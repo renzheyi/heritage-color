@@ -7,6 +7,7 @@
 
 import os
 from typing import List
+from html import escape as _esc
 import streamlit as st
 
 # 注意：set_page_config 必须是第一个 Streamlit 命令，放在任何 st.* 之前。
@@ -56,9 +57,20 @@ except Exception as _e:
 
 from theme import apply_theme
 
-apply_theme()
-
 ASSETS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets")
+
+
+def _background_uri() -> str:
+    """把虚化古建筑图转成 data URI，作为页面淡淡衬底。"""
+    path = os.path.join(ASSETS, "bg_blur.jpg")
+    if not os.path.exists(path):
+        return ""
+    import base64
+    with open(path, "rb") as f:
+        return "data:image/jpeg;base64," + base64.b64encode(f.read()).decode()
+
+
+apply_theme(_background_uri())
 
 
 # ---------------------------------------------------------------- 通用组件
@@ -79,7 +91,7 @@ def banner(image_name: str, title: str, subtitle: str = ""):
     else:
         st.markdown(
             f'<div class="gf-banner" style="background:linear-gradient(135deg,#7A2E24,#9E3329 55%,#B08D4F);">'
-            f'<div class="gf-cloud-divider" style="color:#F7EFE0;">❖　云　纹　❖</div>'
+            f'<div class="gf-cloud-band" style="filter:brightness(3)"></div>'
             f'<div class="gf-banner-cap" style="position:static;background:none;color:#F7EFE0;">'
             f'{title}{sub}</div></div>',
             unsafe_allow_html=True,
@@ -102,6 +114,7 @@ def nav_block(num: str, title: str, desc: str, btn_key: str):
     with st.container():
         st.markdown(
             f'<div class="gf-nav-card">'
+            f'<span class="gf-card-glow"></span>'
             f'<div class="gf-nav-num">{num}</div>'
             f'<div class="gf-nav-title">{title}</div>'
             f'<div class="gf-nav-desc">{desc}</div>'
@@ -109,6 +122,72 @@ def nav_block(num: str, title: str, desc: str, btn_key: str):
             unsafe_allow_html=True,
         )
         return st.button(f"进入 · {title}　→", key=btn_key, use_container_width=True)
+
+
+def orbit_center():
+    """主页环形布局的中心徽记：旋转金环 + 朱印核心。"""
+    st.markdown(
+        '<div class="gf-orbit-wrap"><div class="gf-orbit-center">'
+        '<div class="gf-orbit-ring"></div>'
+        '<div class="gf-orbit-core">考色<small>五门拱卫</small></div>'
+        '</div></div>',
+        unsafe_allow_html=True,
+    )
+
+
+def sec_title(text: str) -> str:
+    """结果区统分区标题。"""
+    return f'<div class="gf-sec-title">{text}</div>'
+
+
+def badge(text: str, tone: str = "red") -> str:
+    """结果区徽章：red / gold / teal。"""
+    return f'<span class="gf-badge gf-badge-{tone}">{text}</span>'
+
+
+def kv(key: str, val: str) -> str:
+    """结果区键值行。"""
+    return f'<div class="gf-kv"><span class="gf-kv-key">{key}</span><span class="gf-kv-val">{val}</span></div>'
+
+
+def note(text: str) -> str:
+    """结果区说明文字块。"""
+    return f'<div class="gf-note">{text}</div>'
+
+
+def html_table(data) -> str:
+    """把 列表[dict] / DataFrame / dict / 列表 渲染成古风表格。"""
+    import html
+    if data is None:
+        return ""
+    if hasattr(data, "to_dict"):
+        data = data.to_dict("records")
+    if isinstance(data, dict):
+        head = ["项目", "内容"]
+        rows = [[html.escape(str(k)), html.escape(str(v))] for k, v in data.items()]
+    elif isinstance(data, (list, tuple)) and len(data) > 0:
+        if isinstance(data[0], dict):
+            head = [html.escape(str(h)) for h in data[0].keys()]
+            rows = [[html.escape(str(row.get(h, ""))) for h in data[0].keys()] for row in data]
+        else:
+            head = ["序号", "内容"]
+            rows = [[str(i + 1), html.escape(str(x))] for i, x in enumerate(data)]
+    else:
+        return ""
+    th = "".join(f"<th>{h}</th>" for h in head)
+    tr = "".join("<tr>" + "".join(f"<td>{c}</td>" for c in row) + "</tr>" for row in rows)
+    return f'<table class="gf-table"><thead><tr>{th}</tr></thead><tbody>{tr}</tbody></table>'
+
+
+def result_panel(sections) -> str:
+    """把 [(小节标题, HTML正文), ...] 渲染成一张整洁的结果卷宗。"""
+    body = ""
+    for title, content in sections:
+        if content is None or content == "":
+            continue
+        body += (f'<div class="gf-sec">{sec_title(title)}'
+                 f'<div class="gf-sec-body">{content}</div></div>')
+    return f'<div class="gf-result-panel">{body}</div>'
 
 
 def goto(view_name: str):
@@ -136,8 +215,12 @@ def back_button():
         goto("home")
 
 
-def cloud_divider(text: str = "❖　云　纹　❖"):
-    st.markdown(f'<div class="gf-cloud-divider">{text}</div>', unsafe_allow_html=True)
+def cloud_divider(text: str = ""):
+    """页头云纹分隔带：默认只显示云纹图形，不显示文字。"""
+    if text:
+        st.markdown(f'<div class="gf-cloud-divider">{text}</div>', unsafe_allow_html=True)
+    else:
+        st.markdown('<div class="gf-cloud-band"></div>', unsafe_allow_html=True)
 
 
 def meander():
@@ -215,33 +298,46 @@ if view == "home":
         'letter-spacing:2px;margin:6px 0 18px;">择一门而入，探文物色彩之奥</div>',
         unsafe_allow_html=True,
     )
-    c1, c2 = st.columns(2, gap="large")
-    with c1:
+    # 众星拱月：五个门牌环绕中心徽记摆放
+    #         [壹]
+    #   [贰]  ◎中心◎  [叁]
+    #   [肆]          [伍]
+    r1a, r1b, r1c = st.columns([1, 1.15, 1], gap="large")
+    with r1b:
         if nav_block(
             "壹", "色彩考证",
             "参酌现存残留色、文献与朝代，推求文物彩画之初色。",
             "go_auth",
         ):
             goto("auth")
+
+    r2a, r2b, r2c = st.columns([1, 1.15, 1], gap="large")
+    with r2a:
         if nav_block(
             "贰", "颜料推演",
             "由一色反求所用颜料与调配之法，青绿朱黄，皆溯其源。",
             "go_infer",
         ):
             goto("infer")
+    with r2b:
+        orbit_center()
+    with r2c:
         if nav_block(
             "叁", "建筑风格识别",
             "由色彩与用色制度，辨识和玺、旋子、苏式、敦煌等彩画风格。",
             "go_style",
         ):
             goto("style")
-    with c2:
+
+    r3a, r3b, r3c = st.columns([1, 1.15, 1], gap="large")
+    with r3a:
         if nav_block(
             "肆", "修复决策",
             "察颜料之性、病害之由、环境之宜，出最小干预之修复策。",
             "go_restore",
         ):
             goto("restore")
+    with r3c:
         if nav_block(
             "伍", "材质辨识与配材",
             "上传照片辨识木石金属等材质，据病害给出修复所需材料。",
@@ -327,25 +423,33 @@ elif view == "auth":
                     observed_hex=observed, dynasty=dynasty1 or None,
                     document_text=doc or None, top_k=top_k,
                 )
-                st.markdown("**原始色（推求）**")
-                st.markdown(swatch_html(r.original_hex, r.original_hex),
-                            unsafe_allow_html=True)
-                st.metric("置信度", f"{r.confidence:.0%}")
-                st.markdown("**匹配颜料**")
-                st.dataframe(r.matched_pigments, width="stretch")
-                st.markdown("**推理依据**")
-                st.info(r.reasoning)
+                sections = []
+                sections.append((
+                    "原始色（推求）",
+                    f'<div class="gf-swatch-row">{swatch_html(r.original_hex, "")}'
+                    f'<span class="gf-num">{r.original_hex}</span>'
+                    f'{badge(f"置信度 {r.confidence:.0%}", "gold")}</div>',
+                ))
+                sections.append(("匹配颜料", html_table(r.matched_pigments)))
+                sections.append(("推理依据", note(_esc(str(r.reasoning)))))
                 pigment_names = [m["颜料"] for m in r.matched_pigments]
                 styles = identify_architecture_style(
                     color_hex=r.original_hex, dynasty=dynasty1 or None,
                     pigment_names=pigment_names, top_n=3,
                 )
                 if styles:
-                    st.markdown("**对应建筑风格（据色推求）**")
+                    items = ""
                     for m in styles:
-                        st.write(
-                            f"- **{m.style}**（{m.category}，匹配度 {m.score:.0%}）"
-                            f"— {m.typical_use}")
+                        items += (
+                            '<div class="gf-style-item">'
+                            + badge(f"{_esc(str(m.style))}　{m.score:.0%}", "teal")
+                            + kv("类别", _esc(str(m.category)))
+                            + kv("常见于", _esc(str(m.typical_use)))
+                            + note(_esc(str(m.reasoning)))
+                            + '</div>'
+                        )
+                    sections.append(("对应建筑风格（据色推求）", items))
+                st.markdown(result_panel(sections), unsafe_allow_html=True)
             except Exception as e:
                 st.error(f"计算失败：{e}")
         else:
@@ -377,17 +481,22 @@ elif view == "infer":
                 r = infer_pigment(target, dynasty=dynasty2 or None,
                                   allow_mixture=allow_mix, top_n=top_n)
                 best = r["best_formula"]
-                st.markdown("**最优配方**")
-                st.markdown(swatch_html(best["result_hex"], best["result_hex"]),
-                            unsafe_allow_html=True)
-                st.write(f"{best['pigments']} · 色差 {best['delta_e']}")
-                st.markdown("**单颜料候选**")
-                st.dataframe(r["single_pigments"], width="stretch")
+                delta_badge = badge("色差 " + str(best["delta_e"]), "gold")
+                sections = []
+                sections.append((
+                    "最优配方",
+                    f'<div class="gf-swatch-row">{swatch_html(best["result_hex"], "")}'
+                    f'<span class="gf-num">{best["result_hex"]}</span>'
+                    f'{delta_badge}</div>'
+                    + kv("颜料", _esc(str(best["pigments"]))),
+                ))
+                sections.append(("单颜料候选", html_table(r["single_pigments"])))
                 if r["mixtures"]:
-                    st.markdown("**混合配方候选**")
-                    st.dataframe(r["mixtures"], width="stretch")
-                st.info(r["reasoning"])
-                st.caption(r["note"])
+                    sections.append(("混合配方候选", html_table(r["mixtures"])))
+                sections.append(("推演依据", note(_esc(str(r["reasoning"])))))
+                if r.get("note"):
+                    sections.append(("附注", note(_esc(str(r["note"])))))
+                st.markdown(result_panel(sections), unsafe_allow_html=True)
             except Exception as e:
                 st.error(f"计算失败：{e}")
         else:
@@ -450,14 +559,22 @@ elif view == "style":
                     color_hex=style_hex, dynasty=dynasty3 or None,
                     pigment_names=names, top_n=3,
                 )
+                items = ""
                 for i, m in enumerate(matches, 1):
-                    st.markdown(f"**{i}. {m.style}**　匹配度 `{m.score:.0%}`")
-                    st.write(f"- 类别：{m.category}　等级：{m.rank}")
-                    st.write(f"- 特征：{m.feature}")
-                    st.write(f"- 常见于：{m.typical_use}")
-                    st.caption(m.reasoning)
-                    if i < len(matches):
-                        st.divider()
+                    items += (
+                        '<div class="gf-style-item">'
+                        + badge(f"{i}. {_esc(str(m.style))}", "red")
+                        + badge(f"匹配 {m.score:.0%}", "gold")
+                        + kv("类别 / 等级", _esc(str(m.category)) + "　" + _esc(str(m.rank)))
+                        + kv("特征", _esc(str(m.feature)))
+                        + kv("常见于", _esc(str(m.typical_use)))
+                        + note(_esc(str(m.reasoning)))
+                        + '</div>'
+                    )
+                st.markdown(
+                    result_panel([("风格候选（按匹配度）", items)]),
+                    unsafe_allow_html=True,
+                )
             except Exception as e:
                 st.error(f"识别失败：{e}")
         else:
@@ -492,17 +609,24 @@ elif view == "restore":
                     env["照度"] = lux
                 r = decide_restoration(pigment=pigment or None, damage=damage,
                                        environment=env or None)
-                st.markdown(f"**紧迫度：{r.urgency}**")
-                st.write(r.summary)
-                st.markdown("**建议工艺步骤**")
-                for i, s in enumerate(r.steps, 1):
-                    st.write(f"{i}. {s}")
-                st.markdown("**建议材料**")
-                st.write("、".join(r.materials))
-                st.markdown("**环境控制**")
-                st.json(r.environment)
+                sections = []
+                sections.append(("方案概要",
+                                 badge(f"紧迫度 {r.urgency}", "red")
+                                 + note(_esc(str(r.summary)))))
+                steps = "".join(
+                    f'<div class="gf-step-line"><span class="gf-step-no">{i}</span>'
+                    f'{_esc(str(s))}</div>' for i, s in enumerate(r.steps, 1))
+                sections.append(("建议工艺步骤", steps))
+                sections.append(("建议材料", note(_esc("、".join(r.materials)))))
+                env_tbl = html_table(r.environment)
+                if env_tbl:
+                    sections.append(("环境控制", env_tbl))
                 if r.risks:
-                    st.warning("风险提示：" + "；".join(r.risks))
+                    sections.append((
+                        "风险提示",
+                        f'<div class="gf-risk">{_esc("；".join(r.risks))}</div>',
+                    ))
+                st.markdown(result_panel(sections), unsafe_allow_html=True)
             except Exception as e:
                 st.error(f"计算失败：{e}")
         else:
@@ -581,24 +705,36 @@ elif view == "material":
                         env["照度"] = lux2
                     plan = recommend_repair_materials(mat_name, diseases=diseases,
                                                       environment=env or None)
-                    st.markdown(f"**材质：{plan.material}**　紧迫度：`{plan.urgency}`")
-                    st.markdown("**修复所需材料**")
-                    st.write("、".join(plan.materials))
-                    st.markdown("**工艺要点**")
-                    st.info(plan.craft)
-                    st.markdown("**修复禁忌**")
-                    st.warning(plan.taboo)
-                    st.markdown("**环境建议**")
-                    st.json(plan.environment)
-                    st.caption(plan.reasoning)
+                    sections = []
+                    sections.append((
+                        "辨识材质",
+                        badge(_esc(str(plan.material)), "red")
+                        + badge(f"紧迫度 {plan.urgency}", "gold"),
+                    ))
+                    sections.append(("修复所需材料", note(_esc("、".join(plan.materials)))))
+                    sections.append(("工艺要点", note(_esc(str(plan.craft)))))
+                    sections.append((
+                        "修复禁忌",
+                        f'<div class="gf-risk">{_esc(str(plan.taboo))}</div>',
+                    ))
+                    env_tbl = html_table(plan.environment)
+                    if env_tbl:
+                        sections.append(("环境建议", env_tbl))
+                    if plan.reasoning:
+                        sections.append(("推断说明", note(_esc(str(plan.reasoning)))))
+                    st.markdown(result_panel(sections), unsafe_allow_html=True)
                 except Exception as e:
                     st.error(f"计算失败：{e}")
         elif detected:
-            st.markdown("**图像辨识结论**")
-            st.success(
-                f"照片最可能为 **{detected[0]}**；"
-                "材质与病害已自动填入左侧，可直接生成配材方案。")
-            st.info("如需调整，可在左侧重新选择材质与病害，再点「生成修复配材方案」。")
+            st.markdown(
+                result_panel([(
+                    "图像辨识结论",
+                    badge(_esc(str(detected[0])), "teal")
+                    + note("照片最可能为上述材质；材质与病害已自动填入左侧，"
+                           "可直接生成配材方案。如需调整，可在左侧重新选择后生成。"),
+                )]),
+                unsafe_allow_html=True,
+            )
         else:
             st.info("上传照片或在左侧选定材质与病害后点击「生成修复配材方案」")
     st.markdown("</div>", unsafe_allow_html=True)

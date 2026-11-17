@@ -14,7 +14,7 @@ import streamlit as st
 st.set_page_config(
     page_title="文物色彩考证与修复辅助系统",
     layout="wide",
-    initial_sidebar_state="collapsed",
+    initial_sidebar_state="expanded",
 )
 
 # 兼容云端旧缓存：Streamlit Cloud 偶尔会只更新 app.py 而未刷新包文件，
@@ -55,7 +55,11 @@ except Exception as _e:
     )
     st.stop()
 
-from theme import apply_theme
+try:
+    from theme import apply_theme, apply_font, FONT_PRESETS
+except ImportError:  # 云端旧缓存：theme.py 还没有字体切换功能
+    from theme import apply_theme
+    apply_font, FONT_PRESETS = None, {}
 
 ASSETS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets")
 
@@ -77,6 +81,35 @@ if "background_uri" in _inspect.signature(apply_theme).parameters:
     apply_theme(_background_uri())
 else:
     apply_theme()
+
+# ---------------------------------------------------------------- 字体风格切换
+if FONT_PRESETS and apply_font is not None:
+    _font_names = list(FONT_PRESETS.keys())
+    with st.sidebar:
+        st.markdown(
+            '<div style="font-family:var(--gf-kai);font-size:18px;color:#7A2E24;'
+            'letter-spacing:3px;text-align:center;margin:4px 0 2px;">✦ 字体风格 ✦</div>',
+            unsafe_allow_html=True,
+        )
+        st.caption("择一书体，切换全站气质")
+        _cur_font = st.selectbox(
+            "字体风格", _font_names,
+            index=_font_names.index(st.session_state["font_preset"])
+            if st.session_state.get("font_preset") in _font_names else 0,
+            key="font_preset",
+            label_visibility="collapsed",
+        )
+        st.caption(
+            {
+                "典雅楷宋": "楷体标题 · 宋体正文，端正典雅（默认）",
+                "古朴隶意": "隶书题字，古朴庄重",
+                "行云流水": "行书飘逸，灵动洒脱",
+                "清雅仿宋": "仿宋清秀，书卷气浓",
+                "唐楷端正": "唐楷法度，端正严整",
+            }.get(_cur_font, "")
+        )
+    # 后注入的 :root 覆盖 apply_theme 的默认值，即时切换全站字体
+    apply_font(_cur_font)
 
 
 # ---------------------------------------------------------------- 通用组件

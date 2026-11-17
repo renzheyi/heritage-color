@@ -125,6 +125,7 @@ def meander():
 
 
 # ---------------------------------------------------------------- 页头
+st.markdown('<div class="gf-top-rule"></div>', unsafe_allow_html=True)
 st.markdown(
     '<div class="gf-title">文物色彩考证与修复辅助系统</div>',
     unsafe_allow_html=True,
@@ -190,6 +191,7 @@ if view == "home":
         st.markdown(
             '<div class="gf-ornate-card" style="height:168px;'
             'display:flex;flex-direction:column;justify-content:center;">'
+            '<div class="gf-nav-num">伍</div>'
             '<div class="gf-nav-title">五门相济</div>'
             '<div class="gf-nav-desc">先辨其色，次溯其料，再识其制，'
             '终辨其质而续其命，循古法以守真。</div></div>',
@@ -204,6 +206,7 @@ if view == "home":
         '</div>',
         unsafe_allow_html=True,
     )
+    st.markdown('<div class="gf-bottom-rule"></div>', unsafe_allow_html=True)
 
 
 # ================================================================ 壹 色彩考证
@@ -444,18 +447,17 @@ elif view == "material":
         "伍 · 材质辨识与配材",
         "上传文物照片辨识其材质，再据病害给出修复所需材料与工艺要点。",
     ), unsafe_allow_html=True)
+    col1, col2 = st.columns([1, 1])
 
-    st.markdown("#### 第一步 · 上传照片识别材质")
-    up_mat = st.file_uploader(
-        "上传木构 / 石刻 / 金属 / 彩画 / 地仗等照片（JPG / PNG）",
-        type=["jpg", "jpeg", "png"], key="upload_material",
-    )
-    detected: List[str] = []
-    if up_mat is not None:
-        ic, rc = st.columns([1, 1])
-        with ic:
+    with col1:
+        st.markdown("**一、上传照片识别材质**")
+        up_mat = st.file_uploader(
+            "上传木构 / 石刻 / 金属 / 彩画 / 地仗等照片（JPG / PNG）",
+            type=["jpg", "jpeg", "png"], key="upload_material",
+        )
+        detected: List[str] = []
+        if up_mat is not None:
             st.image(up_mat, caption="已上传图像", width="stretch")
-        with rc:
             with st.spinner("正在辨析材质……"):
                 try:
                     matches = identify_image_material(up_mat, top_n=3)
@@ -472,27 +474,29 @@ elif view == "material":
                 except Exception as e:
                     st.error(f"图像解析失败：{e}")
 
-    meander()
-    st.markdown("#### 第二步 · 据材质与病害给出修复配材")
-    c1, c2 = st.columns([1, 1])
-    with c1:
+        # 识别结果自动填入下拉框（带 key 的组件会忽略 index，须写入 session_state）
+        if detected and st.session_state.get("mat_sel", "") in ("", None):
+            st.session_state["mat_sel"] = detected[0]
+            st.session_state["mat_dis"] = [
+                d for d in kb.MATERIALS[detected[0]].common_diseases[:2]
+                if d in kb.DAMAGE_RULES
+            ]
+            st.rerun()
+
+        meander()
+        st.markdown("**二、选择材质与病害**")
         mat_options = ["", *kb.MATERIALS.keys()]
-        default_mat = detected[0] if detected else ""
-        mat_index = mat_options.index(default_mat) if default_mat in mat_options else 0
-        mat_name = st.selectbox("材质", mat_options, index=mat_index, key="mat_sel")
-        default_diseases = []
-        if mat_name:
-            default_diseases = kb.MATERIALS[mat_name].common_diseases[:2]
+        mat_name = st.selectbox("材质", mat_options, key="mat_sel")
         diseases = st.multiselect(
-            "病害（可多选）", list(kb.DAMAGE_RULES.keys()),
-            default=[d for d in default_diseases if d in kb.DAMAGE_RULES],
-            key="mat_dis",
+            "病害（可多选）", list(kb.DAMAGE_RULES.keys()), key="mat_dis",
         )
         hum2 = st.text_input("当前湿度", "75% RH", key="mat_hum")
         lux2 = st.text_input("当前照度", "", key="mat_lux")
         run5 = st.button("生成修复配材方案", type="primary", key="run5")
-    with c2:
-        st.markdown('<div class="gf-result-label">修复配材方案</div>', unsafe_allow_html=True)
+
+    with col2:
+        st.markdown('<div class="gf-result-label">识别与配材结果</div>',
+                    unsafe_allow_html=True)
         if run5:
             if not mat_name:
                 st.warning("请先上传照片识别材质，或在左侧下拉框选择材质。")
@@ -517,6 +521,13 @@ elif view == "material":
                     st.caption(plan.reasoning)
                 except Exception as e:
                     st.error(f"计算失败：{e}")
+        elif detected:
+            st.markdown("**图像辨识结论**")
+            st.success(
+                f"照片最可能为 **{detected[0]}**；"
+                "材质与病害已自动填入左侧，可直接生成配材方案。")
+            st.info("如需调整，可在左侧重新选择材质与病害，再点「生成修复配材方案」。")
         else:
             st.info("上传照片或在左侧选定材质与病害后点击「生成修复配材方案」")
     st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown('<div class="gf-bottom-rule"></div>', unsafe_allow_html=True)

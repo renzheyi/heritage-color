@@ -12,18 +12,14 @@
 集中放 CSS，保持 app.py 只管业务逻辑。
 """
 
-# 字体栈：优先中文古风字体，云端 Linux 回退到思源宋体
+# 字体栈：整站固定为古风书体，优先中文古风字体，云端 Linux 回退到思源宋体。
+# 主标题用行楷飘逸、印章编号用隶书古朴、正文用楷体、数字用西文衬线。
 FONT_CSS = """
 :root{
-  /* 楷体 —— 端正典雅，主标题 / 表头 / 按钮 */
-  --gf-kai:  "STKaiti","KaiTi","Kaiti SC","楷体","楷体_GB2312","Noto Serif CJK SC","Source Han Serif SC",serif;
-  /* 隶书 —— 古朴庄重，印章 / 编号 / 徽记 */
+  --gf-kai:  "STXingkai","Xingkai SC","华文行楷","STKaiti","KaiTi","Kaiti SC","楷体","Noto Serif CJK SC","Source Han Serif SC",serif;
   --gf-li:   "STLiti","LiSu","隶书","Noto Serif CJK SC","Source Han Serif SC",serif;
-  /* 行楷 —— 洒脱题字，卡片标题 / 横幅 / 结果标签 */
   --gf-xing: "STXingkai","Xingkai SC","华文行楷","STKaiti","KaiTi","楷体","Noto Serif CJK SC",serif;
-  /* 宋体 —— 书卷正文 */
-  --gf-song: "Songti SC","SimSun","宋体","Noto Serif CJK SC","Source Han Serif SC",serif;
-  /* 西文衬线 —— 色值 / 数字 */
+  --gf-song: "KaiTi","STKaiti","Kaiti SC","楷体","Songti SC","SimSun","Noto Serif CJK SC","Source Han Serif SC",serif;
   --gf-num:  "Georgia","Times New Roman",serif;
 }
 """
@@ -546,54 +542,3 @@ def apply_theme(background_uri: str = "") -> None:
     css = GUOFENG_CSS.replace("__BG_URI__", background_uri)
     st.markdown(css, unsafe_allow_html=True)
 
-
-# ============================================================ 字体风格切换
-# 每套方案给出四类字体栈：楷 / 隶 / 行 / 宋。云端 Linux 回退到思源宋体。
-# 说明：这是"字体气质"的切换——不同方案会改变标题、印章、正文的字体取向。
-FONT_PRESETS = {
-    "典雅楷宋": {
-        "kai": '"STKaiti","KaiTi","Kaiti SC","楷体","楷体_GB2312","Noto Serif CJK SC",serif',
-        "li":  '"STLiti","LiSu","隶书","Noto Serif CJK SC",serif',
-        "xing": '"STXingkai","Xingkai SC","华文行楷","STKaiti","KaiTi","Noto Serif CJK SC",serif',
-        "song": '"Songti SC","SimSun","宋体","Noto Serif CJK SC",serif',
-    },
-    "古朴隶意": {
-        "kai": '"STLiti","LiSu","隶书","STKaiti","KaiTi","Noto Serif CJK SC",serif',
-        "li":  '"STLiti","LiSu","隶书","Noto Serif CJK SC",serif',
-        "xing": '"STXingkai","华文行楷","STLiti","隶书","Noto Serif CJK SC",serif',
-        "song": '"Songti SC","SimSun","宋体","Noto Serif CJK SC",serif',
-    },
-    "行云流水": {
-        "kai": '"STXingkai","Xingkai SC","华文行楷","STKaiti","KaiTi","Noto Serif CJK SC",serif',
-        "li":  '"STLiti","LiSu","隶书","Noto Serif CJK SC",serif',
-        "xing": '"STXingkai","Xingkai SC","华文行楷","Noto Serif CJK SC",serif',
-        "song": '"KaiTi","STKaiti","楷体","Songti SC","SimSun","Noto Serif CJK SC",serif',
-    },
-    "清雅仿宋": {
-        "kai": '"FangSong","仿宋","STKaiti","KaiTi","Noto Serif CJK SC",serif',
-        "li":  '"STLiti","LiSu","隶书","FangSong","仿宋","Noto Serif CJK SC",serif',
-        "xing": '"FangSong","仿宋","STXingkai","华文行楷","Noto Serif CJK SC",serif',
-        "song": '"FangSong","仿宋","FangSong_GB2312","SimSun","宋体","Noto Serif CJK SC",serif',
-    },
-    "唐楷端正": {
-        "kai": '"STKaiti","KaiTi","Kaiti SC","楷体_GB2312","楷体","Noto Serif CJK SC",serif',
-        "li":  '"STKaiti","KaiTi","楷体","STLiti","隶书","Noto Serif CJK SC",serif',
-        "xing": '"STKaiti","KaiTi","楷体","STXingkai","华文行楷","Noto Serif CJK SC",serif',
-        "song": '"SimSun","宋体","Songti SC","Noto Serif CJK SC",serif',
-    },
-}
-
-
-def apply_font(preset_name: str) -> None:
-    """按方案名覆盖字体变量。须在 apply_theme 之后调用（CSS 后者优先）。"""
-    import streamlit as st
-    preset = FONT_PRESETS.get(preset_name)
-    if not preset:
-        return
-    decl = " ".join(
-        f"--gf-{key}: {value};" for key, value in preset.items()
-    )
-    st.markdown(
-        f"<style>:root{{{decl}}}</style>",
-        unsafe_allow_html=True,
-    )

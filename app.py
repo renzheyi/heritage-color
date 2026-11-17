@@ -25,6 +25,7 @@ try:
         "auth_color", "infer_pigment", "decide_restoration",
         "identify_architecture_style", "extract_image_colors",
         "identify_image_material", "recommend_repair_materials",
+        "polish_text",
     )
     _missing = [n for n in _REQUIRED if not hasattr(_hc, n)]
     if _missing:
@@ -41,6 +42,7 @@ try:
     extract_image_colors = _hc.extract_image_colors
     identify_image_material = _hc.identify_image_material
     recommend_repair_materials = _hc.recommend_repair_materials
+    polish_text = _hc.polish_text
     from heritage_color import knowledge_base as kb
 except Exception as _e:
     st.error(
@@ -86,7 +88,7 @@ def banner(image_name: str, title: str, subtitle: str = ""):
 
 def card_start(title: str, desc: str = "") -> str:
     d = f'<div class="gf-card-desc">{desc}</div>' if desc else ""
-    return (f'<div class="gf-ornate-card">'
+    return (f'<div class="gf-ornate-card gf-enter">'
             f'<div class="gf-card-title">{title}</div>{d}')
 
 
@@ -109,11 +111,29 @@ def nav_block(num: str, title: str, desc: str, btn_key: str):
         return st.button(f"进入 · {title}　→", key=btn_key, use_container_width=True)
 
 
+def goto(view_name: str):
+    """切换视图并递增动画令牌，使入场特效在每次进入时重播。"""
+    st.session_state["view"] = view_name
+    st.session_state["anim_token"] = st.session_state.get("anim_token", 0) + 1
+    st.rerun()
+
+
+def enter_animation():
+    """渲染揭幕转场层。HTML 中含令牌，视图切换时节点重建，动画随之重播。"""
+    token = st.session_state.get("anim_token", 0)
+    st.markdown(
+        f'<div class="gf-curtain" data-token="{token}">'
+        f'<div class="gf-curtain-seal">考</div>'
+        f'<div class="gf-curtain-line"></div>'
+        f'</div>',
+        unsafe_allow_html=True,
+    )
+
+
 def back_button():
     """程序页顶部的返回按钮。"""
     if st.button("←　返回总览", key="back_home"):
-        st.session_state["view"] = "home"
-        st.rerun()
+        goto("home")
 
 
 def cloud_divider(text: str = "❖　云　纹　❖"):
@@ -124,7 +144,47 @@ def meander():
     st.markdown('<div class="gf-meander"></div>', unsafe_allow_html=True)
 
 
+def dynasty_options(default: str = "清"):
+    """朝代下拉框的选项与默认值索引，默认指向指定朝代。"""
+    opts = ["", *kb.DYNASTIES.keys()]
+    idx = opts.index(default) if default in opts else 0
+    return opts, idx
+
+
+def ai_polish_block(text_key: str, label: str = "文献描述", dynasty_key: str = None):
+    """在文本框下方渲染"AI 润色"程序：把口语描述改为考证书面语并补全色彩关键词。
+
+    text_key: 对应文本输入框的 session_state key（润色结果写回此 key）。
+    dynasty_key: 可选，朝代输入框的 key，用于按朝代补充用色线索。
+    使用 on_click 回调在 widget 实例化前写入 session_state，避免新版
+    Streamlit 的"widget 已实例化不可改"报错。
+    """
+    def _do_polish():
+        src = st.session_state.get(text_key, "") or ""
+        dy = st.session_state.get(dynasty_key, "") if dynasty_key else None
+        result = polish_text(src, dynasty=dy or None)
+        st.session_state[text_key] = result["polished"]
+        st.session_state[f"{text_key}_polish_info"] = result
+
+    btn_col, hint_col = st.columns([1, 2])
+    with btn_col:
+        st.button(
+            "✦ AI 润色提示词", on_click=_do_polish,
+            key=f"polish_{text_key}", help="将口语描述润色为文物考证书面语，并补全色彩关键词以提升考证准确度",
+        )
+    info = st.session_state.get(f"{text_key}_polish_info")
+    if info:
+        with st.expander("润色说明", expanded=False):
+            st.markdown("**改动点**")
+            for c in info["changes"]:
+                st.write("- " + c)
+            if info["keywords"]:
+                st.markdown("**提取的色彩关键词**：" + "、".join(info["keywords"]))
+            st.caption("润色采用内置文物考证书面语规则，无需联网；结果仅供描述优化参考。")
+
+
 # ---------------------------------------------------------------- 页头
+enter_animation()
 st.markdown('<div class="gf-top-rule"></div>', unsafe_allow_html=True)
 st.markdown(
     '<div class="gf-title">文物色彩考证与修复辅助系统</div>',
@@ -162,32 +222,32 @@ if view == "home":
             "参酌现存残留色、文献与朝代，推求文物彩画之初色。",
             "go_auth",
         ):
-            st.session_state["view"] = "auth"; st.rerun()
+            goto("auth")
         if nav_block(
             "贰", "颜料推演",
             "由一色反求所用颜料与调配之法，青绿朱黄，皆溯其源。",
             "go_infer",
         ):
-            st.session_state["view"] = "infer"; st.rerun()
+            goto("infer")
         if nav_block(
             "叁", "建筑风格识别",
             "由色彩与用色制度，辨识和玺、旋子、苏式、敦煌等彩画风格。",
             "go_style",
         ):
-            st.session_state["view"] = "style"; st.rerun()
+            goto("style")
     with c2:
         if nav_block(
             "肆", "修复决策",
             "察颜料之性、病害之由、环境之宜，出最小干预之修复策。",
             "go_restore",
         ):
-            st.session_state["view"] = "restore"; st.rerun()
+            goto("restore")
         if nav_block(
             "伍", "材质辨识与配材",
             "上传照片辨识木石金属等材质，据病害给出修复所需材料。",
             "go_material",
         ):
-            st.session_state["view"] = "material"; st.rerun()
+            goto("material")
 
     meander()
     st.markdown(
@@ -212,7 +272,9 @@ elif view == "auth":
     col1, col2 = st.columns([1, 1])
     with col1:
         st.markdown("**一、现存残留色**")
-        observed = st.color_picker("现存残留色（实测）", "#6E2020", key="observed")
+        if "observed" not in st.session_state:
+            st.session_state["observed"] = "#6E2020"
+        observed = st.color_picker("现存残留色（实测）", key="observed")
         with st.expander("上传文物照片，自动识别现存残留色"):
             uploaded = st.file_uploader(
                 "上传彩画 / 壁画照片（JPG / PNG）",
@@ -224,27 +286,37 @@ elif view == "auth":
                     try:
                         swatches = extract_image_colors(uploaded, top_n=6)
                         st.markdown("**画面主色（按占比）**")
+
+                        def _pick_auth_color(hex_value=None):
+                            """回调：在 color_picker 实例化前写回现存色。"""
+                            st.session_state["observed"] = hex_value
+                            st.session_state["observed_picked"] = hex_value
+
                         for i, s in enumerate(swatches):
                             a, b = st.columns([1, 3])
                             with a:
                                 st.markdown(swatch_html(s.hex, ""), unsafe_allow_html=True)
                             with b:
                                 st.write(f"{s.hex} · 占比 {s.ratio:.0%}")
-                                if st.button("用作现存色", key=f"pick_{i}"):
-                                    st.session_state["observed"] = s.hex
-                                    st.session_state["observed_picked"] = s.hex
-                                    st.rerun()
+                                st.button(
+                                    "用作现存色", key=f"pick_{i}",
+                                    on_click=_pick_auth_color, args=(s.hex,),
+                                )
                         if "observed_picked" in st.session_state:
                             st.success(
                                 f"已采用图像取色 {st.session_state['observed_picked']} "
                                 "作为现存残留色。")
                     except Exception as e:
                         st.error(f"图像解析失败：{e}")
-        dynasty1 = st.selectbox("朝代", ["", *kb.DYNASTIES.keys()], index=5, key="dyn1")
+        dy_opts, dy_idx = dynasty_options("清")
+        dynasty1 = st.selectbox("朝代", dy_opts, index=dy_idx, key="dyn1")
+        if "doc" not in st.session_state:
+            st.session_state["doc"] = "檐下青绿彩画，朱柱，间以金线"
         doc = st.text_area(
-            "文献描述文本", "檐下青绿彩画，朱柱，间以金线",
+            "文献描述文本", key="doc",
             help="含朱/青/绿/金/红/白/黑等色彩关键词即可作为证据",
         )
+        ai_polish_block("doc", dynasty_key="dyn1")
         top_k = st.slider("候选颜料数量", 1, 5, 3, key="topk1")
         run1 = st.button("开始考证", type="primary", key="run1")
     with col2:
@@ -293,7 +365,8 @@ elif view == "infer":
     col1, col2 = st.columns([1, 1])
     with col1:
         target = st.color_picker("目标颜色", "#2E9070", key="target")
-        dynasty2 = st.selectbox("朝代约束", ["", *kb.DYNASTIES.keys()], index=5, key="dyn2")
+        dy_opts2, dy_idx2 = dynasty_options("清")
+        dynasty2 = st.selectbox("朝代约束", dy_opts2, index=dy_idx2, key="dyn2")
         allow_mix = st.checkbox("允许混合颜料配方", value=True)
         top_n = st.slider("候选配方数", 1, 5, 3, key="topn2")
         run2 = st.button("开始推演", type="primary", key="run2")
@@ -333,7 +406,9 @@ elif view == "style":
     ), unsafe_allow_html=True)
     col1, col2 = st.columns([1, 1])
     with col1:
-        style_hex = st.color_picker("已知彩画主色", "#1B6FA8", key="style_color")
+        if "style_color" not in st.session_state:
+            st.session_state["style_color"] = "#1B6FA8"
+        style_hex = st.color_picker("已知彩画主色", key="style_color")
         with st.expander("或上传图片自动取色"):
             uploaded3 = st.file_uploader(
                 "上传彩画照片取主色", type=["jpg", "jpeg", "png"], key="upload_style")
@@ -341,16 +416,22 @@ elif view == "style":
                 st.image(uploaded3, caption="已上传图像", width="stretch")
                 try:
                     sw = extract_image_colors(uploaded3, top_n=6)
+
+                    def _pick_style_color(hex_value=None):
+                        """回调：在 color_picker 实例化前写回主色。"""
+                        st.session_state["style_color"] = hex_value
+                        st.session_state["style_picked"] = hex_value
+
                     for i, s in enumerate(sw):
                         a, b = st.columns([1, 3])
                         with a:
                             st.markdown(swatch_html(s.hex, ""), unsafe_allow_html=True)
                         with b:
                             st.write(f"{s.hex} · {s.ratio:.0%}")
-                            if st.button("取此色", key=f"style_pick_{i}"):
-                                st.session_state["style_color"] = s.hex
-                                st.session_state["style_picked"] = s.hex
-                                st.rerun()
+                            st.button(
+                                "取此色", key=f"style_pick_{i}",
+                                on_click=_pick_style_color, args=(s.hex,),
+                            )
                     if "style_picked" in st.session_state:
                         st.success(f"已采用图像取色 {st.session_state['style_picked']}")
                 except Exception as e:

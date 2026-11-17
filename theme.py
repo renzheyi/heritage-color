@@ -7,6 +7,7 @@
   · 瓦当徽记 —— 标题两侧的圆形印章
   · 双线金框 —— 图片横幅
   · 菱形点缀 —— 结果标签与分隔带
+  · 入场动效 —— 内容入场淡入上浮、卷轴揭幕、回纹带流光
 
 集中放 CSS，保持 app.py 只管业务逻辑。
 """
@@ -274,6 +275,94 @@ hr { border-color: #D9C8A6 !important; }
     width: 20px; height: 20px; line-height: 20px; text-align: center;
     font-size: 11px; color: #F7EFE0; background: #9E3329;
     border-radius: 2px; letter-spacing: 0;
+}
+
+/* ============ 9. 入场动态特效 ============ */
+/* 整页内容淡入并轻微上浮，模拟卷轴徐徐展开 */
+.gf-enter {
+    animation: gfUnfurl 0.62s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+@keyframes gfUnfurl {
+    from { opacity: 0; transform: translateY(22px); filter: blur(2px); }
+    to   { opacity: 1; transform: translateY(0);    filter: blur(0); }
+}
+
+/* 门牌依次入场：每个方块按序错开浮现，如卷轴逐格展开 */
+.gf-nav-card {
+    animation: gfCardRise 0.5s ease-out both;
+}
+.gf-nav-card:nth-of-type(1) { animation-delay: 0.05s; }
+.gf-nav-card:nth-of-type(2) { animation-delay: 0.13s; }
+.gf-nav-card:nth-of-type(3) { animation-delay: 0.21s; }
+
+@keyframes gfCardRise {
+    from { opacity: 0; transform: translateY(16px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* 图片横幅揭幕：从左向右展开的卷轴效果 */
+.gf-banner img {
+    animation: gfReveal 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+    transform-origin: left center;
+}
+@keyframes gfReveal {
+    from { transform: scaleX(0.05); opacity: 0.3; }
+    to   { transform: scaleX(1);    opacity: 1; }
+}
+
+/* 回纹带流光：金色纹样缓缓流动 */
+.gf-meander, .gf-top-rule {
+    background-size: 18px 100%, 100% 100%;
+    animation: gfFlow 6s linear infinite;
+}
+@keyframes gfFlow {
+    from { background-position: 0 0, 0 0; }
+    to   { background-position: 180px 0, 0 0; }
+}
+
+/* 朱印入场：轻微盖印回弹 */
+.gf-nav-num, .gf-wadang {
+    animation: gfStamp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@keyframes gfStamp {
+    from { transform: scale(1.35) rotate(-8deg); opacity: 0; }
+    to   { transform: scale(1) rotate(0);        opacity: 1; }
+}
+
+/* 揭幕转场层：进入模块时宣纸幕布带朱印自上而下揭开 */
+.gf-curtain {
+    position: fixed; inset: 0; z-index: 9999; pointer-events: none;
+    background: #F4ECD8;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    animation: gfCurtainLift 0.7s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+.gf-curtain-seal {
+    width: 76px; height: 76px; line-height: 76px; text-align: center;
+    background: #9E3329; color: #F7EFE0;
+    font-family: "Songti SC", SimSun, serif; font-size: 30px;
+    border: 3px double #F7EFE0; outline: 2px solid #9E3329;
+    box-shadow: 3px 4px 10px rgba(0,0,0,0.2);
+    animation: gfSealPulse 0.7s ease-out both;
+}
+.gf-curtain-line {
+    margin-top: 18px; width: 160px; height: 3px; background: #B08D4F;
+    animation: gfLineGrow 0.7s ease-out both;
+}
+@keyframes gfCurtainLift {
+    0%   { clip-path: inset(0 0 0 0);   opacity: 1; }
+    70%  { clip-path: inset(0 0 0 0);   opacity: 1; }
+    100% { clip-path: inset(0 0 100% 0); opacity: 0; }
+}
+@keyframes gfSealPulse {
+    0%   { transform: scale(0.6) rotate(-15deg); opacity: 0; }
+    45%  { transform: scale(1.1) rotate(3deg);   opacity: 1; }
+    100% { transform: scale(1) rotate(0);        opacity: 0.9; }
+}
+@keyframes gfLineGrow {
+    0%   { transform: scaleX(0); opacity: 0; }
+    60%  { transform: scaleX(1); opacity: 1; }
+    100% { transform: scaleX(1); opacity: 0; }
 }
 </style>
 """

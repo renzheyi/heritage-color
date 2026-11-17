@@ -25,6 +25,7 @@ from .modules import (
     StyleMatch, identify_style,
     ColorSwatch, extract_palette, dominant_color,
     MaterialMatch, RepairPlan, identify_material, recommend_repair,
+    polish_text,
 )
 
 # 对外统一入口（函数别名，语义更直观）
@@ -47,4 +48,5 @@ __all__ = [
     "StyleMatch", "identify_style",
     "ColorSwatch", "extract_palette", "dominant_color",
     "MaterialMatch", "RepairPlan", "identify_material", "recommend_repair",
+    "polish_text",
 ]

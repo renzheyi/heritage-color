@@ -164,39 +164,30 @@ if view == "home":
         ):
             st.session_state["view"] = "auth"; st.rerun()
         if nav_block(
-            "叁", "建筑风格识别",
-            "由色彩与用色制度，辨识和玺、旋子、苏式、敦煌等彩画风格。",
-            "go_style",
-        ):
-            st.session_state["view"] = "style"; st.rerun()
-        if nav_block(
-            "伍", "材质辨识与配材",
-            "上传照片辨识木石金属等材质，据病害给出修复所需材料。",
-            "go_material",
-        ):
-            st.session_state["view"] = "material"; st.rerun()
-    with c2:
-        if nav_block(
             "贰", "颜料推演",
             "由一色反求所用颜料与调配之法，青绿朱黄，皆溯其源。",
             "go_infer",
         ):
             st.session_state["view"] = "infer"; st.rerun()
         if nav_block(
+            "叁", "建筑风格识别",
+            "由色彩与用色制度，辨识和玺、旋子、苏式、敦煌等彩画风格。",
+            "go_style",
+        ):
+            st.session_state["view"] = "style"; st.rerun()
+    with c2:
+        if nav_block(
             "肆", "修复决策",
             "察颜料之性、病害之由、环境之宜，出最小干预之修复策。",
             "go_restore",
         ):
             st.session_state["view"] = "restore"; st.rerun()
-        st.markdown(
-            '<div class="gf-ornate-card" style="height:168px;'
-            'display:flex;flex-direction:column;justify-content:center;">'
-            '<div class="gf-nav-num">伍</div>'
-            '<div class="gf-nav-title">五门相济</div>'
-            '<div class="gf-nav-desc">先辨其色，次溯其料，再识其制，'
-            '终辨其质而续其命，循古法以守真。</div></div>',
-            unsafe_allow_html=True,
-        )
+        if nav_block(
+            "伍", "材质辨识与配材",
+            "上传照片辨识木石金属等材质，据病害给出修复所需材料。",
+            "go_material",
+        ):
+            st.session_state["view"] = "material"; st.rerun()
 
     meander()
     st.markdown(

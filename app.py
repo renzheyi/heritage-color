@@ -9,19 +9,51 @@ import os
 from typing import List
 import streamlit as st
 
-from heritage_color import (
-    auth_color, infer_pigment, decide_restoration,
-    identify_architecture_style, extract_image_colors,
-    identify_image_material, recommend_repair_materials,
-)
-from heritage_color import knowledge_base as kb
-from theme import apply_theme
-
+# 注意：set_page_config 必须是第一个 Streamlit 命令，放在任何 st.* 之前。
 st.set_page_config(
     page_title="文物色彩考证与修复辅助系统",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
+
+# 兼容云端旧缓存：Streamlit Cloud 偶尔会只更新 app.py 而未刷新包文件，
+# 导致 from heritage_color import ... 抛 ImportError。这里显式检查并给出
+# 可操作的提示，而不是显示被脱敏的红色报错页。
+try:
+    import heritage_color as _hc
+    _REQUIRED = (
+        "auth_color", "infer_pigment", "decide_restoration",
+        "identify_architecture_style", "extract_image_colors",
+        "identify_image_material", "recommend_repair_materials",
+    )
+    _missing = [n for n in _REQUIRED if not hasattr(_hc, n)]
+    if _missing:
+        raise ImportError(
+            "云端运行的是旧版代码缓存，缺少新模块导出："
+            + "、".join(_missing)
+            + "。请在 Streamlit Cloud 的 Manage app 中点击 Reboot app，"
+            "或确认已部署最新提交 731a23f。"
+        )
+    auth_color = _hc.auth_color
+    infer_pigment = _hc.infer_pigment
+    decide_restoration = _hc.decide_restoration
+    identify_architecture_style = _hc.identify_architecture_style
+    extract_image_colors = _hc.extract_image_colors
+    identify_image_material = _hc.identify_image_material
+    recommend_repair_materials = _hc.recommend_repair_materials
+    from heritage_color import knowledge_base as kb
+except Exception as _e:
+    st.error(
+        "应用初始化失败（多为 Streamlit Cloud 代码缓存未刷新）：\n\n"
+        f"{type(_e).__name__}: {_e}\n\n"
+        "解决办法：打开右下角 Manage app → 点击 ... → Reboot app；"
+        "若仍失败，确认 GitHub 仓库 renzheyi/heritage-color 的 main 分支"
+        "最新提交为 731a23f。"
+    )
+    st.stop()
+
+from theme import apply_theme
+
 apply_theme()
 
 ASSETS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets")

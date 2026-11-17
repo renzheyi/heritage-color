@@ -135,6 +135,82 @@ hr { border-color: #D9C8A6 !important; }
 }
 .gf-nav-desc { font-size: 13px; color: #7A6A50; line-height: 1.6; }
 .gf-back { margin-bottom: 8px; }
+
+/* ==================== 古风图案装饰 ==================== */
+/* 回纹带：连续回字纹，用作分隔与卡片顶饰 */
+.gf-meander {
+    height: 14px;
+    background-color: #9E3329;
+    background-image: repeating-linear-gradient(90deg,
+        transparent 0, transparent 8px,
+        rgba(247,239,224,0.85) 8px, rgba(247,239,224,0.85) 10px,
+        transparent 10px, transparent 18px);
+    opacity: 0.75;
+    border-radius: 2px;
+}
+
+/* 云纹角花：卡片四角的祥云卷草纹（SVG data-uri，朱砂描边） */
+.gf-ornate-card {
+    position: relative;
+    background: #FBF6EA;
+    border: 1px solid #D9C8A6;
+    border-radius: 4px;
+    padding: 22px 22px 18px;
+    margin: 10px 0 18px;
+    box-shadow: 0 2px 8px rgba(90,70,40,0.10);
+}
+.gf-ornate-card::before,
+.gf-ornate-card::after {
+    content: ""; position: absolute; width: 46px; height: 46px;
+    background-repeat: no-repeat; background-size: contain; opacity: 0.55;
+}
+.gf-ornate-card::before {
+    top: 6px; left: 6px;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'><path d='M4 56 L4 20 Q4 8 16 8 Q28 8 28 20 Q28 30 18 30 Q10 30 10 22 M30 4 L56 4 L56 30' fill='none' stroke='%239E3329' stroke-width='3'/><circle cx='18' cy='20' r='3' fill='%23B08D4F'/></svg>");
+}
+.gf-ornate-card::after {
+    bottom: 6px; right: 6px; transform: rotate(180deg);
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'><path d='M4 56 L4 20 Q4 8 16 8 Q28 8 28 20 Q28 30 18 30 Q10 30 10 22 M30 4 L56 4 L56 30' fill='none' stroke='%239E3329' stroke-width='3'/><circle cx='18' cy='20' r='3' fill='%23B08D4F'/></svg>");
+}
+
+/* 标题两侧云纹 */
+.gf-cloud-divider {
+    text-align: center; color: #B08D4F; font-size: 18px;
+    letter-spacing: 14px; margin: 2px 0 14px; opacity: 0.8;
+}
+
+/* 瓦当形徽记：圆形印章式徽标 */
+.gf-wadang {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 62px; height: 62px; border-radius: 50%;
+    background: #9E3329; color: #F7EFE0;
+    border: 3px double #F7EFE0; outline: 2px solid #9E3329;
+    font-family: "Songti SC", SimSun, serif; font-size: 20px; font-weight: 700;
+    box-shadow: 2px 3px 6px rgba(0,0,0,0.18);
+}
+
+/* 古建筑横幅：图片上方叠加宣纸色渐变遮罩，融进古风底色 */
+.gf-banner {
+    position: relative; border-radius: 4px; overflow: hidden;
+    border: 1px solid #D9C8A6; margin: 6px 0 18px;
+    box-shadow: 0 3px 12px rgba(90,70,40,0.15);
+}
+.gf-banner img { display: block; width: 100%; height: 220px; object-fit: cover; }
+.gf-banner-cap {
+    position: absolute; left: 0; right: 0; bottom: 0;
+    padding: 26px 20px 10px;
+    background: linear-gradient(transparent, rgba(43,38,30,0.78));
+    color: #F5EFE1; font-family: "Songti SC", SimSun, serif;
+    font-size: 15px; letter-spacing: 3px;
+}
+.gf-banner-cap small { display:block; font-size: 11px; letter-spacing:1px; opacity:0.8; margin-top:3px; }
+
+/* 门牌方块内的纹样角标 */
+.gf-nav-card::before {
+    content: "◆"; position: absolute; top: 8px; right: 12px;
+    color: #D9C8A6; font-size: 16px;
+}
+.gf-nav-card { position: relative; }
 </style>
 """
 

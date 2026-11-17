@@ -5,6 +5,7 @@
 - restoration_decision：修复决策
 - architecture_style：建筑风格识别
 - image_color：上传图片识别现存残留色
+- material_analysis：由图片识别材质 + 修复配材
 """
 
 from .color_authentication import Evidence, AuthenticationResult, authenticate, parse_document
@@ -12,6 +13,7 @@ from .pigment_inference import Formula, infer
 from .restoration_decision import DecisionResult, decide
 from .architecture_style import StyleMatch, identify_style
 from .image_color import ColorSwatch, extract_palette, dominant_color
+from .material_analysis import MaterialMatch, RepairPlan, identify_material, recommend_repair
 
 __all__ = [
     "Evidence", "AuthenticationResult", "authenticate", "parse_document",
@@ -19,4 +21,5 @@ __all__ = [
     "DecisionResult", "decide",
     "StyleMatch", "identify_style",
     "ColorSwatch", "extract_palette", "dominant_color",
+    "MaterialMatch", "RepairPlan", "identify_material", "recommend_repair",
 ]

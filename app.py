@@ -1,15 +1,18 @@
 """文物色彩考证与修复辅助系统 —— 古风界面（门户导航式）。
 
-首页为四个独立方块，点击进入对应程序；每个程序页可返回首页。
+首页为五个独立方块，点击进入对应程序；每个程序页可返回首页。
 部署到 Streamlit Community Cloud 时，入口文件选这个。
 本地运行：streamlit run app.py
 """
 
+import os
+from typing import List
 import streamlit as st
 
 from heritage_color import (
     auth_color, infer_pigment, decide_restoration,
     identify_architecture_style, extract_image_colors,
+    identify_image_material, recommend_repair_materials,
 )
 from heritage_color import knowledge_base as kb
 from theme import apply_theme
@@ -21,11 +24,37 @@ st.set_page_config(
 )
 apply_theme()
 
+ASSETS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets")
+
 
 # ---------------------------------------------------------------- 通用组件
+def banner(image_name: str, title: str, subtitle: str = ""):
+    """古建筑图片横幅：有图则显示图片，无图则用 CSS 古风纹样占位。"""
+    path = os.path.join(ASSETS, image_name)
+    sub = f"<small>{subtitle}</small>" if subtitle else ""
+    if os.path.exists(path):
+        import base64
+        with open(path, "rb") as f:
+            data = base64.b64encode(f.read()).decode()
+        st.markdown(
+            f'<div class="gf-banner">'
+            f'<img src="data:image/jpeg;base64,{data}" alt="{title}">'
+            f'<div class="gf-banner-cap">{title}{sub}</div></div>',
+            unsafe_allow_html=True,
+        )
+    else:
+        st.markdown(
+            f'<div class="gf-banner" style="background:linear-gradient(135deg,#7A2E24,#9E3329 55%,#B08D4F);">'
+            f'<div class="gf-cloud-divider" style="color:#F7EFE0;">❖　云　纹　❖</div>'
+            f'<div class="gf-banner-cap" style="position:static;background:none;color:#F7EFE0;">'
+            f'{title}{sub}</div></div>',
+            unsafe_allow_html=True,
+        )
+
+
 def card_start(title: str, desc: str = "") -> str:
     d = f'<div class="gf-card-desc">{desc}</div>' if desc else ""
-    return (f'<div class="gf-card">'
+    return (f'<div class="gf-ornate-card">'
             f'<div class="gf-card-title">{title}</div>{d}')
 
 
@@ -55,13 +84,25 @@ def back_button():
         st.rerun()
 
 
+def cloud_divider(text: str = "❖　云　纹　❖"):
+    st.markdown(f'<div class="gf-cloud-divider">{text}</div>', unsafe_allow_html=True)
+
+
+def meander():
+    st.markdown('<div class="gf-meander"></div>', unsafe_allow_html=True)
+
+
 # ---------------------------------------------------------------- 页头
 st.markdown(
-    '<div class="gf-title">文物色彩考证与修复辅助系统</div>'
+    '<div class="gf-title">文物色彩考证与修复辅助系统</div>',
+    unsafe_allow_html=True,
+)
+cloud_divider()
+st.markdown(
     '<div class="gf-subtitle">'
-    '<span class="gf-seal">考色</span>'
-    '以色彩证源流 · 以颜料推古法 · 以风格辨建制 · 以工艺续华章'
-    '<span class="gf-seal">存真</span>'
+    '<span class="gf-wadang">考色</span>'
+    '&nbsp;&nbsp;以色彩证源流 · 以颜料推古法 · 以风格辨建制 · 以材质续华章&nbsp;&nbsp;'
+    '<span class="gf-wadang">存真</span>'
     '</div>',
     unsafe_allow_html=True,
 )
@@ -74,9 +115,11 @@ view = st.session_state["view"]
 
 # ================================================================ 门户首页
 if view == "home":
+    banner("forbidden_city.jpg", "丹宸彩画 · 源远流长",
+           "故宫太和殿 —— 和玺彩画之典范，青绿为地，金龙腾跃")
     st.markdown(
         '<div style="text-align:center;color:#7A6A50;font-size:15px;'
-        'letter-spacing:2px;margin:6px 0 20px;">择一门而入，探文物色彩之奥</div>',
+        'letter-spacing:2px;margin:6px 0 18px;">择一门而入，探文物色彩之奥</div>',
         unsafe_allow_html=True,
     )
     c1, c2 = st.columns(2, gap="large")
@@ -93,6 +136,12 @@ if view == "home":
             "go_style",
         ):
             st.session_state["view"] = "style"; st.rerun()
+        if nav_block(
+            "伍", "材质辨识与配材",
+            "上传照片辨识木石金属等材质，据病害给出修复所需材料。",
+            "go_material",
+        ):
+            st.session_state["view"] = "material"; st.rerun()
     with c2:
         if nav_block(
             "贰", "颜料推演",
@@ -106,8 +155,16 @@ if view == "home":
             "go_restore",
         ):
             st.session_state["view"] = "restore"; st.rerun()
+        st.markdown(
+            '<div class="gf-ornate-card" style="height:168px;'
+            'display:flex;flex-direction:column;justify-content:center;">'
+            '<div class="gf-nav-title">五门相济</div>'
+            '<div class="gf-nav-desc">先辨其色，次溯其料，再识其制，'
+            '终辨其质而续其命，循古法以守真。</div></div>',
+            unsafe_allow_html=True,
+        )
 
-    st.divider()
+    meander()
     st.markdown(
         '<div style="text-align:center;color:#8A7B60;font-size:12px;'
         'font-family:\'Songti SC\',SimSun,serif;letter-spacing:1px;">'
@@ -120,6 +177,8 @@ if view == "home":
 # ================================================================ 壹 色彩考证
 elif view == "auth":
     back_button()
+    banner("summer_palace.jpg", "壹 · 色彩考证",
+           "循残留之色，参文献之载，以推本来面目")
     st.markdown(card_start(
         "壹 · 色彩考证",
         "参酌现存残留色、文献记载与朝代风格，推求文物彩画之初色。",
@@ -199,6 +258,8 @@ elif view == "auth":
 # ================================================================ 贰 颜料推演
 elif view == "infer":
     back_button()
+    banner("dunhuang.jpg", "贰 · 颜料推演",
+           "青绿朱黄，皆有所自；一色反求，可溯其源")
     st.markdown(card_start(
         "贰 · 颜料推演",
         "由一色反求其所用颜料与调配之法，青绿朱黄，皆可溯其源。",
@@ -238,6 +299,8 @@ elif view == "infer":
 # ================================================================ 叁 建筑风格识别
 elif view == "style":
     back_button()
+    banner("foguang_temple.jpg", "叁 · 建筑风格识别",
+           "观其用色制度，辨其建制源流")
     st.markdown(card_start(
         "叁 · 建筑风格识别",
         "由色彩与用色制度，辨识其所属古建筑彩画风格：和玺、旋子、苏式、敦煌壁画等。",
@@ -298,6 +361,8 @@ elif view == "style":
 # ================================================================ 肆 修复决策
 elif view == "restore":
     back_button()
+    banner("potala.jpg", "肆 · 修复决策",
+           "察其材、审其病、度其境，而后出修复之策")
     st.markdown(card_start(
         "肆 · 修复决策",
         "察颜料之性、病害之由、环境之宜，出修复之策，守最小干预之则。",
@@ -335,4 +400,91 @@ elif view == "restore":
                 st.error(f"计算失败：{e}")
         else:
             st.info("填写左侧参数后点击「生成方案」")
+    st.markdown("</div>", unsafe_allow_html=True)
+
+
+# ================================================================ 伍 材质辨识与配材
+elif view == "material":
+    back_button()
+    banner("foguang_temple.jpg", "伍 · 材质辨识与配材",
+           "辨木石金彩之质，定修复配材之方")
+    st.markdown(card_start(
+        "伍 · 材质辨识与配材",
+        "上传文物照片辨识其材质，再据病害给出修复所需材料与工艺要点。",
+    ), unsafe_allow_html=True)
+
+    st.markdown("#### 第一步 · 上传照片识别材质")
+    up_mat = st.file_uploader(
+        "上传木构 / 石刻 / 金属 / 彩画 / 地仗等照片（JPG / PNG）",
+        type=["jpg", "jpeg", "png"], key="upload_material",
+    )
+    detected: List[str] = []
+    if up_mat is not None:
+        ic, rc = st.columns([1, 1])
+        with ic:
+            st.image(up_mat, caption="已上传图像", width="stretch")
+        with rc:
+            with st.spinner("正在辨析材质……"):
+                try:
+                    matches = identify_image_material(up_mat, top_n=3)
+                    st.markdown("**材质候选（按置信度）**")
+                    for i, mm in enumerate(matches, 1):
+                        st.markdown(
+                            f"**{i}. {mm.material}**　（`{mm.category}`，置信度 {mm.score:.0%}）")
+                        st.markdown(swatch_html(mm.dominant_hex, mm.dominant_hex),
+                                    unsafe_allow_html=True)
+                        st.caption(mm.texture)
+                        if i < len(matches):
+                            st.divider()
+                    detected = [m.material for m in matches]
+                except Exception as e:
+                    st.error(f"图像解析失败：{e}")
+
+    meander()
+    st.markdown("#### 第二步 · 据材质与病害给出修复配材")
+    c1, c2 = st.columns([1, 1])
+    with c1:
+        mat_options = ["", *kb.MATERIALS.keys()]
+        default_mat = detected[0] if detected else ""
+        mat_index = mat_options.index(default_mat) if default_mat in mat_options else 0
+        mat_name = st.selectbox("材质", mat_options, index=mat_index, key="mat_sel")
+        default_diseases = []
+        if mat_name:
+            default_diseases = kb.MATERIALS[mat_name].common_diseases[:2]
+        diseases = st.multiselect(
+            "病害（可多选）", list(kb.DAMAGE_RULES.keys()),
+            default=[d for d in default_diseases if d in kb.DAMAGE_RULES],
+            key="mat_dis",
+        )
+        hum2 = st.text_input("当前湿度", "75% RH", key="mat_hum")
+        lux2 = st.text_input("当前照度", "", key="mat_lux")
+        run5 = st.button("生成修复配材方案", type="primary", key="run5")
+    with c2:
+        st.markdown('<div class="gf-result-label">修复配材方案</div>', unsafe_allow_html=True)
+        if run5:
+            if not mat_name:
+                st.warning("请先上传照片识别材质，或在左侧下拉框选择材质。")
+            else:
+                try:
+                    env = {}
+                    if hum2:
+                        env["湿度"] = hum2
+                    if lux2:
+                        env["照度"] = lux2
+                    plan = recommend_repair_materials(mat_name, diseases=diseases,
+                                                      environment=env or None)
+                    st.markdown(f"**材质：{plan.material}**　紧迫度：`{plan.urgency}`")
+                    st.markdown("**修复所需材料**")
+                    st.write("、".join(plan.materials))
+                    st.markdown("**工艺要点**")
+                    st.info(plan.craft)
+                    st.markdown("**修复禁忌**")
+                    st.warning(plan.taboo)
+                    st.markdown("**环境建议**")
+                    st.json(plan.environment)
+                    st.caption(plan.reasoning)
+                except Exception as e:
+                    st.error(f"计算失败：{e}")
+        else:
+            st.info("上传照片或在左侧选定材质与病害后点击「生成修复配材方案」")
     st.markdown("</div>", unsafe_allow_html=True)

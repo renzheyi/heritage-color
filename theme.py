@@ -111,6 +111,30 @@ h1, h2, h3, [data-testid="stHeader"] { color: #6E2B23 !important; }
 }
 .stCaption { color: #8A7B60 !important; }
 hr { border-color: #D9C8A6 !important; }
+
+/* ---- 门户导航方块 ---- */
+.gf-nav-card {
+    background: #FBF6EA;
+    border: 1px solid #D9C8A6;
+    border-top: 4px solid #9E3329;
+    border-radius: 6px 6px 0 0;
+    padding: 20px 18px 16px;
+    height: 168px;
+    box-shadow: 0 3px 10px rgba(90,70,40,0.12);
+    display: flex; flex-direction: column; justify-content: center;
+}
+.gf-nav-num {
+    font-family: "Songti SC", "SimSun", serif;
+    font-size: 34px; line-height: 1; color: #9E3329;
+    letter-spacing: 2px; margin-bottom: 8px;
+}
+.gf-nav-title {
+    font-family: "Songti SC", "SimSun", serif;
+    font-size: 22px; font-weight: 700; color: #6E2B23;
+    letter-spacing: 3px; margin-bottom: 6px;
+}
+.gf-nav-desc { font-size: 13px; color: #7A6A50; line-height: 1.6; }
+.gf-back { margin-bottom: 8px; }
 </style>
 """
 

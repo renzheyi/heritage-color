@@ -70,7 +70,13 @@ def _background_uri() -> str:
         return "data:image/jpeg;base64," + base64.b64encode(f.read()).decode()
 
 
-apply_theme(_background_uri())
+# Streamlit Cloud 偶发只刷新 app.py、theme.py 仍是旧缓存（旧版 apply_theme 无参数）。
+# 这里按实际签名调用，新旧版本都能工作，避免 TypeError 红页。
+import inspect as _inspect
+if "background_uri" in _inspect.signature(apply_theme).parameters:
+    apply_theme(_background_uri())
+else:
+    apply_theme()
 
 
 # ---------------------------------------------------------------- 通用组件

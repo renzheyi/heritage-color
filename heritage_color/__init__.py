@@ -22,17 +22,24 @@ from .modules import (
     Evidence, AuthenticationResult, authenticate, parse_document,
     Formula, infer,
     DecisionResult, decide,
+    StyleMatch, identify_style,
+    ColorSwatch, extract_palette, dominant_color,
 )
 
 # 对外统一入口（函数别名，语义更直观）
 auth_color = authenticate
 infer_pigment = infer
 decide_restoration = decide
+identify_architecture_style = identify_style
+extract_image_colors = extract_palette
 
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 __all__ = [
     "auth_color", "infer_pigment", "decide_restoration",
+    "identify_architecture_style", "extract_image_colors",
     "Evidence", "AuthenticationResult", "authenticate", "parse_document",
     "Formula", "infer",
     "DecisionResult", "decide",
+    "StyleMatch", "identify_style",
+    "ColorSwatch", "extract_palette", "dominant_color",
 ]

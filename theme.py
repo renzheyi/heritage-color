@@ -407,7 +407,8 @@ div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker.n5):not(:has(div[dat
     .gf-result-panel { grid-template-columns: 1fr; }
 }
 .gf-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 2px 0; }
-.gf-table th { font-family: var(--gf-kai); color: #FFF3DC; background: #C4322B; padding: 7px 9px; text-align: left; font-weight: 600; letter-spacing: 1px; }
+/* 表头是英文/技术字段名，用清晰黑体，避免行楷连笔看不清 */
+.gf-table th { font-family: "Noto Sans CJK SC","Microsoft YaHei","PingFang SC",Arial,sans-serif; color: #FFF3DC; background: #C4322B; padding: 7px 9px; text-align: left; font-weight: 700; font-size: 13px; font-style: normal; letter-spacing: 0.5px; }
 .gf-table td { padding: 7px 9px; border-bottom: 1px dotted #E6D6A8; color: #3E372D; }
 .gf-table tr:nth-child(even) td { background: rgba(212,175,55,0.06); }
 .gf-table tr:hover td { background: rgba(196,50,43,0.07); }

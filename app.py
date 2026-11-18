@@ -178,6 +178,12 @@ div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker.n5):not(:has(div[dat
 }}
 .gf-nav-num {{ background: #C4322B !important; border-color: #8E1F1A !important; }}
 .gf-nav-title {{ color: #8E1F1A !important; }}
+/* 表头多为英文字段名，改用清晰黑体，避免行楷连笔看不清 */
+.gf-table th {{
+    font-family: "Noto Sans CJK SC","Microsoft YaHei","PingFang SC",Arial,sans-serif !important;
+    font-style: normal !important; font-weight: 700 !important;
+    font-size: 13px !important; letter-spacing: 0.5px !important;
+}}
 .gf-nav-icon {{
     position: absolute !important; right: 12px !important; top: 12px !important;
     width: 34px !important; height: 34px !important;

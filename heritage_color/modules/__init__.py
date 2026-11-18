@@ -12,9 +12,20 @@
 - viz：纯 SVG 科技可视化（CIE 色度图 / 光谱曲线 / 时光轴 / 仪表盘）
 """
 
-from . import spectral as spectral
-from . import uncertainty as uncertainty
-from . import viz as viz
+# 光谱/不确定度/可视化三个增强模块为可选：文件缺失时置 None，不影响主站五模块
+# （Streamlit Cloud 偶发只刷新 app.py、包文件仍是旧缓存，硬导入会导致整站红页）。
+try:
+    from . import spectral as spectral
+except Exception:
+    spectral = None
+try:
+    from . import uncertainty as uncertainty
+except Exception:
+    uncertainty = None
+try:
+    from . import viz as viz
+except Exception:
+    viz = None
 from .color_authentication import Evidence, AuthenticationResult, authenticate, parse_document
 from .pigment_inference import Formula, infer
 from .restoration_decision import DecisionResult, decide

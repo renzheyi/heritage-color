@@ -62,9 +62,10 @@ ASSETS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets")
 
 # 数智中枢为可选增强：即使 Streamlit Cloud 只刷新了 app.py、包文件仍是旧缓存，
 # 主站五个模块照常可用，只是暂不显示技术增强面板（避免整站红页）。
+# 注意包内 __init__ 已把三个增强模块软导出（缺失时为 None），这里双重保险。
 try:
     from heritage_color import spectral as sp, uncertainty as unc, viz
-    _TECH_OK = True
+    _TECH_OK = bool(sp and unc and viz)
 except Exception:
     _TECH_OK = False
 
@@ -792,13 +793,21 @@ if view == "home":
         'letter-spacing:2px;margin:6px 0 6px;">择一门而入，探文物色彩之奥</div>',
         unsafe_allow_html=True,
     )
-    # 数智中枢入口：独立一行按钮，不改动下方五门环绕布局
-    if _TECH_OK:
-        _tl, _tm, _tr = st.columns([1, 1.7, 1])
-        with _tm:
-            if st.button("◈ 数智中枢　·　光谱引擎 / 贝叶斯推断 / 蒙特卡洛　→",
-                         key="go_tech_home", use_container_width=True):
-                goto("tech")
+    # 数智中枢入口：独立一行按钮，不改动下方五门环绕布局。
+    # 按钮无条件显示——即使 Cloud 包缓存未刷新（_TECH_OK=False），入口也必须可见，
+    # 进入后显示降级介绍页并给出 Reboot 指引，避免"新模块凭空消失"。
+    _tl, _tm, _tr = st.columns([1, 1.7, 1])
+    with _tm:
+        if st.button("◈ 数智中枢　·　光谱引擎 / 贝叶斯推断 / 蒙特卡洛　→",
+                     key="go_tech_home", use_container_width=True):
+            goto("tech")
+        if not _TECH_OK:
+            st.markdown(
+                '<div style="text-align:center;color:#8A7B60;font-size:12px;'
+                'margin-top:2px;">（云端计算内核尚未加载：右下角 Manage app → '
+                'Reboot app 即可启用）</div>',
+                unsafe_allow_html=True,
+            )
     # 五门真正沿圆周均匀环绕：正上 → 右上 → 右下 → 左下 → 左上，
     # 每门间隔 72°，中心只保留「考色 / 五门拱卫」球体，外部圆圈全部去除。
     # 门牌仍是原来的卡片 + 真实 st.button，样式与文案一字未改。
@@ -846,8 +855,58 @@ if view == "home":
 elif view == "tech":
     back_button()
     if not _TECH_OK:
-        st.info("数智中枢模块尚未在云端生效：请在 Manage app 中点击 Reboot app，"
-                "或确认已部署包含 spectral / uncertainty / viz 的最新提交。")
+        # 降级介绍页：不依赖 spectral/uncertainty/viz 包文件，纯 HTML 渲染，
+        # 让用户在任何缓存状态下都能看到新模块的说明与启用指引。
+        st.warning(
+            "⚠ 数智中枢计算内核（spectral / uncertainty / viz）尚未在云端生效。"
+            "请点击页面右下角 **Manage app** → **...** → **Reboot app**，"
+            "约 1 分钟后刷新即可体验完整功能。"
+        )
+        tech_card(
+            "数智中枢 · SPECTRAL INTELLIGENCE",
+            "CIE 1931 标准观察者 / Kubelka-Munk 物理混色 / 贝叶斯证据合成 / 蒙特卡洛不确定度传播",
+            '<div class="gf-tech-metrics">'
+            '<div><b>18</b><span>朝代风格库</span></div>'
+            '<div><b>15</b><span>矿物/有机颜料</span></div>'
+            '<div><b>36</b><span>光谱通道 380–730nm</span></div>'
+            '<div><b>1200</b><span>蒙特卡洛采样</span></div>'
+            '<div><b>ΔE₀₀</b><span>CIEDE2000 色差</span></div>'
+            '<div><b>10 nm</b><span>光谱采样间隔</span></div>'
+            '</div>',
+        )
+        tech_card(
+            "推理链路 · 从光子到决策",
+            "6 阶段可解释流水线（Reboot 后提供交互式版本）",
+            '<div class="gf-tech-compare">'
+            '<div><b>① 实测</b><span>sRGB / 文献</span></div>'
+            '<div class="gf-tech-arrow">→</div>'
+            '<div><b>② 光谱</b><span>36 通道重建</span></div>'
+            '<div class="gf-tech-arrow">→</div>'
+            '<div><b>③ 物理</b><span>K-M 混色</span></div>'
+            '<div class="gf-tech-arrow">→</div>'
+            '<div><b>④ 似然</b><span>CIEDE2000</span></div>'
+            '<div class="gf-tech-arrow">→</div>'
+            '<div><b>⑤ 后验</b><span>贝叶斯 + MC</span></div>'
+            '<div class="gf-tech-arrow">→</div>'
+            '<div><b>⑥ 决策</b><span>最小干预</span></div>'
+            '</div>',
+        )
+        tech_card(
+            "核心能力",
+            "色彩考证与颜料推演两大模块的深度分析面板同步获得增强",
+            '<div class="gf-tech-note">'
+            "① <b>光谱级取色</b>：不再停留于 RGB 三通道，把每个颜色重建为 380–730nm "
+            "36 通道反射率光谱，用 CIE 1931 标准观察者做色度学定位；<br>"
+            "② <b>物理混色</b>：Kubelka-Munk 单常数 K/S 模型按颜料光学密度混合，"
+            "预测调配后的真实光谱而非简单平均；<br>"
+            "③ <b>不确定性量化</b>：1200 次蒙特卡洛传播测量噪声，给出 95% 置信椭圆；"
+            "贝叶斯后验融合朝代先验与文献权重，输出每种候选颜料的概率；<br>"
+            "④ <b>时光倒流</b>：可逆老化动力学（光褪色 + 硫化变黑双通道）从现存色反演"
+            "任意年代的原始色；<br>"
+            "⑤ <b>同色异谱检测</b>：换光源（D65 / A / 烛光 / LED）计算色度漂移与"
+            "异谱指数，评估修复配色在不同展陈光环境下的稳定性。"
+            '</div>',
+        )
     else:
         from heritage_color import color_utils as _cu
 

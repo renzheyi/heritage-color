@@ -26,8 +26,8 @@ from .modules import (
     ColorSwatch, extract_palette, dominant_color,
     MaterialMatch, RepairPlan, identify_material, recommend_repair,
     polish_text,
+    spectral, uncertainty, viz,
 )
-from .modules import spectral, uncertainty, viz
 
 # 对外统一入口（函数别名，语义更直观）
 auth_color = authenticate

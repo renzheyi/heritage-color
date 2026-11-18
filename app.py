@@ -78,6 +78,39 @@ if "background_uri" in _inspect.signature(apply_theme).parameters:
 else:
     apply_theme()
 
+# Streamlit Cloud 偶发只刷新 app.py、theme.py 仍是旧缓存。旧主题没有 .gf-nav-icon
+# 规则，导致门牌图标按原始尺寸撑开卡片，文字被按钮遮住。这里把新版关键样式
+# 随 app.py 一起注入，任何缓存状态下都能正确显示门牌、图标与描边建筑背景。
+_BG_URI_FOR_PATCH = _background_uri()
+_CRITICAL_CSS = f"""
+<style>
+[data-testid="stAppViewContainer"] {{
+    background-color: #F4ECD8 !important;
+    background-image:
+        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 56 56'><path d='M8 8 H47 V47 H8 V8 M15 15 H40 V40 H15 Z M24 8 V15 M24 40 V47 M8 24 H15 M40 24 H47 M27 27 H33 V33 H27 Z' fill='none' stroke='%23B08D4F' stroke-opacity='0.07' stroke-width='1'/></svg>"),
+        linear-gradient(rgba(244,236,216,0.30), rgba(244,236,216,0.24)),
+        url("{_BG_URI_FOR_PATCH}") !important;
+    background-size: 56px 56px, cover, cover !important;
+    background-position: center, center, center center !important;
+    background-attachment: fixed, fixed, fixed !important;
+    background-repeat: repeat, no-repeat, no-repeat !important;
+}}
+.gf-nav-card {{
+    box-sizing: border-box !important;
+    height: 158px !important; min-height: 158px; max-height: 158px;
+    overflow: hidden;
+}}
+.gf-nav-icon {{
+    position: absolute !important; right: 12px !important; top: 12px !important;
+    width: 34px !important; height: 34px !important;
+    object-fit: contain; pointer-events: none;
+}}
+.gf-orbit-core {{ width: 118px !important; height: 118px !important; }}
+.gf-orbit-wrap::before {{ width: 330px; height: 330px; }}
+</style>
+"""
+st.markdown(_CRITICAL_CSS, unsafe_allow_html=True)
+
 
 # ---------------------------------------------------------------- 通用组件
 def banner(image_name: str, title: str, subtitle: str = ""):

@@ -27,6 +27,7 @@ from .modules import (
     MaterialMatch, RepairPlan, identify_material, recommend_repair,
     polish_text,
 )
+from .modules import spectral, uncertainty, viz
 
 # 对外统一入口（函数别名，语义更直观）
 auth_color = authenticate
@@ -37,7 +38,7 @@ extract_image_colors = extract_palette
 identify_image_material = identify_material
 recommend_repair_materials = recommend_repair
 
-__version__ = "1.2.0"
+__version__ = "2.0.0"
 __all__ = [
     "auth_color", "infer_pigment", "decide_restoration",
     "identify_architecture_style", "extract_image_colors",
@@ -49,4 +50,5 @@ __all__ = [
     "ColorSwatch", "extract_palette", "dominant_color",
     "MaterialMatch", "RepairPlan", "identify_material", "recommend_repair",
     "polish_text",
+    "spectral", "uncertainty", "viz",
 ]

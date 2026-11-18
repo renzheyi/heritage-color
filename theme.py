@@ -255,7 +255,7 @@ div[data-testid="stVerticalBlock"]:has(.gf-ring-stage-marker):not(:has(div[data-
     --rx: clamp(205px, 24vw, 255px);
     width: 100%; max-width: 1100px;
     height: calc(var(--r) + var(--r) + 290px);
-    margin: -100px auto 6px !important;
+    margin: -40px auto 6px !important;
 }
 /* 取消舞台内部容器的定位上下文，让圆心与门牌相对舞台绝对定位 */
 div[data-testid="stVerticalBlock"]:has(.gf-ring-stage-marker):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-stage-marker)) [data-testid="stElementContainer"],
@@ -693,6 +693,79 @@ hr { border-color: #E0CB95 !important; }
 @media (max-width: 760px) {
     .gf-slide { width: 268px; height: 196px; }
     .gf-slide-title { font-size: 16px; }
+}
+
+/* ============ 12. 数智中枢：深色科技仪表盘 ============ */
+.gf-tech-card {
+    box-sizing: border-box; margin: 12px 0; padding: 16px 18px;
+    background: linear-gradient(160deg, #0C1418, #132127 70%, #0E1A1F);
+    border: 1px solid rgba(212,175,55,0.42); border-radius: 6px;
+    box-shadow: 0 8px 26px rgba(12,20,24,0.28), inset 0 0 0 1px rgba(87,207,195,0.06);
+    color: #DCE7DF;
+}
+.gf-tech-h {
+    font-family: Georgia,"Times New Roman",serif; font-size: 17px;
+    letter-spacing: 2px; color: #F3D98A; padding-bottom: 8px; margin-bottom: 6px;
+    border-bottom: 1px solid rgba(212,175,55,0.28);
+}
+.gf-tech-sub {
+    font-size: 12px; color: #8FA8A2; letter-spacing: 0.5px;
+    margin-bottom: 12px; line-height: 1.6;
+}
+.gf-tech-metrics {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
+    gap: 10px; margin-top: 12px;
+}
+.gf-tech-metrics > div {
+    background: rgba(87,207,195,0.06); border: 1px solid rgba(212,175,55,0.20);
+    border-radius: 4px; padding: 10px 8px; text-align: center;
+}
+.gf-tech-metrics b {
+    display: block; font-family: Georgia,serif; font-size: 22px;
+    color: #F3D98A; letter-spacing: 1px;
+}
+.gf-tech-metrics span { display: block; font-size: 11px; color: #8FA8A2; margin-top: 4px; }
+.gf-tech-note {
+    margin: 10px 0 4px; padding: 10px 12px;
+    background: rgba(87,207,195,0.06); border-left: 3px solid #57CFC3;
+    font-size: 12px; line-height: 1.75; color: #B9CDC7; border-radius: 0 4px 4px 0;
+}
+.gf-tech-compare {
+    display: flex; align-items: center; justify-content: center;
+    gap: 18px; flex-wrap: wrap; margin: 10px 0;
+}
+.gf-tech-compare > div { text-align: center; min-width: 130px; }
+.gf-tech-compare span {
+    display: block; font-size: 11px; color: #8FA8A2;
+    margin-bottom: 6px; letter-spacing: 1px;
+}
+.gf-tech-compare i {
+    display: block; width: 100%; height: 56px; border-radius: 4px;
+    border: 1px solid rgba(212,175,55,0.45);
+    box-shadow: inset 0 0 12px rgba(0,0,0,0.25);
+}
+.gf-tech-compare b {
+    display: block; margin-top: 6px; font-family: Georgia,serif;
+    font-size: 14px; color: #F3D98A; letter-spacing: 1px;
+}
+.gf-tech-compare > .gf-tech-arrow {
+    color: #D4AF37; font-size: 13px; letter-spacing: 1px; min-width: 120px;
+}
+.gf-tech-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.gf-tech-table th {
+    background: rgba(196,50,43,0.30); color: #F3D98A; text-align: left;
+    padding: 8px 10px; font-family: "Noto Sans CJK SC","Microsoft YaHei",Arial,sans-serif;
+    font-weight: 700; letter-spacing: 0.5px;
+    border-bottom: 1px solid rgba(212,175,55,0.35);
+}
+.gf-tech-table td {
+    padding: 7px 10px; color: #C6D6D0;
+    border-bottom: 1px dotted rgba(212,175,55,0.18);
+}
+.gf-tech-table tr:hover td { background: rgba(87,207,195,0.06); }
+@media (max-width: 700px) {
+    .gf-tech-compare { gap: 10px; }
+    .gf-tech-compare > div { min-width: 100px; }
 }
 </style>
 """

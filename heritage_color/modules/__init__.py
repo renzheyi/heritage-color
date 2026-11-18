@@ -7,8 +7,14 @@
 - image_color：上传图片识别现存残留色
 - material_analysis：由图片识别材质 + 修复配材
 - text_polish：文献描述智能润色（把口语转为考证书面语并补全色彩关键词）
+- spectral：光谱级引擎（CIE1931 / Kubelka-Munk / 同色异谱 / 老化反演）
+- uncertainty：蒙特卡洛与贝叶斯不确定性量化
+- viz：纯 SVG 科技可视化（CIE 色度图 / 光谱曲线 / 时光轴 / 仪表盘）
 """
 
+from . import spectral as spectral
+from . import uncertainty as uncertainty
+from . import viz as viz
 from .color_authentication import Evidence, AuthenticationResult, authenticate, parse_document
 from .pigment_inference import Formula, infer
 from .restoration_decision import DecisionResult, decide
@@ -25,4 +31,5 @@ __all__ = [
     "ColorSwatch", "extract_palette", "dominant_color",
     "MaterialMatch", "RepairPlan", "identify_material", "recommend_repair",
     "polish_text",
+    "spectral", "uncertainty", "viz",
 ]

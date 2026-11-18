@@ -60,6 +60,14 @@ from theme import apply_theme
 
 ASSETS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets")
 
+# 数智中枢为可选增强：即使 Streamlit Cloud 只刷新了 app.py、包文件仍是旧缓存，
+# 主站五个模块照常可用，只是暂不显示技术增强面板（避免整站红页）。
+try:
+    from heritage_color import spectral as sp, uncertainty as unc, viz
+    _TECH_OK = True
+except Exception:
+    _TECH_OK = False
+
 
 def _background_uri() -> str:
     """把描边抠主体、虚化后的古建筑图转成 data URI，作为页面淡淡衬底。"""
@@ -117,7 +125,7 @@ div[data-testid="stVerticalBlock"]:has(.gf-ring-stage-marker):not(:has(div[data-
     --rx: clamp(205px, 24vw, 255px);
     width: 100%; max-width: 1100px;
     height: calc(var(--r) + var(--r) + 290px);
-    margin: -100px auto 6px !important;
+    margin: -40px auto 6px !important;
 }}
 /* 取消舞台内部容器的定位上下文，让圆心与门牌相对舞台绝对定位 */
 div[data-testid="stVerticalBlock"]:has(.gf-ring-stage-marker):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-stage-marker)) [data-testid="stElementContainer"],
@@ -309,6 +317,87 @@ div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker.n5):not(:has(div[dat
 @media (max-width: 760px) {{
     .gf-slide {{ width: 268px !important; height: 196px !important; }}
     .gf-slide-title {{ font-size: 16px !important; }}
+}}
+
+/* ===== 数智中枢：深色科技仪表盘（随 app.py 注入防缓存） ===== */
+.gf-tech-card {{
+    box-sizing: border-box !important; margin: 12px 0 !important; padding: 16px 18px !important;
+    background: linear-gradient(160deg, #0C1418, #132127 70%, #0E1A1F) !important;
+    border: 1px solid rgba(212,175,55,0.42) !important; border-radius: 6px !important;
+    box-shadow: 0 8px 26px rgba(12,20,24,0.28), inset 0 0 0 1px rgba(87,207,195,0.06) !important;
+    color: #DCE7DF !important;
+}}
+.gf-tech-h {{
+    font-family: Georgia,"Times New Roman",serif !important; font-size: 17px !important;
+    letter-spacing: 2px !important; color: #F3D98A !important;
+    padding-bottom: 8px !important; margin-bottom: 6px !important;
+    border-bottom: 1px solid rgba(212,175,55,0.28) !important;
+}}
+.gf-tech-sub {{
+    font-size: 12px !important; color: #8FA8A2 !important;
+    letter-spacing: 0.5px !important; margin-bottom: 12px !important; line-height: 1.6 !important;
+}}
+.gf-tech-metrics {{
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(118px, 1fr)) !important;
+    gap: 10px !important; margin-top: 12px !important;
+}}
+.gf-tech-metrics > div {{
+    background: rgba(87,207,195,0.06) !important;
+    border: 1px solid rgba(212,175,55,0.20) !important;
+    border-radius: 4px !important; padding: 10px 8px !important; text-align: center !important;
+}}
+.gf-tech-metrics b {{
+    display: block !important; font-family: Georgia,serif !important;
+    font-size: 22px !important; color: #F3D98A !important; letter-spacing: 1px !important;
+}}
+.gf-tech-metrics span {{
+    display: block !important; font-size: 11px !important;
+    color: #8FA8A2 !important; margin-top: 4px !important;
+}}
+.gf-tech-note {{
+    margin: 10px 0 4px !important; padding: 10px 12px !important;
+    background: rgba(87,207,195,0.06) !important; border-left: 3px solid #57CFC3 !important;
+    font-size: 12px !important; line-height: 1.75 !important;
+    color: #B9CDC7 !important; border-radius: 0 4px 4px 0 !important;
+}}
+.gf-tech-compare {{
+    display: flex !important; align-items: center !important; justify-content: center !important;
+    gap: 18px !important; flex-wrap: wrap !important; margin: 10px 0 !important;
+}}
+.gf-tech-compare > div {{ text-align: center !important; min-width: 130px !important; }}
+.gf-tech-compare span {{
+    display: block !important; font-size: 11px !important; color: #8FA8A2 !important;
+    margin-bottom: 6px !important; letter-spacing: 1px !important;
+}}
+.gf-tech-compare i {{
+    display: block !important; width: 100% !important; height: 56px !important;
+    border-radius: 4px !important; border: 1px solid rgba(212,175,55,0.45) !important;
+    box-shadow: inset 0 0 12px rgba(0,0,0,0.25) !important;
+}}
+.gf-tech-compare b {{
+    display: block !important; margin-top: 6px !important;
+    font-family: Georgia,serif !important; font-size: 14px !important;
+    color: #F3D98A !important; letter-spacing: 1px !important;
+}}
+.gf-tech-compare > .gf-tech-arrow {{
+    color: #D4AF37 !important; font-size: 13px !important;
+    letter-spacing: 1px !important; min-width: 120px !important;
+}}
+.gf-tech-table {{ width: 100% !important; border-collapse: collapse !important; font-size: 12px !important; }}
+.gf-tech-table th {{
+    background: rgba(196,50,43,0.30) !important; color: #F3D98A !important;
+    text-align: left !important; padding: 8px 10px !important;
+    font-family: "Noto Sans CJK SC","Microsoft YaHei",Arial,sans-serif !important;
+    font-weight: 700 !important; letter-spacing: 0.5px !important;
+    border-bottom: 1px solid rgba(212,175,55,0.35) !important;
+}}
+.gf-tech-table td {{
+    padding: 7px 10px !important; color: #C6D6D0 !important;
+    border-bottom: 1px dotted rgba(212,175,55,0.18) !important;
+}}
+@media (max-width: 700px) {{
+    .gf-tech-compare > div {{ min-width: 100px !important; }}
 }}
 </style>
 """
@@ -512,6 +601,72 @@ def result_panel(sections) -> str:
     return f'<div class="gf-result-panel">{body}</div>'
 
 
+def tech_card(title: str, subtitle: str = "", body_html: str = ""):
+    """数智中枢深色卡片：用于承载纯 HTML / SVG 内容。"""
+    st.markdown(
+        f'<div class="gf-tech-card">'
+        f'<div class="gf-tech-h">{title}</div>'
+        f'<div class="gf-tech-sub">{subtitle}</div>'
+        f'{body_html}</div>',
+        unsafe_allow_html=True,
+    )
+
+
+def deep_analysis(observed_hex: str, result_hex: str,
+                  candidates, module_label: str = ""):
+    """结果区深度分析：CIE 色度定位 + 贝叶斯后验 + 蒙特卡洛不确定度。
+
+    candidates: [(名称, 候选色 hex), ...]
+    """
+    if not _TECH_OK:
+        return
+    from heritage_color import color_utils as cu
+    pairs = [(n, hx) for n, hx in candidates if hx]
+    if not pairs:
+        return
+    cand_hexes = [hx for _, hx in pairs]
+    mc = unc.monte_carlo(observed_hex, cand_hexes, n_samples=1200)
+    rows = unc.bayesian_posterior(
+        [(n, hx, cu.color_distance(hx, result_hex)) for n, hx in pairs]
+    )
+    summary = unc.confidence_summary(mc, rows)
+    extra = [(n[:6], hx, "#F3D98A" if i == 0 else "#57CFC3")
+             for i, (n, hx) in enumerate(pairs[:4])]
+
+    with st.expander("◈ 深度分析 · 光谱色度 / 贝叶斯 / 蒙特卡洛", expanded=False):
+        st.markdown(
+            f'<div class="gf-tech-card"><div class="gf-tech-h">'
+            f'推理可信度 · {_esc(module_label or "本次推求")}</div>'
+            f'<div class="gf-tech-metrics">'
+            f'<div><b>{summary["top_probability"] * 100:.1f}%</b><span>最优后验概率</span></div>'
+            f'<div><b>{summary["effective_candidates"]:.2f}</b><span>等效候选数 e^H</span></div>'
+            f'<div><b>{summary["samples"]}</b><span>蒙特卡洛采样</span></div>'
+            f'<div><b>{mc["ellipse"]["rx"]:.1f}×{mc["ellipse"]["ry"]:.1f}</b>'
+            f'<span>95% 置信椭圆 / a*b*</span></div>'
+            f'<div><b>{summary["confidence_level"]}</b><span>置信等级</span></div>'
+            f'</div></div>',
+            unsafe_allow_html=True,
+        )
+        c1, c2 = st.columns([1.45, 1], gap="medium")
+        with c1:
+            st.markdown(viz.chromaticity_diagram(
+                observed_hex, result_hex, mc["cloud_hexes"],
+                mc["ellipse"], extra), unsafe_allow_html=True)
+        with c2:
+            st.markdown(viz.posterior_bars(rows), unsafe_allow_html=True)
+            st.markdown(viz.convergence_chart(mc["convergence"]),
+                        unsafe_allow_html=True)
+        st.markdown(
+            '<div class="gf-tech-card"><div class="gf-tech-note">'
+            '推理链：实测色注入 Lab 测量噪声（σ = 2.0 / 3.2 / 3.2）→ '
+            '蒙特卡洛传播 1200 次 → CIEDE2000 似然 exp(−ΔE/κ) × 朝代先验 × 文献证据 '
+            '→ softmax 后验；色度图基于 CIE 1931 2° 标准观察者与光谱轨迹，'
+            '点云为不确定度在初色空间的投影，虚线为 95% 置信区域。'
+            '</div></div>',
+            unsafe_allow_html=True,
+        )
+
+
 def goto(view_name: str):
     """切换视图并递增动画令牌，使入场特效在每次进入时重播。"""
     st.query_params["view"] = view_name
@@ -617,7 +772,7 @@ st.markdown(
 # ---------------------------------------------------------------- 视图路由
 # 支持三种导航：① 环形门牌用 ?view=xxx 链接；② 程序页按钮用 session_state；
 # ③ 古建案例页用 ?view=hc_<key> 链接。
-_VALID_VIEWS = ("home", "auth", "infer", "style", "restore", "material")
+_VALID_VIEWS = ("home", "auth", "infer", "style", "restore", "material", "tech")
 _qp_view = st.query_params.get("view")
 if _qp_view:
     if _qp_view in _VALID_VIEWS or _qp_view.startswith("hc_"):
@@ -637,6 +792,13 @@ if view == "home":
         'letter-spacing:2px;margin:6px 0 6px;">择一门而入，探文物色彩之奥</div>',
         unsafe_allow_html=True,
     )
+    # 数智中枢入口：独立一行按钮，不改动下方五门环绕布局
+    if _TECH_OK:
+        _tl, _tm, _tr = st.columns([1, 1.7, 1])
+        with _tm:
+            if st.button("◈ 数智中枢　·　光谱引擎 / 贝叶斯推断 / 蒙特卡洛　→",
+                         key="go_tech_home", use_container_width=True):
+                goto("tech")
     # 五门真正沿圆周均匀环绕：正上 → 右上 → 右下 → 左下 → 左上，
     # 每门间隔 72°，中心只保留「考色 / 五门拱卫」球体，外部圆圈全部去除。
     # 门牌仍是原来的卡片 + 真实 st.button，样式与文案一字未改。
@@ -677,6 +839,164 @@ if view == "home":
         '</div>',
         unsafe_allow_html=True,
     )
+    st.markdown('<div class="gf-bottom-rule"></div>', unsafe_allow_html=True)
+
+
+# ================================================================ 数智中枢（技术内核）
+elif view == "tech":
+    back_button()
+    if not _TECH_OK:
+        st.info("数智中枢模块尚未在云端生效：请在 Manage app 中点击 Reboot app，"
+                "或确认已部署包含 spectral / uncertainty / viz 的最新提交。")
+    else:
+        from heritage_color import color_utils as _cu
+
+        tech_card(
+            "数智中枢 · SPECTRAL INTELLIGENCE",
+            "CIE 1931 标准观察者 / Kubelka-Munk 物理混色 / 贝叶斯证据合成 / 蒙特卡洛不确定度传播",
+            f'<div class="gf-tech-metrics">'
+            f'<div><b>{len(kb.DYNASTIES)}</b><span>朝代风格库</span></div>'
+            f'<div><b>{len(kb.PIGMENTS)}</b><span>矿物/有机颜料</span></div>'
+            f'<div><b>{sp._N}</b><span>光谱通道 380–730nm</span></div>'
+            f'<div><b>1200</b><span>蒙特卡洛采样</span></div>'
+            f'<div><b>ΔE₀₀</b><span>CIEDE2000 色差</span></div>'
+            f'<div><b>10 nm</b><span>光谱采样间隔</span></div>'
+            f'</div>',
+        )
+        st.markdown(viz.flow_diagram([
+            ("① 实测", "sRGB / 文献"), ("② 光谱", "36 通道重建"),
+            ("③ 物理", "K-M 混色"), ("④ 似然", "CIEDE2000"),
+            ("⑤ 后验", "贝叶斯 + MC"), ("⑥ 决策", "最小干预"),
+        ]), unsafe_allow_html=True)
+
+        ca, cb, cc = st.columns(3)
+        with ca:
+            pigment = st.selectbox("考察颜料", list(kb.PIGMENTS.keys()),
+                                   key="tech_pigment")
+        with cb:
+            years = st.slider("时光倒流 · 反演年代（年）", 20, 500, 200, 20,
+                              key="tech_years")
+        with cc:
+            test_light = st.selectbox("同色异谱 · 对照光源",
+                                      ("A", "烛光", "展厅LED"),
+                                      key="tech_light")
+
+        p = kb.PIGMENTS[pigment]
+        fresh_hex = p.hex_fresh
+        ag = sp.aging_curve(fresh_hex, pigment, 400, 12)
+        aged_hex = ag[-1]["hex"]
+        rev = sp.reverse_aging(aged_hex, pigment, years)
+        shift = sp.illuminant_shift(fresh_hex, "D65", test_light)
+        # 同色异谱对照：取同色系的两种颜料做配比优化，使 D65 下可调至等色
+        _same = [q for q in kb.PIGMENTS.values()
+                 if q.family == p.family and q.name != pigment]
+        _alt_names = ([q.name for q in _same[:2]] if len(_same) >= 2
+                      else ["石青", "藤黄"])
+        mm = sp.metamerism_index([(pigment, 1.0)],
+                                 [(_alt_names[0], 0.5), (_alt_names[1], 0.5)],
+                                 test_light)
+
+        near = [(q.name, q.hex_fresh) for q in sorted(
+            kb.PIGMENTS.values(),
+            key=lambda q: _cu.color_distance(fresh_hex, q.hex_fresh))[:4]]
+        mc = unc.monte_carlo(aged_hex, [hx for _, hx in near], n_samples=1200)
+
+        c1, c2 = st.columns([1.2, 1], gap="medium")
+        with c1:
+            st.markdown(viz.chromaticity_diagram(
+                aged_hex, rev["restored_hex"], mc["cloud_hexes"][:130],
+                mc["ellipse"], [(pigment, fresh_hex, "#F3D98A")]),
+                unsafe_allow_html=True)
+        with c2:
+            st.markdown(viz.spectrum_chart([
+                (pigment + " 新鲜态", sp.reflectance_from_hex(fresh_hex), "#E0574A"),
+                ("现存老化态", sp.reflectance_from_hex(aged_hex), "#57CFC3"),
+                ("D65 光源 SPD", sp.illuminant("D65"), "#D4AF37"),
+            ], y_max=1.35), unsafe_allow_html=True)
+
+        # —— 时光倒流：老化动力学 + 解析反演 ——
+        st.markdown(viz.aging_timeline(
+            sp.aging_curve(fresh_hex, pigment, years, 10)), unsafe_allow_html=True)
+        tech_card(
+            "时光倒流 · 解析反演",
+            "光致褪色（漂白）+ 含铅/汞颜料硫化变黑双通道，闭式逆变换直接解出初色",
+            f'<div class="gf-tech-compare">'
+            f'<div><span>推求初色 · t = 0</span>'
+            f'<i style="background:{rev["restored_hex"]}"></i>'
+            f'<b>{rev["restored_hex"]}</b></div>'
+            f'<div class="gf-tech-arrow">⟶ 历经 {years} 年 ⟶</div>'
+            f'<div><span>现存残留色 · t = {years}</span>'
+            f'<i style="background:{aged_hex}"></i><b>{aged_hex}</b></div>'
+            f'</div>'
+            f'<div class="gf-tech-note">老化时间常数 τ = {rev["tau_years"]} 年'
+            f'（由耐光等级 {p.lightfastness}/5 推得）；正向老化累计色差 '
+            f'ΔE₀₀ = {ag[-1]["delta_e"]}；把反演初色重新正向老化，'
+            f'与观测色残差仅 {rev["residual_delta_e"]} ΔE₀₀，验证逆变换自洽。</div>',
+        )
+
+        # —— 同色异谱：展厅照明风险 ——
+        mm_txt = ""
+        if mm.get("valid"):
+            mm_txt = (f'配方级同色异谱指数 MI = {mm["metamerism_index"]} ΔE₀₀'
+                      f'（D65 下两配方等色至 {mm["delta_e_d65"]}，换 {_esc(test_light)} '
+                      f'光源后为 {mm["delta_e_test"]}；优化配比 {mm["optimized_formula"]}）'
+                      f'—— MI 越低，补色方案在照明变化下越稳定')
+        tech_card(
+            "同色异谱 · 展厅照明评估",
+            "同一反射光谱在不同光源 SPD 下的呈色漂移；补色在暖光下「跳色」的量化风险",
+            f'<div class="gf-tech-compare">'
+            f'<div><span>D65 标准日光</span>'
+            f'<i style="background:{shift["a"]["hex"]}"></i>'
+            f'<b>{shift["a"]["hex"]}</b></div>'
+            f'<div class="gf-tech-arrow">⟶ 换光源 ⟶</div>'
+            f'<div><span>{_esc(test_light)}</span>'
+            f'<i style="background:{shift["b"]["hex"]}"></i>'
+            f'<b>{shift["b"]["hex"]}</b></div>'
+            f'</div>'
+            f'<div class="gf-tech-note">色度漂移 x: '
+            f'{shift["a"]["xy"][0]:.3f}→{shift["b"]["xy"][0]:.3f}，'
+            f'y: {shift["a"]["xy"][1]:.3f}→{shift["b"]["xy"][1]:.3f}；'
+            f'呈色差 ΔE₀₀ = {shift["delta_e"]}。{mm_txt}</div>',
+        )
+
+        # —— 贝叶斯后验 + 蒙特卡洛收敛 ——
+        rows = unc.bayesian_posterior(
+            [(n, hx, _cu.color_distance(hx, fresh_hex)) for n, hx in near]
+        )
+        d1, d2 = st.columns(2, gap="medium")
+        with d1:
+            st.markdown(viz.posterior_bars(rows), unsafe_allow_html=True)
+        with d2:
+            st.markdown(viz.convergence_chart(mc["convergence"]),
+                        unsafe_allow_html=True)
+
+        # —— 算法栈 ——
+        stack = [
+            ("色空间", "sRGB ↔ CIE XYZ ↔ CIE-L*ab（D65）", "三刺激值与感知均匀空间互转"),
+            ("色差", "CIEDE2000（CIE 142-2001）", "含明度/彩度/色相加权与旋转项"),
+            ("标准观察者", "CIE 1931 2° CMF（Wyman 2013 解析拟合）", "36 通道光谱积分与 xy 色度"),
+            ("光源", "Planck 黑体辐射 · D65/A/烛光/LED", "同色异谱与照明漂移评估"),
+            ("混色物理", "Kubelka-Munk 单常数 K/S 模型", "颜料浓度加权的非线性混色"),
+            ("老化", "光褪色 + 硫化变黑双通道（可逆）", "解析逆变换「时光倒流」"),
+            ("证据", "贝叶斯似然 × 朝代先验 × 文献权重", "softmax 后验概率"),
+            ("不确定度", "蒙特卡洛传播 + 协方差特征分解", "95% 置信椭圆 / 收敛诊断"),
+        ]
+        tbl = ('<table class="gf-tech-table"><tr><th>层</th><th>算法 / 标准</th>'
+               '<th>在本系统中的作用</th></tr>'
+               + "".join(f'<tr><td>{_esc(a)}</td><td>{_esc(b)}</td>'
+                         f'<td>{_esc(c)}</td></tr>' for a, b, c in stack)
+               + '</table>')
+        tech_card("算法栈 · 标准与实现",
+                  "纯 Python 标准库实现，无外部模型权重；推理过程全程可解释、可复现",
+                  tbl)
+
+        st.markdown(
+            '<div class="gf-tech-card"><div class="gf-tech-note">说明：反射率由颜料典型色反演重建'
+            '（同色异谱近似，闭环残差 &lt; 2.1 ΔE₀₀），属教学/演示级参考光谱，'
+            '不替代实测分光光度数据；实际修复须以检测报告为准。</div></div>',
+            unsafe_allow_html=True,
+        )
+    meander()
     st.markdown('<div class="gf-bottom-rule"></div>', unsafe_allow_html=True)
 
 
@@ -824,6 +1144,16 @@ elif view == "auth":
                     sections.append(("对应建筑风格（据色推求）",
                                      f'<div class="gf-style-list">{items}</div>'))
                 st.markdown(result_panel(sections), unsafe_allow_html=True)
+                # 深度分析：把「一个答案」展开成色度定位 + 概率分布
+                from heritage_color import color_utils as _cu
+                _pairs = [(m["颜料"], kb.PIGMENTS[m["颜料"]].hex_fresh)
+                          for m in r.matched_pigments
+                          if m.get("颜料") in kb.PIGMENTS]
+                if not _pairs:
+                    _pairs = [(p.name, p.hex_fresh) for p in sorted(
+                        kb.PIGMENTS.values(),
+                        key=lambda p: _cu.color_distance(r.original_hex, p.hex_fresh))[:4]]
+                deep_analysis(observed, r.original_hex, _pairs, "色彩考证")
             except Exception as e:
                 st.error(f"计算失败：{e}")
         else:
@@ -872,6 +1202,11 @@ elif view == "infer":
                 if r.get("note"):
                     sections.append(("附注", note(_esc(str(r["note"])))))
                 st.markdown(result_panel(sections), unsafe_allow_html=True)
+                from heritage_color import color_utils as _cu
+                _pairs = [(p.name, p.hex_fresh) for p in sorted(
+                    kb.PIGMENTS.values(),
+                    key=lambda p: _cu.color_distance(best["result_hex"], p.hex_fresh))[:4]]
+                deep_analysis(target, best["result_hex"], _pairs, "颜料推演")
             except Exception as e:
                 st.error(f"计算失败：{e}")
         else:

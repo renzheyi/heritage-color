@@ -617,6 +617,83 @@ hr { border-color: #E0CB95 !important; }
     60%  { transform: scaleX(1); opacity: 1; }
     100% { transform: scaleX(1); opacity: 0; }
 }
+
+/* ============ 11. 古建照片轮播（横向自动滚动 + 悬停暂停 + 点击进入详情） ============ */
+.gf-carousel-hint {
+    text-align: center; margin: 6px 0 0;
+    font-family: var(--gf-song); font-size: 13px; letter-spacing: 1px;
+    color: #6E5C42;
+}
+.gf-carousel {
+    position: relative; overflow: hidden;
+    width: 100%; margin: 16px auto 20px; padding: 10px 0;
+    border: 1px solid #D4AF37; border-radius: 6px;
+    background: rgba(253,248,236,0.55);
+    box-shadow: 0 6px 22px rgba(142,31,26,0.18), inset 0 0 0 4px rgba(212,175,55,0.10);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+    animation: gfCarouselIn 0.9s ease-out both;
+}
+@keyframes gfCarouselIn {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.gf-carousel-track {
+    display: flex; width: max-content;
+    animation: gfCarouselScroll 52s linear infinite;
+}
+.gf-carousel:hover .gf-carousel-track,
+.gf-carousel:focus-within .gf-carousel-track { animation-play-state: paused; }
+/* 内容复制两遍，移动 -50% 恰好一组，实现无缝循环（间距由卡片 margin 提供） */
+@keyframes gfCarouselScroll {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+}
+.gf-slide {
+    position: relative; flex: 0 0 auto;
+    width: 348px; height: 226px; margin-right: 18px;
+    border-radius: 4px; overflow: hidden;
+    text-decoration: none !important; color: inherit !important;
+    border: 1px solid #E0CB95; background: #3E372D;
+    box-shadow: 0 3px 12px rgba(62,55,45,0.22);
+    transition: transform .3s cubic-bezier(.34,1.56,.64,1), box-shadow .3s;
+}
+.gf-slide:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 10px 26px rgba(142,31,26,0.42);
+    z-index: 2;
+}
+.gf-slide img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+    filter: saturate(1.06) contrast(1.04);
+    transition: transform .5s ease;
+}
+.gf-slide:hover img { transform: scale(1.06); }
+.gf-slide-cap {
+    position: absolute; left: 0; right: 0; bottom: 0;
+    padding: 30px 14px 12px; pointer-events: none;
+    display: flex; flex-direction: column; gap: 3px;
+    background: linear-gradient(180deg, rgba(28,20,14,0) 0%, rgba(28,20,14,0.72) 42%, rgba(28,20,14,0.94) 100%);
+}
+.gf-slide-title {
+    font-family: var(--gf-xing); color: #F3D98A;
+    font-size: 18px; font-weight: 700; letter-spacing: 2px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+}
+.gf-slide-sub {
+    font-family: var(--gf-song); color: #FDF8EC;
+    font-size: 12px; line-height: 1.45;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.75);
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.gf-slide-more {
+    margin-top: 3px; font-family: var(--gf-song);
+    font-size: 11px; letter-spacing: 1px; color: #F3D98A;
+}
+@media (max-width: 760px) {
+    .gf-slide { width: 268px; height: 196px; }
+    .gf-slide-title { font-size: 16px; }
+}
 </style>
 """
 

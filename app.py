@@ -22,6 +22,7 @@ st.set_page_config(
 # 可操作的提示，而不是显示被脱敏的红色报错页。
 try:
     import heritage_color as _hc
+    from heritage_color.heritages import HERITAGES, get_heritage
     _REQUIRED = (
         "auth_color", "infer_pigment", "decide_restoration",
         "identify_architecture_style", "extract_image_colors",
@@ -234,6 +235,81 @@ div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker.n5):not(:has(div[dat
     }}
     div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-node-marker)):hover {{ transform: translateY(-6px) scale(1.02) !important; }}
 }}
+
+/* ===== 古建照片轮播：随 app.py 注入，防 Cloud 缓存旧 theme ===== */
+.gf-carousel-hint {{
+    text-align: center; margin: 6px 0 0;
+    font-family: var(--gf-song) !important; font-size: 13px !important;
+    letter-spacing: 1px !important; color: #6E5C42 !important;
+}}
+.gf-carousel {{
+    position: relative; overflow: hidden;
+    width: 100%; margin: 16px auto 20px; padding: 10px 0;
+    border: 1px solid #D4AF37 !important; border-radius: 6px !important;
+    background: rgba(253,248,236,0.55) !important;
+    box-shadow: 0 6px 22px rgba(142,31,26,0.18), inset 0 0 0 4px rgba(212,175,55,0.10) !important;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+    animation: gfCarouselIn 0.9s ease-out both !important;
+}}
+@keyframes gfCarouselIn {{
+    from {{ opacity: 0; transform: translateY(18px); }}
+    to   {{ opacity: 1; transform: translateY(0); }}
+}}
+.gf-carousel-track {{
+    display: flex !important; width: max-content !important;
+    animation: gfCarouselScroll 52s linear infinite !important;
+}}
+.gf-carousel:hover .gf-carousel-track,
+.gf-carousel:focus-within .gf-carousel-track {{ animation-play-state: paused !important; }}
+@keyframes gfCarouselScroll {{
+    from {{ transform: translateX(0); }}
+    to   {{ transform: translateX(-50%); }}
+}}
+.gf-slide {{
+    position: relative !important; flex: 0 0 auto !important;
+    width: 348px !important; height: 226px !important; margin-right: 18px !important;
+    border-radius: 4px !important; overflow: hidden !important;
+    text-decoration: none !important; color: inherit !important;
+    border: 1px solid #E0CB95 !important; background: #3E372D !important;
+    box-shadow: 0 3px 12px rgba(62,55,45,0.22) !important;
+    transition: transform .3s cubic-bezier(.34,1.56,.64,1), box-shadow .3s !important;
+}}
+.gf-slide:hover {{
+    transform: translateY(-6px) scale(1.02) !important;
+    box-shadow: 0 10px 26px rgba(142,31,26,0.42) !important; z-index: 2;
+}}
+.gf-slide img {{
+    width: 100% !important; height: 100% !important; object-fit: cover !important;
+    display: block !important; filter: saturate(1.06) contrast(1.04);
+    transition: transform .5s ease !important;
+}}
+.gf-slide:hover img {{ transform: scale(1.06) !important; }}
+.gf-slide-cap {{
+    position: absolute !important; left: 0; right: 0; bottom: 0;
+    padding: 30px 14px 12px !important; pointer-events: none;
+    display: flex !important; flex-direction: column !important; gap: 3px !important;
+    background: linear-gradient(180deg, rgba(28,20,14,0) 0%, rgba(28,20,14,0.72) 42%, rgba(28,20,14,0.94) 100%) !important;
+}}
+.gf-slide-title {{
+    font-family: var(--gf-xing) !important; color: #F3D98A !important;
+    font-size: 18px !important; font-weight: 700 !important; letter-spacing: 2px !important;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+}}
+.gf-slide-sub {{
+    font-family: var(--gf-song) !important; color: #FDF8EC !important;
+    font-size: 12px !important; line-height: 1.45 !important;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.75);
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}}
+.gf-slide-more {{
+    margin-top: 3px; font-family: var(--gf-song) !important;
+    font-size: 11px !important; letter-spacing: 1px !important; color: #F3D98A !important;
+}}
+@media (max-width: 760px) {{
+    .gf-slide {{ width: 268px !important; height: 196px !important; }}
+    .gf-slide-title {{ font-size: 16px !important; }}
+}}
 </style>
 """
 st.markdown(_CRITICAL_CSS, unsafe_allow_html=True)
@@ -262,6 +338,56 @@ def banner(image_name: str, title: str, subtitle: str = ""):
             f'{title}{sub}</div></div>',
             unsafe_allow_html=True,
         )
+
+
+def _carousel_thumb(path: str) -> str:
+    """把古建图缩成约 700px 宽的 JPEG 再转 base64，避免整页内嵌数兆原图。"""
+    import base64
+    import io
+    try:
+        from PIL import Image
+        with Image.open(path) as im:
+            im = im.convert("RGB")
+            im.thumbnail((700, 460), Image.LANCZOS)
+            buf = io.BytesIO()
+            im.save(buf, format="JPEG", quality=76, optimize=True)
+            return base64.b64encode(buf.getvalue()).decode()
+    except Exception:
+        with open(path, "rb") as f:
+            return base64.b64encode(f.read()).decode()
+
+
+def heritage_carousel():
+    """古建照片轮播：横向自动滚动，每张可点击进入对应古建详情页。"""
+    slides = ""
+    for h in HERITAGES:
+        path = os.path.join(ASSETS, h["image"])
+        if not os.path.exists(path):
+            continue
+        data = _carousel_thumb(path)
+        slides += (
+            f'<a class="gf-slide" href="?view=hc_{_esc(h["key"])}" target="_self" '
+            f'title="点击进入 · {_esc(h["name"])}">'
+            f'<img src="data:image/jpeg;base64,{data}" alt="{_esc(h["caption"])}">'
+            f'<div class="gf-slide-cap">'
+            f'<span class="gf-slide-title">{_esc(h["banner_title"])}</span>'
+            f'<span class="gf-slide-sub">{_esc(h["banner_sub"])}</span>'
+            f'<span class="gf-slide-more">点击进入「{_esc(h["name"])}」色彩修复案例 →</span>'
+            f'</div></a>'
+        )
+    if not slides:
+        return
+    st.markdown(
+        '<div class="gf-carousel-hint">'
+        '古建巡览 · 五处遗产的色彩修复实录　|　照片横向缓缓呈现，'
+        '鼠标悬停即停，点击任一画面查阅详情 →</div>',
+        unsafe_allow_html=True,
+    )
+    # 复制一遍实现无缝循环
+    st.markdown(
+        f'<div class="gf-carousel"><div class="gf-carousel-track">{slides}{slides}</div></div>',
+        unsafe_allow_html=True,
+    )
 
 
 def card_start(title: str, desc: str = "", icon: str = "") -> str:
@@ -489,11 +615,15 @@ st.markdown(
 )
 
 # ---------------------------------------------------------------- 视图路由
-# 支持两种导航：① 环形门牌用 ?view=xxx 链接；② 程序页按钮用 session_state。
+# 支持三种导航：① 环形门牌用 ?view=xxx 链接；② 程序页按钮用 session_state；
+# ③ 古建案例页用 ?view=hc_<key> 链接。
 _VALID_VIEWS = ("home", "auth", "infer", "style", "restore", "material")
 _qp_view = st.query_params.get("view")
 if _qp_view:
-    st.session_state["view"] = _qp_view if _qp_view in _VALID_VIEWS else "home"
+    if _qp_view in _VALID_VIEWS or _qp_view.startswith("hc_"):
+        st.session_state["view"] = _qp_view
+    else:
+        st.session_state["view"] = "home"
 if "view" not in st.session_state:
     st.session_state["view"] = "home"
 view = st.session_state["view"]
@@ -501,8 +631,7 @@ view = st.session_state["view"]
 
 # ================================================================ 门户首页
 if view == "home":
-    banner("forbidden_city.jpg", "丹宸彩画 · 源远流长",
-           "故宫太和殿 —— 和玺彩画之典范，青绿为地，金龙腾跃")
+    heritage_carousel()
     st.markdown(
         '<div style="text-align:center;color:#7A6A50;font-size:15px;'
         'letter-spacing:2px;margin:6px 0 6px;">择一门而入，探文物色彩之奥</div>',
@@ -548,6 +677,54 @@ if view == "home":
         '</div>',
         unsafe_allow_html=True,
     )
+    st.markdown('<div class="gf-bottom-rule"></div>', unsafe_allow_html=True)
+
+
+# ================================================================ 古建案例详情
+elif view.startswith("hc_"):
+    _hc_data = get_heritage(view[len("hc_"):])
+    if _hc_data is None:
+        st.info("未找到该古建案例，请返回总览。")
+        back_button()
+    else:
+        back_button()
+        banner(_hc_data["image"], _hc_data["banner_title"], _hc_data["caption"])
+        st.markdown(card_start(
+            _hc_data["name"] + " · 色彩修复案例",
+            _hc_data["intro"],
+            icon="lantern",
+        ), unsafe_allow_html=True)
+        def _case_list(items):
+            return "".join(f'<div class="gf-step-line">{_esc(str(x))}</div>'
+                           for x in items)
+
+        def _case_points(items):
+            return "".join(f'<div class="gf-kv">'
+                           f'<span class="gf-kv-val">{_esc(str(x))}</span></div>'
+                           for x in items)
+
+        st.markdown('<div class="gf-result-label">AI 与数字化修复经历</div>',
+                    unsafe_allow_html=True)
+        st.markdown(result_panel([("数字化与 AI 应用", _case_list(_hc_data["ai_history"]))]),
+                    unsafe_allow_html=True)
+
+        st.markdown('<div class="gf-result-label">当前的修复困难</div>',
+                    unsafe_allow_html=True)
+        st.markdown(result_panel([("修复困难", _case_list(_hc_data["difficulties"]))]),
+                    unsafe_allow_html=True)
+
+        st.markdown('<div class="gf-result-label">本系统能解决什么</div>',
+                    unsafe_allow_html=True)
+        st.markdown(result_panel([("「考色」五门对应之策", _case_points(_hc_data["solutions"]))]),
+                    unsafe_allow_html=True)
+
+        cta1, cta2, cta3 = st.columns([1, 2, 1])
+        with cta2:
+            if st.button("进入「色彩考证」体验本技术", type="primary",
+                         key="hc_go_auth", width="stretch"):
+                goto("auth")
+    st.markdown("</div>", unsafe_allow_html=True)
+    meander()
     st.markdown('<div class="gf-bottom-rule"></div>', unsafe_allow_html=True)
 
 

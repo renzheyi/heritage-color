@@ -33,10 +33,10 @@ GUOFENG_CSS = """
     background-color: #F4ECD8;
     background-image:
         url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'><path d='M8 8 H40 V40 H8 V8 M16 16 H32 V32 H16 Z M24 8 V16 M24 32 V40 M8 24 H16 M32 24 H40' fill='none' stroke='%23B08D4F' stroke-opacity='0.10' stroke-width='1'/></svg>"),
-        linear-gradient(rgba(244,236,216,0.91), rgba(244,236,216,0.87)),
+        linear-gradient(rgba(244,236,216,0.93), rgba(244,236,216,0.90)),
         url("data:image/jpeg;base64,__BG_URI__");
     background-size: 48px 48px, cover, cover;
-    background-position: center, center, center;
+    background-position: center, center, center bottom;
     background-attachment: fixed, fixed, fixed;
     background-repeat: repeat, no-repeat, no-repeat;
 }
@@ -264,6 +264,70 @@ h1, h2, h3, [data-testid="stHeader"] { color: #6E2B23 !important; font-family: v
 .gf-orbit-center:hover .gf-orbit-core { box-shadow: 2px 6px 20px rgba(158,51,41,0.45); }
 @keyframes gfSpin { to { transform: rotate(360deg); } }
 
+/* ============ 6b. 五门环形舞台：五门牌均匀绕中心圆摆放 ============ */
+.gf-ring-stage {
+    position: relative;
+    width: 100%; max-width: 1040px;
+    height: 660px; margin: 4px auto 10px;
+}
+/* 双层轨道圆：外实内虚，鎏金赭色 */
+.gf-ring-track, .gf-ring-track-inner {
+    position: absolute; left: 50%; top: 50%;
+    border-radius: 50%; pointer-events: none;
+    transform: translate(-50%, -50%);
+}
+.gf-ring-track {
+    width: 560px; height: 560px;
+    border: 2px dashed rgba(176,141,79,0.55);
+    box-shadow: 0 0 0 1px rgba(158,51,41,0.10), inset 0 0 0 1px rgba(158,51,41,0.10);
+    animation: gfSpin 90s linear infinite;
+}
+.gf-ring-track::before {
+    content: "❖"; position: absolute; top: -13px; left: 50%;
+    transform: translateX(-50%); color: #9E3329; font-size: 18px; background: #F4ECD8; padding: 0 6px;
+}
+.gf-ring-track-inner {
+    width: 300px; height: 300px;
+    border: 1px dotted rgba(158,51,41,0.35);
+}
+.gf-ring-center {
+    position: absolute; left: 50%; top: 50%;
+    transform: translate(-50%, -50%); z-index: 3;
+}
+.gf-ring-center .gf-orbit-center { margin: 0; }
+/* 门牌节点：绝对定位到圆周五个角度（正上 / 右上 / 右下 / 左下 / 左上） */
+.gf-ring-node {
+    position: absolute; z-index: 4; width: 232px;
+    text-decoration: none !important; color: inherit !important;
+    display: block;
+}
+.gf-ring-node .gf-nav-card { height: 150px; padding: 14px 14px 12px; }
+.gf-ring-node .gf-nav-num { width: 36px; height: 36px; line-height: 36px; font-size: 22px; margin-bottom: 5px; }
+.gf-ring-node .gf-nav-title { font-size: 18px; letter-spacing: 2px; margin-bottom: 4px; }
+.gf-ring-node .gf-nav-desc { font-size: 11.5px; line-height: 1.5; }
+/* 顶门居中；两侧四门贴圆周左右 */
+.gf-ring-node.n1 { left: 50%; top: 2%;  transform: translateX(-50%); }
+.gf-ring-node.n2 { right: 1%;  top: 30%; }
+.gf-ring-node.n3 { right: 3%;  top: 66%; }
+.gf-ring-node.n4 { left: 3%;   top: 66%; }
+.gf-ring-node.n5 { left: 1%;   top: 30%; }
+/* 悬停：节点整体上浮，卡片沿用 .gf-nav-card:hover 动效 */
+.gf-ring-node { transition: transform .28s cubic-bezier(.34,1.56,.64,1); }
+.gf-ring-node:hover { z-index: 6; }
+.gf-ring-node.n1:hover { transform: translateX(-50%) translateY(-8px) scale(1.03); }
+.gf-ring-node.n2:hover, .gf-ring-node.n3:hover,
+.gf-ring-node.n4:hover, .gf-ring-node.n5:hover { transform: translateY(-8px) scale(1.03); }
+/* 窄屏降级：舞台变高、门牌缩窄，避免重叠 */
+@media (max-width: 900px) {
+    .gf-ring-stage { height: 980px; }
+    .gf-ring-track { width: 440px; height: 440px; }
+    .gf-ring-track-inner { width: 240px; height: 240px; }
+    .gf-ring-node { width: 190px; }
+    .gf-ring-node.n1 { top: 0; }
+    .gf-ring-node.n2, .gf-ring-node.n5 { top: 27%; }
+    .gf-ring-node.n3, .gf-ring-node.n4 { top: 63%; }
+}
+
 /* ============ 7. 回纹带 / 云纹分隔 ============ */
 .gf-meander {
     height: 14px; margin: 14px 0;
@@ -322,16 +386,23 @@ h1, h2, h3, [data-testid="stHeader"] { color: #6E2B23 !important; font-family: v
 .gf-result-panel {
     position: relative; background: rgba(251,246,234,0.86);
     border: 1px solid #D9C8A6; border-left: 3px solid #9E3329;
-    border-radius: 4px; padding: 14px 16px 6px; margin: 8px 0 14px;
+    border-radius: 4px; padding: 14px 16px 14px; margin: 8px 0 14px;
     box-shadow: 0 1px 6px rgba(90,70,40,0.08);
     background-image:
         url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'><path d='M0 12 L12 0 M28 40 L40 28 M0 28 L12 40 M28 0 L40 12' stroke='%23B08D4F' stroke-opacity='0.18' stroke-width='1' fill='none'/></svg>");
     transition: box-shadow .28s, border-left-color .28s, transform .28s;
+    /* 横向排列：每个小节成为一张卡片，自动换行铺开 */
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px 16px; align-items: start;
 }
 .gf-result-panel:hover {
     border-left-color: #B08D4F;
     box-shadow: 0 4px 16px rgba(90,70,40,0.14), inset 0 0 24px rgba(176,141,79,0.08);
     transform: translateX(3px);
+}
+/* 窄结果列或手机端退回单列 */
+@media (max-width: 1100px) {
+    .gf-result-panel { grid-template-columns: 1fr; }
 }
 .gf-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 2px 0; }
 .gf-table th { font-family: var(--gf-kai); color: #F7EFE0; background: #9E3329; padding: 7px 9px; text-align: left; font-weight: 600; letter-spacing: 1px; }

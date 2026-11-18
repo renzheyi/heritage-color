@@ -61,8 +61,8 @@ ASSETS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets")
 
 
 def _background_uri() -> str:
-    """把虚化古建筑图转成 data URI，作为页面淡淡衬底。"""
-    path = os.path.join(ASSETS, "bg_blur.jpg")
+    """把描边抠主体、虚化后的古建筑图转成 data URI，作为页面淡淡衬底。"""
+    path = os.path.join(ASSETS, "bg_arch.jpg")
     if not os.path.exists(path):
         return ""
     import base64
@@ -198,6 +198,7 @@ def result_panel(sections) -> str:
 
 def goto(view_name: str):
     """切换视图并递增动画令牌，使入场特效在每次进入时重播。"""
+    st.query_params["view"] = view_name
     st.session_state["view"] = view_name
     st.session_state["anim_token"] = st.session_state.get("anim_token", 0) + 1
     st.rerun()
@@ -290,6 +291,11 @@ st.markdown(
 )
 
 # ---------------------------------------------------------------- 视图路由
+# 支持两种导航：① 环形门牌用 ?view=xxx 链接；② 程序页按钮用 session_state。
+_VALID_VIEWS = ("home", "auth", "infer", "style", "restore", "material")
+_qp_view = st.query_params.get("view")
+if _qp_view:
+    st.session_state["view"] = _qp_view if _qp_view in _VALID_VIEWS else "home"
 if "view" not in st.session_state:
     st.session_state["view"] = "home"
 view = st.session_state["view"]
@@ -301,55 +307,41 @@ if view == "home":
            "故宫太和殿 —— 和玺彩画之典范，青绿为地，金龙腾跃")
     st.markdown(
         '<div style="text-align:center;color:#7A6A50;font-size:15px;'
-        'letter-spacing:2px;margin:6px 0 18px;">择一门而入，探文物色彩之奥</div>',
+        'letter-spacing:2px;margin:6px 0 6px;">择一门而入，探文物色彩之奥</div>',
         unsafe_allow_html=True,
     )
-    # 众星拱月：五个门牌环绕中心徽记摆放
-    #         [壹]
-    #   [贰]  ◎中心◎  [叁]
-    #   [肆]          [伍]
-    r1a, r1b, r1c = st.columns([1, 1.15, 1], gap="large")
-    with r1b:
-        if nav_block(
-            "壹", "色彩考证",
-            "参酌现存残留色、文献与朝代，推求文物彩画之初色。",
-            "go_auth",
-        ):
-            goto("auth")
-
-    r2a, r2b, r2c = st.columns([1, 1.15, 1], gap="large")
-    with r2a:
-        if nav_block(
-            "贰", "颜料推演",
-            "由一色反求所用颜料与调配之法，青绿朱黄，皆溯其源。",
-            "go_infer",
-        ):
-            goto("infer")
-    with r2b:
-        orbit_center()
-    with r2c:
-        if nav_block(
-            "叁", "建筑风格识别",
-            "由色彩与用色制度，辨识和玺、旋子、苏式、敦煌等彩画风格。",
-            "go_style",
-        ):
-            goto("style")
-
-    r3a, r3b, r3c = st.columns([1, 1.15, 1], gap="large")
-    with r3a:
-        if nav_block(
-            "肆", "修复决策",
-            "察颜料之性、病害之由、环境之宜，出最小干预之修复策。",
-            "go_restore",
-        ):
-            goto("restore")
-    with r3c:
-        if nav_block(
-            "伍", "材质辨识与配材",
-            "上传照片辨识木石金属等材质，据病害给出修复所需材料。",
-            "go_material",
-        ):
-            goto("material")
+    # 五门环形：五个门牌均匀分布于圆周，中心为旋转徽记。
+    # 用纯 HTML + CSS 绝对定位实现真正的"绕圈"，点击走 ?view= 链接路由。
+    _nodes = [
+        ("壹", "色彩考证", "参酌现存残留色、文献与朝代，推求文物彩画之初色。", "auth", "n1"),
+        ("贰", "颜料推演", "由一色反求所用颜料与调配之法，青绿朱黄，皆溯其源。", "infer", "n2"),
+        ("叁", "建筑风格识别", "由色彩与用色制度，辨识和玺、旋子、苏式、敦煌等彩画风格。", "style", "n3"),
+        ("肆", "修复决策", "察颜料之性、病害之由、环境之宜，出最小干预之修复策。", "restore", "n4"),
+        ("伍", "材质辨识与配材", "上传照片辨识木石金属等材质，据病害给出修复所需材料。", "material", "n5"),
+    ]
+    _cards = "".join(
+        f'<a class="gf-ring-node {pos}" href="?view={v}" target="_self">'
+        f'<div class="gf-nav-card">'
+        f'<span class="gf-card-glow"></span>'
+        f'<div class="gf-nav-num">{num}</div>'
+        f'<div class="gf-nav-title">{title}</div>'
+        f'<div class="gf-nav-desc">{desc}</div>'
+        f'</div></a>'
+        for num, title, desc, v, pos in _nodes
+    )
+    st.markdown(
+        '<div class="gf-ring-stage">'
+        '<div class="gf-ring-track"></div>'
+        '<div class="gf-ring-track-inner"></div>'
+        + _cards +
+        '<div class="gf-ring-center">'
+        '<div class="gf-orbit-center">'
+        '<div class="gf-orbit-ring"></div>'
+        '<div class="gf-orbit-core">考色<small>五门拱卫</small></div>'
+        '</div></div>'
+        '</div>',
+        unsafe_allow_html=True,
+    )
 
     meander()
     st.markdown(
@@ -371,7 +363,7 @@ elif view == "auth":
         "壹 · 色彩考证",
         "参酌现存残留色、文献记载与朝代风格，推求文物彩画之初色。",
     ), unsafe_allow_html=True)
-    col1, col2 = st.columns([1, 1])
+    col1, col2 = st.columns([0.85, 1.5])
     with col1:
         st.markdown("**一、现存残留色**")
         if "observed" not in st.session_state:
@@ -472,7 +464,7 @@ elif view == "infer":
         "贰 · 颜料推演",
         "由一色反求其所用颜料与调配之法，青绿朱黄，皆可溯其源。",
     ), unsafe_allow_html=True)
-    col1, col2 = st.columns([1, 1])
+    col1, col2 = st.columns([0.85, 1.5])
     with col1:
         target = st.color_picker("目标颜色", "#2E9070", key="target")
         dy_opts2, dy_idx2 = dynasty_options("清")
@@ -519,7 +511,7 @@ elif view == "style":
         "叁 · 建筑风格识别",
         "由色彩与用色制度，辨识其所属古建筑彩画风格：和玺、旋子、苏式、敦煌壁画等。",
     ), unsafe_allow_html=True)
-    col1, col2 = st.columns([1, 1])
+    col1, col2 = st.columns([0.85, 1.5])
     with col1:
         if "style_color" not in st.session_state:
             st.session_state["style_color"] = "#1B6FA8"
@@ -597,7 +589,7 @@ elif view == "restore":
         "肆 · 修复决策",
         "察颜料之性、病害之由、环境之宜，出修复之策，守最小干预之则。",
     ), unsafe_allow_html=True)
-    col1, col2 = st.columns([1, 1])
+    col1, col2 = st.columns([0.85, 1.5])
     with col1:
         pigment = st.selectbox("颜料", ["", *kb.PIGMENTS.keys()], key="pig")
         damage = st.selectbox("病害", list(kb.DAMAGE_RULES.keys()), key="dmg")
@@ -649,7 +641,7 @@ elif view == "material":
         "伍 · 材质辨识与配材",
         "上传文物照片辨识其材质，再据病害给出修复所需材料与工艺要点。",
     ), unsafe_allow_html=True)
-    col1, col2 = st.columns([1, 1])
+    col1, col2 = st.columns([0.85, 1.5])
 
     with col1:
         st.markdown("**一、上传照片识别材质**")

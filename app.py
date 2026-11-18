@@ -187,6 +187,21 @@ div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker.n5):not(:has(div[dat
 @media (max-width: 700px) {{
     .gf-result-panel {{ grid-template-columns: 1fr !important; }}
 }}
+/* 风格候选卡片横向并排，窄屏回退单列 */
+.gf-sec-wide {{ grid-column: 1 / -1 !important; }}
+.gf-style-list {{
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)) !important;
+    gap: 10px 14px !important; align-items: start !important;
+}}
+.gf-style-item {{
+    box-sizing: border-box !important; padding: 10px 12px !important;
+    background: rgba(255,243,220,0.55) !important; border: 1px solid #E0CB95 !important;
+    border-radius: 4px !important;
+}}
+@media (max-width: 700px) {{
+    .gf-style-list {{ grid-template-columns: 1fr !important; }}
+}}
 /* 表头多为英文字段名，改用清晰黑体，避免行楷连笔看不清 */
 .gf-table th {{
     font-family: "Noto Sans CJK SC","Microsoft YaHei","PingFang SC",Arial,sans-serif !important;
@@ -360,11 +375,13 @@ def html_table(data) -> str:
 
 def result_panel(sections) -> str:
     """把 [(小节标题, HTML正文), ...] 渲染成一张整洁的结果卷宗。"""
+    wide_titles = ("对应建筑风格（据色推求）", "风格候选（按匹配度）")
     body = ""
     for title, content in sections:
         if content is None or content == "":
             continue
-        body += (f'<div class="gf-sec">{sec_title(title)}'
+        cls = "gf-sec gf-sec-wide" if title in wide_titles else "gf-sec"
+        body += (f'<div class="{cls}">{sec_title(title)}'
                  f'<div class="gf-sec-body">{content}</div></div>')
     return f'<div class="gf-result-panel">{body}</div>'
 
@@ -627,7 +644,8 @@ elif view == "auth":
                             + note(_esc(str(m.reasoning)))
                             + '</div>'
                         )
-                    sections.append(("对应建筑风格（据色推求）", items))
+                    sections.append(("对应建筑风格（据色推求）",
+                                     f'<div class="gf-style-list">{items}</div>'))
                 st.markdown(result_panel(sections), unsafe_allow_html=True)
             except Exception as e:
                 st.error(f"计算失败：{e}")
@@ -753,7 +771,8 @@ elif view == "style":
                         + '</div>'
                     )
                 st.markdown(
-                    result_panel([("风格候选（按匹配度）", items)]),
+                    result_panel([("风格候选（按匹配度）",
+                                   f'<div class="gf-style-list">{items}</div>')]),
                     unsafe_allow_html=True,
                 )
             except Exception as e:

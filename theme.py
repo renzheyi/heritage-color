@@ -413,8 +413,21 @@ div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker.n5):not(:has(div[dat
 .gf-table tr:nth-child(even) td { background: rgba(212,175,55,0.06); }
 .gf-table tr:hover td { background: rgba(196,50,43,0.07); }
 .gf-note { font-family: var(--gf-song); font-size: 13px; line-height: 1.8; color: #6E5C42; background: rgba(212,175,55,0.07); border-left: 2px solid #D4AF37; padding: 6px 10px; margin: 4px 0 8px; }
-.gf-style-item { padding: 6px 0 10px; border-bottom: 1px dotted #E6D6A8; }
-.gf-style-item:last-child { border-bottom: none; }
+/* 风格候选横向并排：宽度足够时多个小卡并排一行，窄屏自动回退单列 */
+.gf-sec-wide { grid-column: 1 / -1; }
+.gf-style-list {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 10px 14px; align-items: start;
+}
+.gf-style-item {
+    box-sizing: border-box; padding: 10px 12px;
+    background: rgba(255,243,220,0.55); border: 1px solid #E0CB95;
+    border-radius: 4px;
+}
+.gf-style-item:last-child { border-bottom: 1px solid #E0CB95; }
+@media (max-width: 700px) {
+    .gf-style-list { grid-template-columns: 1fr; }
+}
 .gf-step-line { display: flex; gap: 10px; align-items: flex-start; padding: 4px 0; line-height: 1.7; }
 .gf-step-no { flex: 0 0 22px; height: 22px; line-height: 22px; text-align: center; background: #C4322B; color: #FFF3DC; border-radius: 2px; font-family: var(--gf-li); font-size: 12px; }
 .gf-risk { font-family: var(--gf-song); font-size: 13px; line-height: 1.75; color: #A82821; background: rgba(196,50,43,0.08); border-left: 3px solid #C4322B; padding: 8px 10px; margin: 4px 0 8px; }

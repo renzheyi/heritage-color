@@ -178,6 +178,15 @@ div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker.n5):not(:has(div[dat
 }}
 .gf-nav-num {{ background: #C4322B !important; border-color: #8E1F1A !important; }}
 .gf-nav-title {{ color: #8E1F1A !important; }}
+/* 推演/考证结果横向并排，窄屏才回退单列 */
+.gf-result-panel {{
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
+    gap: 12px 16px !important; align-items: start !important;
+}}
+@media (max-width: 700px) {{
+    .gf-result-panel {{ grid-template-columns: 1fr !important; }}
+}}
 /* 表头多为英文字段名，改用清晰黑体，避免行楷连笔看不清 */
 .gf-table th {{
     font-family: "Noto Sans CJK SC","Microsoft YaHei","PingFang SC",Arial,sans-serif !important;

@@ -393,8 +393,8 @@ div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker.n5):not(:has(div[dat
     background-image:
         url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'><path d='M0 12 L12 0 M28 40 L40 28 M0 28 L12 40 M28 0 L40 12' stroke='%23D4AF37' stroke-opacity='0.18' stroke-width='1' fill='none'/></svg>");
     transition: box-shadow .28s, border-left-color .28s, transform .28s;
-    /* 横向排列：每个小节成为一张卡片，自动换行铺开 */
-    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+    /* 横向排列：每个小节成为一张卡片，宽度足够时自动并排 */
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 12px 16px; align-items: start;
 }
 .gf-result-panel:hover {
@@ -402,8 +402,8 @@ div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker.n5):not(:has(div[dat
     box-shadow: 0 4px 16px rgba(90,70,40,0.14), inset 0 0 24px rgba(212,175,55,0.08);
     transform: translateX(3px);
 }
-/* 窄结果列或手机端退回单列 */
-@media (max-width: 1100px) {
+/* 窄屏或手机端才退回单列，桌面端保持横向并排 */
+@media (max-width: 700px) {
     .gf-result-panel { grid-template-columns: 1fr; }
 }
 .gf-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 2px 0; }

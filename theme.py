@@ -28,15 +28,17 @@ FONT_CSS = """
 GUOFENG_CSS = """
 <style>
 """ + FONT_CSS + """
-/* ============ 1. 全局：虚化古建筑衬底 + 宣纸蒙版 + 万字回纹 ============ */
+/* ============ 1. 全局：描边古建筑 + 万字回纹花纹 衬底 ============ */
+/* 背景图 bg_arch.jpg 已烘焙：网络古建筑照片描边抠主体 + 虚化 + 方框回纹花纹。
+   这里再用一层极淡 SVG 回纹点缀，蒙版压得很低，让描边建筑隐约可见而不喧宾夺主。 */
 [data-testid="stAppViewContainer"] {
     background-color: #F4ECD8;
     background-image:
-        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'><path d='M8 8 H40 V40 H8 V8 M16 16 H32 V32 H16 Z M24 8 V16 M24 32 V40 M8 24 H16 M32 24 H40' fill='none' stroke='%23B08D4F' stroke-opacity='0.10' stroke-width='1'/></svg>"),
-        linear-gradient(rgba(244,236,216,0.93), rgba(244,236,216,0.90)),
+        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 56 56'><path d='M8 8 H47 V47 H8 V8 M15 15 H40 V40 H15 Z M24 8 V15 M24 40 V47 M8 24 H15 M40 24 H47 M27 27 H33 V33 H27 Z' fill='none' stroke='%23B08D4F' stroke-opacity='0.07' stroke-width='1'/></svg>"),
+        linear-gradient(rgba(244,236,216,0.30), rgba(244,236,216,0.24)),
         url("data:image/jpeg;base64,__BG_URI__");
-    background-size: 48px 48px, cover, cover;
-    background-position: center, center, center bottom;
+    background-size: 56px 56px, cover, cover;
+    background-position: center, center, center center;
     background-attachment: fixed, fixed, fixed;
     background-repeat: repeat, no-repeat, no-repeat;
 }
@@ -154,6 +156,11 @@ h1, h2, h3, [data-testid="stHeader"] { color: #6E2B23 !important; font-family: v
     letter-spacing: 0;
 }
 .gf-card-desc { font-family: var(--gf-song); font-size: 13px; color: #7A6A50; margin-bottom: 12px; }
+/* 模块页卡片上的古风小图标 */
+.gf-card-icon {
+    float: right; width: 40px; height: 40px; object-fit: contain; margin: -2px 0 0 10px;
+    filter: sepia(0.3) saturate(0.8) drop-shadow(0 1px 2px rgba(90,70,40,0.22));
+}
 
 /* ============ 5. 门牌方块：四角云纹 + 回纹冠 + 编号印（楷/隶） ============ */
 .gf-nav-card {
@@ -200,6 +207,19 @@ h1, h2, h3, [data-testid="stHeader"] { color: #6E2B23 !important; font-family: v
     letter-spacing: 3px; margin-bottom: 6px;
 }
 .gf-nav-desc { font-family: var(--gf-song); font-size: 12.5px; color: #7A6A50; line-height: 1.6; }
+/* 门牌上的古风小图像（网络检索的 emoji 图标） */
+.gf-nav-icon {
+    position: absolute; right: 12px; top: 12px;
+    width: 34px; height: 34px; object-fit: contain;
+    opacity: 0.92; filter: sepia(0.28) saturate(0.85) drop-shadow(0 1px 2px rgba(90,70,40,0.25));
+    transition: transform .3s cubic-bezier(.34,1.56,.64,1), filter .3s;
+    pointer-events: none;
+}
+.gf-nav-card:hover .gf-nav-icon { transform: rotate(-12deg) scale(1.18); filter: sepia(0.12) saturate(1.05) drop-shadow(0 2px 4px rgba(158,51,41,0.35)); }
+/* 页眉 / 标题旁的小图标 */
+.gf-inline-icon { width: 30px; height: 30px; vertical-align: middle; object-fit: contain; filter: sepia(0.3) saturate(0.8); margin: 0 3px; }
+.gf-icon-strip { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 2px 0 6px; }
+.gf-icon-strip img { width: 26px; height: 26px; object-fit: contain; opacity: 0.8; filter: sepia(0.35) saturate(0.7); }
 
 /* 鼠标触及门牌：上浮 + 金边发光 + 流光扫过 + 编号/星纹轻转 */
 .gf-nav-card { transition: transform .28s cubic-bezier(.34,1.56,.64,1), box-shadow .28s, border-color .28s; }
@@ -240,6 +260,20 @@ h1, h2, h3, [data-testid="stHeader"] { color: #6E2B23 !important; font-family: v
     box-shadow: 0 0 0 6px rgba(176,141,79,0.10), inset 0 0 0 6px rgba(158,51,41,0.07);
     animation: gfSpin 26s linear infinite;
 }
+/* 中心球体外再套一圈更大的虚线轨道，强化"五门拱卫"的环绕感 */
+.gf-orbit-wrap { position: relative; }
+.gf-orbit-wrap::before {
+    content: ""; position: absolute; left: 50%; top: 50%;
+    width: 330px; height: 330px; border-radius: 50%;
+    border: 2px dashed rgba(176,141,79,0.42);
+    box-shadow: inset 0 0 0 1px rgba(158,51,41,0.06);
+    transform: translate(-50%, -50%); pointer-events: none;
+}
+.gf-orbit-wrap::after {
+    content: "❖"; position: absolute; left: 50%; top: calc(50% - 175px);
+    transform: translateX(-50%); color: #9E3329; font-size: 17px;
+    background: rgba(244,236,216,0.85); padding: 0 6px; pointer-events: none;
+}
 .gf-orbit-ring::before {
     content: ""; position: absolute; inset: 8px; border-radius: 50%;
     border: 1px dashed rgba(158,51,41,0.38);
@@ -249,13 +283,28 @@ h1, h2, h3, [data-testid="stHeader"] { color: #6E2B23 !important; font-family: v
     color: #9E3329; font-size: 16px; background: #F4ECD8; padding: 0 4px;
 }
 .gf-orbit-core {
-    width: 98px; height: 98px; border-radius: 50%;
-    background: radial-gradient(circle at 35% 30%, #A83B2E, #7A2E24 72%);
+    width: 118px; height: 118px; border-radius: 50%;
+    background:
+        radial-gradient(circle at 33% 28%, rgba(255,240,215,0.55) 0%, rgba(255,240,215,0) 42%),
+        radial-gradient(circle at 66% 74%, rgba(60,18,14,0.45) 0%, rgba(60,18,14,0) 55%),
+        radial-gradient(circle at 38% 32%, #B74738, #8E2E24 60%, #6E2119 100%);
     color: #F7EFE0; display: flex; align-items: center; justify-content: center;
-    flex-direction: column; font-family: var(--gf-li); font-size: 20px;
-    letter-spacing: 2px; line-height: 1.35; text-align: center;
-    border: 3px double #F0DFB8; box-shadow: 2px 4px 12px rgba(0,0,0,0.25);
+    flex-direction: column; font-family: var(--gf-li); font-size: 24px; font-weight: 700;
+    letter-spacing: 3px; line-height: 1.35; text-align: center;
+    border: 3px double #F0DFB8;
+    box-shadow:
+        inset -8px -10px 22px rgba(50,14,10,0.55),
+        inset 6px 6px 18px rgba(255,235,205,0.28),
+        0 8px 24px rgba(90,30,22,0.42), 0 0 0 5px rgba(176,141,79,0.18);
     z-index: 1;
+    text-shadow: 0 2px 3px rgba(50,14,10,0.5);
+}
+/* 球体高光点 */
+.gf-orbit-core::before {
+    content: ""; position: absolute; left: 26px; top: 20px;
+    width: 30px; height: 18px; border-radius: 50%;
+    background: radial-gradient(ellipse, rgba(255,248,232,0.7), rgba(255,248,232,0) 70%);
+    transform: rotate(-28deg); pointer-events: none;
 }
 .gf-orbit-core small { font-family: var(--gf-song); font-size: 10px; letter-spacing: 2px; opacity: 0.85; }
 .gf-orbit-center { transition: transform .3s cubic-bezier(.34,1.56,.64,1); }

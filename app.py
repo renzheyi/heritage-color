@@ -104,10 +104,15 @@ def banner(image_name: str, title: str, subtitle: str = ""):
         )
 
 
-def card_start(title: str, desc: str = "") -> str:
+def card_start(title: str, desc: str = "", icon: str = "") -> str:
     d = f'<div class="gf-card-desc">{desc}</div>' if desc else ""
+    ic = ""
+    if icon:
+        uri = _icon_uri(icon)
+        if uri:
+            ic = f'<img class="gf-card-icon" src="{uri}" alt="">'
     return (f'<div class="gf-ornate-card gf-enter">'
-            f'<div class="gf-card-title">{title}</div>{d}')
+            f'{ic}<div class="gf-card-title">{title}</div>{d}')
 
 
 def swatch_html(hex_color: str, label: str = "") -> str:
@@ -115,12 +120,28 @@ def swatch_html(hex_color: str, label: str = "") -> str:
             f'<span class="gf-swatch-label">{label or hex_color}</span>')
 
 
-def nav_block(num: str, title: str, desc: str, btn_key: str):
-    """渲染一个导航方块，返回是否被点击。整块视觉即一个门牌，按钮为其入口。"""
+def _icon_uri(name: str) -> str:
+    """把网络检索得到的古风小图标转成 data URI，云端无需外网。"""
+    path = os.path.join(ASSETS, "emoji", name + ".png")
+    if not os.path.exists(path):
+        return ""
+    import base64
+    with open(path, "rb") as f:
+        return "data:image/png;base64," + base64.b64encode(f.read()).decode()
+
+
+def nav_block(num: str, title: str, desc: str, btn_key: str, icon: str = ""):
+    """渲染一个导航方块（含真实 st.button），返回是否被点击。整块视觉即一个门牌。"""
+    icon_html = ""
+    if icon:
+        uri = _icon_uri(icon)
+        if uri:
+            icon_html = f'<img class="gf-nav-icon" src="{uri}" alt="">'
     with st.container():
         st.markdown(
             f'<div class="gf-nav-card">'
             f'<span class="gf-card-glow"></span>'
+            f'{icon_html}'
             f'<div class="gf-nav-num">{num}</div>'
             f'<div class="gf-nav-title">{title}</div>'
             f'<div class="gf-nav-desc">{desc}</div>'
@@ -281,11 +302,19 @@ st.markdown(
     unsafe_allow_html=True,
 )
 cloud_divider()
+_hdr_l, _hdr_r = _icon_uri("lantern"), _icon_uri("dragon")
+_hdr_icons = (
+    f'<img class="gf-inline-icon" src="{_hdr_l}" alt="">'
+    if _hdr_l else ""
+) + (
+    f'<img class="gf-inline-icon" src="{_hdr_r}" alt="">'
+    if _hdr_r else ""
+)
 st.markdown(
-    '<div class="gf-subtitle">'
-    '<span class="gf-wadang">考色</span>'
-    '&nbsp;&nbsp;以色彩证源流 · 以颜料推古法 · 以风格辨建制 · 以材质续华章&nbsp;&nbsp;'
-    '<span class="gf-wadang">存真</span>'
+    f'<div class="gf-subtitle">'
+    f'{_hdr_icons}'
+    '&nbsp;以色彩证源流 · 以颜料推古法 · 以风格辨建制 · 以材质续华章&nbsp;'
+    f'{_hdr_icons}'
     '</div>',
     unsafe_allow_html=True,
 )
@@ -310,38 +339,51 @@ if view == "home":
         'letter-spacing:2px;margin:6px 0 6px;">择一门而入，探文物色彩之奥</div>',
         unsafe_allow_html=True,
     )
-    # 五门环形：五个门牌均匀分布于圆周，中心为旋转徽记。
-    # 用纯 HTML + CSS 绝对定位实现真正的"绕圈"，点击走 ?view= 链接路由。
-    _nodes = [
-        ("壹", "色彩考证", "参酌现存残留色、文献与朝代，推求文物彩画之初色。", "auth", "n1"),
-        ("贰", "颜料推演", "由一色反求所用颜料与调配之法，青绿朱黄，皆溯其源。", "infer", "n2"),
-        ("叁", "建筑风格识别", "由色彩与用色制度，辨识和玺、旋子、苏式、敦煌等彩画风格。", "style", "n3"),
-        ("肆", "修复决策", "察颜料之性、病害之由、环境之宜，出最小干预之修复策。", "restore", "n4"),
-        ("伍", "材质辨识与配材", "上传照片辨识木石金属等材质，据病害给出修复所需材料。", "material", "n5"),
-    ]
-    _cards = "".join(
-        f'<a class="gf-ring-node {pos}" href="?view={v}" target="_self">'
-        f'<div class="gf-nav-card">'
-        f'<span class="gf-card-glow"></span>'
-        f'<div class="gf-nav-num">{num}</div>'
-        f'<div class="gf-nav-title">{title}</div>'
-        f'<div class="gf-nav-desc">{desc}</div>'
-        f'</div></a>'
-        for num, title, desc, v, pos in _nodes
-    )
-    st.markdown(
-        '<div class="gf-ring-stage">'
-        '<div class="gf-ring-track"></div>'
-        '<div class="gf-ring-track-inner"></div>'
-        + _cards +
-        '<div class="gf-ring-center">'
-        '<div class="gf-orbit-center">'
-        '<div class="gf-orbit-ring"></div>'
-        '<div class="gf-orbit-core">考色<small>五门拱卫</small></div>'
-        '</div></div>'
-        '</div>',
-        unsafe_allow_html=True,
-    )
+    # 五门环绕中心「考色」球体：保留真实 st.button 的门牌形式，
+    # 以 3×3 网格环绕排布（上壹 / 左伍-中心球-右贰 / 左肆-右叁），
+    # 任何 CSS 缓存状态下按钮都可见可点，不会退化成蓝色下划线链接。
+    # —— 上：壹 色彩考证 ——
+    _, c1, _ = st.columns([1, 1.15, 1], gap="large")
+    with c1:
+        if nav_block("壹", "色彩考证",
+                     "参酌现存残留色、文献与朝代，推求文物彩画之初色。",
+                     "go_auth", icon="palette"):
+            goto("auth")
+
+    # —— 中：伍 · 考色球体 · 贰 ——
+    m1, m2, m3 = st.columns([1, 1.15, 1], gap="large")
+    with m1:
+        if nav_block("伍", "材质辨识与配材",
+                     "上传照片辨识木石金属等材质，据病害给出修复所需材料。",
+                     "go_material", icon="rock"):
+            goto("material")
+    with m2:
+        st.markdown(
+            '<div class="gf-orbit-wrap">'
+            '<div class="gf-orbit-center" style="margin:14px auto 0;">'
+            '<div class="gf-orbit-ring"></div>'
+            '<div class="gf-orbit-core">考色<small>五门拱卫</small></div>'
+            '</div></div>',
+            unsafe_allow_html=True,
+        )
+    with m3:
+        if nav_block("贰", "颜料推演",
+                     "由一色反求所用颜料与调配之法，青绿朱黄，皆溯其源。",
+                     "go_infer", icon="brush"):
+            goto("infer")
+
+    # —— 下：肆 修复决策 · 叁 建筑风格识别 ——
+    b1, b2, b3 = st.columns([1, 1.15, 1], gap="large")
+    with b1:
+        if nav_block("肆", "修复决策",
+                     "察颜料之性、病害之由、环境之宜，出最小干预之修复策。",
+                     "go_restore", icon="scroll"):
+            goto("restore")
+    with b3:
+        if nav_block("叁", "建筑风格识别",
+                     "由色彩与用色制度，辨识和玺、旋子、苏式、敦煌等彩画风格。",
+                     "go_style", icon="castle"):
+            goto("style")
 
     meander()
     st.markdown(
@@ -362,6 +404,7 @@ elif view == "auth":
     st.markdown(card_start(
         "壹 · 色彩考证",
         "参酌现存残留色、文献记载与朝代风格，推求文物彩画之初色。",
+        icon="palette",
     ), unsafe_allow_html=True)
     col1, col2 = st.columns([0.85, 1.5])
     with col1:
@@ -463,6 +506,7 @@ elif view == "infer":
     st.markdown(card_start(
         "贰 · 颜料推演",
         "由一色反求其所用颜料与调配之法，青绿朱黄，皆可溯其源。",
+        icon="brush",
     ), unsafe_allow_html=True)
     col1, col2 = st.columns([0.85, 1.5])
     with col1:
@@ -510,6 +554,7 @@ elif view == "style":
     st.markdown(card_start(
         "叁 · 建筑风格识别",
         "由色彩与用色制度，辨识其所属古建筑彩画风格：和玺、旋子、苏式、敦煌壁画等。",
+        icon="castle",
     ), unsafe_allow_html=True)
     col1, col2 = st.columns([0.85, 1.5])
     with col1:
@@ -588,6 +633,7 @@ elif view == "restore":
     st.markdown(card_start(
         "肆 · 修复决策",
         "察颜料之性、病害之由、环境之宜，出修复之策，守最小干预之则。",
+        icon="scroll",
     ), unsafe_allow_html=True)
     col1, col2 = st.columns([0.85, 1.5])
     with col1:
@@ -640,6 +686,7 @@ elif view == "material":
     st.markdown(card_start(
         "伍 · 材质辨识与配材",
         "上传文物照片辨识其材质，再据病害给出修复所需材料与工艺要点。",
+        icon="rock",
     ), unsafe_allow_html=True)
     col1, col2 = st.columns([0.85, 1.5])
 

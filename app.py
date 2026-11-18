@@ -544,7 +544,7 @@ elif view == "auth":
         "参酌现存残留色、文献记载与朝代风格，推求文物彩画之初色。",
         icon="palette",
     ), unsafe_allow_html=True)
-    col1, col2 = st.columns([0.85, 1.5])
+    _in_left, col1, _in_right = st.columns([1, 2, 1])
     with col1:
         st.markdown("**一、现存残留色**")
         if "observed" not in st.session_state:
@@ -594,7 +594,7 @@ elif view == "auth":
         ai_polish_block("doc", dynasty_key="dyn1")
         top_k = st.slider("候选颜料数量", 1, 5, 3, key="topk1")
         run1 = st.button("开始考证", type="primary", key="run1")
-    with col2:
+    with st.container():
         st.markdown('<div class="gf-result-label">推断结果</div>', unsafe_allow_html=True)
         if run1:
             try:
@@ -632,7 +632,7 @@ elif view == "auth":
             except Exception as e:
                 st.error(f"计算失败：{e}")
         else:
-            st.info("填写左侧参数后点击「开始考证」")
+            st.info("填写上方参数后点击「开始考证」")
     st.markdown("</div>", unsafe_allow_html=True)
 
 
@@ -646,7 +646,7 @@ elif view == "infer":
         "由一色反求其所用颜料与调配之法，青绿朱黄，皆可溯其源。",
         icon="brush",
     ), unsafe_allow_html=True)
-    col1, col2 = st.columns([0.85, 1.5])
+    _in_left, col1, _in_right = st.columns([1, 2, 1])
     with col1:
         target = st.color_picker("目标颜色", "#2E9070", key="target")
         dy_opts2, dy_idx2 = dynasty_options("清")
@@ -654,7 +654,7 @@ elif view == "infer":
         allow_mix = st.checkbox("允许混合颜料配方", value=True)
         top_n = st.slider("候选配方数", 1, 5, 3, key="topn2")
         run2 = st.button("开始推演", type="primary", key="run2")
-    with col2:
+    with st.container():
         st.markdown('<div class="gf-result-label">推演结果</div>', unsafe_allow_html=True)
         if run2:
             try:
@@ -680,7 +680,7 @@ elif view == "infer":
             except Exception as e:
                 st.error(f"计算失败：{e}")
         else:
-            st.info("填写左侧参数后点击「开始推演」")
+            st.info("填写上方参数后点击「开始推演」")
     st.markdown("</div>", unsafe_allow_html=True)
 
 
@@ -694,7 +694,7 @@ elif view == "style":
         "由色彩与用色制度，辨识其所属古建筑彩画风格：和玺、旋子、苏式、敦煌壁画等。",
         icon="castle",
     ), unsafe_allow_html=True)
-    col1, col2 = st.columns([0.85, 1.5])
+    _in_left, col1, _in_right = st.columns([1, 2, 1])
     with col1:
         if "style_color" not in st.session_state:
             st.session_state["style_color"] = "#1B6FA8"
@@ -731,7 +731,7 @@ elif view == "style":
             "已知颜料（可选，逗号分隔）", "石青,石绿",
             help="如 石青,石绿,朱砂；留空则仅凭色彩与朝代判断")
         run3 = st.button("识别风格", type="primary", key="run3s")
-    with col2:
+    with st.container():
         st.markdown('<div class="gf-result-label">识别结果</div>', unsafe_allow_html=True)
         if run3:
             try:
@@ -759,7 +759,7 @@ elif view == "style":
             except Exception as e:
                 st.error(f"识别失败：{e}")
         else:
-            st.info("填写左侧参数后点击「识别风格」")
+            st.info("填写上方参数后点击「识别风格」")
     st.markdown("</div>", unsafe_allow_html=True)
 
 
@@ -773,14 +773,14 @@ elif view == "restore":
         "察颜料之性、病害之由、环境之宜，出修复之策，守最小干预之则。",
         icon="scroll",
     ), unsafe_allow_html=True)
-    col1, col2 = st.columns([0.85, 1.5])
+    _in_left, col1, _in_right = st.columns([1, 2, 1])
     with col1:
         pigment = st.selectbox("颜料", ["", *kb.PIGMENTS.keys()], key="pig")
         damage = st.selectbox("病害", list(kb.DAMAGE_RULES.keys()), key="dmg")
         hum = st.text_input("当前湿度", "75% RH")
         lux = st.text_input("当前照度", "")
         run4 = st.button("生成方案", type="primary", key="run4")
-    with col2:
+    with st.container():
         st.markdown('<div class="gf-result-label">修复方案</div>', unsafe_allow_html=True)
         if run4:
             try:
@@ -812,7 +812,7 @@ elif view == "restore":
             except Exception as e:
                 st.error(f"计算失败：{e}")
         else:
-            st.info("填写左侧参数后点击「生成方案」")
+            st.info("填写上方参数后点击「生成方案」")
     st.markdown("</div>", unsafe_allow_html=True)
 
 
@@ -826,7 +826,7 @@ elif view == "material":
         "上传文物照片辨识其材质，再据病害给出修复所需材料与工艺要点。",
         icon="rock",
     ), unsafe_allow_html=True)
-    col1, col2 = st.columns([0.85, 1.5])
+    _in_left, col1, _in_right = st.columns([1, 2, 1])
 
     with col1:
         st.markdown("**一、上传照片识别材质**")
@@ -873,12 +873,12 @@ elif view == "material":
         lux2 = st.text_input("当前照度", "", key="mat_lux")
         run5 = st.button("生成修复配材方案", type="primary", key="run5")
 
-    with col2:
+    with st.container():
         st.markdown('<div class="gf-result-label">识别与配材结果</div>',
                     unsafe_allow_html=True)
         if run5:
             if not mat_name:
-                st.warning("请先上传照片识别材质，或在左侧下拉框选择材质。")
+                st.warning("请先上传照片识别材质，或在上方下拉框选择材质。")
             else:
                 try:
                     env = {}
@@ -914,11 +914,11 @@ elif view == "material":
                     "图像辨识结论",
                     badge(_esc(str(detected[0])), "teal")
                     + note("照片最可能为上述材质；材质与病害已自动填入左侧，"
-                           "可直接生成配材方案。如需调整，可在左侧重新选择后生成。"),
+                           "可直接生成配材方案。如需调整，可在上方重新选择后生成。"),
                 )]),
                 unsafe_allow_html=True,
             )
         else:
-            st.info("上传照片或在左侧选定材质与病害后点击「生成修复配材方案」")
+            st.info("上传照片或在上方选定材质与病害后点击「生成修复配材方案」")
     st.markdown("</div>", unsafe_allow_html=True)
     st.markdown('<div class="gf-bottom-rule"></div>', unsafe_allow_html=True)

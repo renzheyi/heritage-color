@@ -12,7 +12,7 @@ import streamlit as st
 
 # 注意：set_page_config 必须是第一个 Streamlit 命令，放在任何 st.* 之前。
 st.set_page_config(
-    page_title="文物色彩考证与修复辅助系统",
+    page_title="考色 KAOSE · 文物色彩智能考证平台",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
@@ -404,6 +404,458 @@ div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker.n5):not(:has(div[dat
 """
 st.markdown(_CRITICAL_CSS, unsafe_allow_html=True)
 
+# 商业化展示层样式：与 _CRITICAL_CSS 一样随 app.py 注入，
+# 不依赖 theme.py 是否刷新，保证任何部署缓存状态下品牌视觉一致。
+_BIZ_CSS = """
+<style>
+:root{
+  --biz-sans: "Noto Sans CJK SC","Microsoft YaHei","PingFang SC","Hiragino Sans GB",Arial,sans-serif;
+  --biz-red:#C4322B; --biz-red-deep:#8E1F1A; --biz-gold:#D4AF37;
+  --biz-ink:#2B1D16; --biz-ink-deep:#231812; --biz-paper:#FDF8EC;
+  --biz-mute:#6E5C42; --biz-line:rgba(168,128,31,.30);
+}
+.biz-nav{
+  position:relative; width:100%; margin:0 0 18px;
+  background:linear-gradient(100deg,#231812 0%,#3A2018 58%,#5A231C 100%);
+  border:1px solid var(--biz-gold); border-radius:6px;
+  box-shadow:0 6px 20px rgba(43,29,22,.22);
+}
+.biz-nav::before{
+  content:""; position:absolute; inset:4px; border:1px solid rgba(212,175,55,.22);
+  border-radius:3px; pointer-events:none;
+}
+.biz-nav-inner{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:18px; flex-wrap:wrap; padding:12px 20px;
+}
+.biz-nav-brand{display:flex; align-items:center; gap:10px; white-space:nowrap;}
+.biz-seal{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:34px; height:34px; flex:0 0 34px;
+  background:var(--biz-red); color:#FFF3D6;
+  font-family:var(--gf-li),"STLiti","LiSu",serif !important;
+  font-size:21px !important; font-weight:700;
+  border:1px solid var(--biz-gold); border-radius:4px;
+  box-shadow:inset 0 0 0 2px rgba(255,243,214,.25);
+}
+.biz-nav-name{
+  font-family:var(--biz-sans) !important; font-size:17px !important;
+  font-weight:700 !important; color:#F7EEDC !important; letter-spacing:2px !important;
+}
+.biz-nav-name b{font-family:Georgia,serif !important; font-size:13px !important; color:var(--biz-gold) !important; letter-spacing:1px;}
+.biz-nav-tag{
+  font-family:var(--biz-sans) !important; font-size:11px !important;
+  color:#E8C86A !important; border-left:1px solid rgba(212,175,55,.5);
+  padding-left:12px; letter-spacing:1px;
+}
+.biz-nav-links{display:flex; align-items:center; gap:4px; flex-wrap:wrap;}
+.biz-nav-link{
+  font-family:var(--biz-sans) !important; font-size:13px !important;
+  font-weight:600 !important; color:#EADFC6 !important;
+  text-decoration:none !important; padding:7px 12px; border-radius:3px;
+  letter-spacing:1px; transition:background .2s,color .2s;
+}
+.biz-nav-link:hover,.biz-nav-link.is-active{background:rgba(212,175,55,.18) !important; color:#FFF0C0 !important;}
+
+/* ===== 首屏 ===== */
+.biz-hero{
+  background:linear-gradient(135deg,rgba(253,248,236,.94),rgba(247,238,220,.72));
+  border:1px solid var(--biz-line); border-left:4px solid var(--biz-red);
+  border-radius:6px; padding:28px 30px 24px; margin:0 0 14px;
+  box-shadow:0 8px 26px rgba(43,29,22,.10);
+}
+.biz-eyebrow{
+  display:flex; align-items:center; gap:9px;
+  font-family:Georgia,var(--biz-sans) !important; font-size:11px !important;
+  font-weight:700 !important; letter-spacing:2.4px !important;
+  color:var(--biz-red-deep) !important; margin:0 0 12px;
+}
+.biz-eyebrow i{display:inline-block; width:22px; height:2px; background:var(--biz-gold);}
+.biz-h1{
+  font-family:var(--biz-sans) !important; font-size:38px !important;
+  font-weight:800 !important; line-height:1.25 !important;
+  letter-spacing:4px !important; color:var(--biz-red-deep) !important;
+  margin:0 0 6px !important; text-shadow:1px 1px 0 rgba(255,255,255,.7);
+}
+.biz-hero-en{
+  font-family:Georgia,serif !important; font-size:12px !important;
+  letter-spacing:1.6px !important;   color:#A8801F !important; margin:0 0 16px;
+}
+.biz-lead{
+  font-family:var(--biz-sans) !important; font-size:14px !important;
+  line-height:1.95 !important; color:#4A3B2C !important; margin:0 0 14px;
+}
+.biz-lead strong{color:var(--biz-red-deep) !important; font-weight:700 !important;}
+.biz-hero-points{list-style:none; margin:0 0 14px; padding:0;}
+.biz-hero-points li{
+  font-family:var(--biz-sans) !important; font-size:13px !important;
+  line-height:1.8 !important; color:#4A3B2C !important; margin:5px 0;
+  display:flex; align-items:baseline; gap:10px;
+}
+.biz-hero-points li span{
+  font-family:Georgia,serif !important; font-size:12px !important;
+  color:#FFF !important; background:var(--biz-red); border-radius:2px;
+  padding:1px 6px; flex:0 0 auto; font-weight:700;
+}
+.biz-hero-note{
+  font-family:var(--biz-sans) !important; font-size:11.5px !important;
+  color:var(--biz-mute) !important; border-top:1px dashed var(--biz-line);
+  padding-top:10px; letter-spacing:.5px;
+}
+.biz-metrics-wrap{
+  background:var(--biz-ink-deep); border:1px solid var(--biz-gold);
+  border-radius:6px; padding:18px 18px 14px; margin:0 0 14px;
+  box-shadow:0 8px 26px rgba(43,29,22,.24); height:calc(100% - 14px);
+}
+.biz-metrics-head{
+  display:flex; align-items:baseline; justify-content:space-between;
+  border-bottom:1px solid rgba(212,175,55,.35); padding-bottom:9px; margin-bottom:14px;
+}
+.biz-metrics-head span{font-family:Georgia,serif !important; font-size:10px !important; letter-spacing:1.8px !important; color:#C9A94E !important;}
+.biz-metrics-head b{font-family:var(--biz-sans) !important; font-size:14px !important; color:#F7EEDC !important; letter-spacing:1px !important;}
+.biz-metrics{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+.biz-metric{
+  background:rgba(212,175,55,.07); border:1px solid rgba(212,175,55,.26);
+  border-radius:4px; padding:12px 10px; text-align:center;
+}
+.biz-metric b{
+  display:block; font-family:Georgia,serif !important; font-size:27px !important;
+  color:#F3D98A !important; line-height:1.1 !important; letter-spacing:1px !important;
+}
+.biz-metric-label{
+  display:block; font-family:var(--biz-sans) !important; font-size:12px !important;
+  font-weight:700 !important; color:#F7EEDC !important; margin-top:5px;
+}
+.biz-metric-sub{
+  display:block; font-family:var(--biz-sans) !important; font-size:10.5px !important;
+  color:#B6A585 !important; margin-top:4px; line-height:1.5;
+}
+.biz-metrics-foot{
+  font-family:Georgia,serif !important; font-size:10.5px !important;
+  color:#C9A94E !important; text-align:center; margin:13px 0 4px; letter-spacing:.6px;
+}
+.biz-metrics-disclaimer{
+  font-family:var(--biz-sans) !important; font-size:10px !important;
+  color:#8E8069 !important; text-align:center;
+}
+.biz-trust{
+  display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+  background:rgba(253,248,236,.82); border:1px solid var(--biz-line);
+  border-radius:4px; padding:11px 16px; margin:0 0 16px;
+  font-family:var(--biz-sans) !important; font-size:12.5px !important;
+  color:#4A3B2C !important;
+}
+.biz-trust-label{
+  font-weight:700 !important; color:var(--biz-red-deep) !important;
+  border-right:1px solid var(--biz-line); padding-right:12px; letter-spacing:1px;
+}
+.biz-trust i{width:4px; height:4px; background:var(--biz-gold); border-radius:50%; flex:0 0 4px;}
+.biz-trust-badge{
+  margin-left:auto; background:rgba(196,50,43,.10); color:var(--biz-red-deep) !important;
+  border:1px solid rgba(196,50,43,.30); border-radius:20px;
+  padding:3px 12px; font-size:11px !important; font-weight:700 !important; white-space:nowrap;
+}
+
+/* ===== 通用区块标题 ===== */
+.biz-section-head{margin:30px 0 16px; scroll-margin-top:18px;}
+.biz-section-no{
+  font-family:Georgia,serif !important; font-size:11px !important;
+  letter-spacing:2.2px !important; color:#A8801F !important; font-weight:700;
+}
+.biz-h2{
+  font-family:var(--biz-sans) !important; font-size:25px !important;
+  font-weight:800 !important; color:var(--biz-red-deep) !important;
+  letter-spacing:2px !important; margin:5px 0 6px !important;
+}
+.biz-section-desc{
+  font-family:var(--biz-sans) !important; font-size:13px !important;
+  color:var(--biz-mute) !important; line-height:1.8 !important; margin:0 !important;
+}
+.biz-section-line{height:2px; width:56px; background:linear-gradient(90deg,var(--biz-red),var(--biz-gold)); margin-top:11px; border-radius:2px;}
+
+/* ===== 卡片网格 ===== */
+.biz-grid-4{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:14px;}
+.biz-grid-3{display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:16px;}
+.biz-card{
+  background:var(--biz-paper); border:1px solid var(--biz-line);
+  border-top:3px solid var(--biz-red); border-radius:5px;
+  padding:18px 17px 16px; box-shadow:0 4px 14px rgba(43,29,22,.08);
+  transition:transform .25s ease,box-shadow .25s ease;
+}
+.biz-card:hover{transform:translateY(-5px); box-shadow:0 12px 26px rgba(142,31,26,.18);}
+.biz-card-top{display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;}
+.biz-card-icon{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:34px; height:34px; background:var(--biz-red); color:#FFF3D6;
+  font-family:var(--gf-kai),"KaiTi",serif !important; font-size:19px !important;
+  border-radius:4px; border:1px solid var(--biz-gold);
+}
+.biz-card-no{font-family:Georgia,serif !important; font-size:20px !important; color:#D9C398 !important;}
+.biz-card h3{
+  font-family:var(--biz-sans) !important; font-size:15px !important;
+  font-weight:700 !important; color:var(--biz-ink) !important; margin:0 0 8px !important;
+}
+.biz-card p{
+  font-family:var(--biz-sans) !important; font-size:12.5px !important;
+  line-height:1.8 !important; color:#5C4C39 !important; margin:0 0 12px; min-height:66px;
+}
+.biz-tags{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px;}
+.biz-tag{
+  font-family:var(--biz-sans) !important; font-size:10.5px !important;
+  color:var(--biz-red-deep) !important; background:rgba(196,50,43,.08);
+  border:1px solid rgba(196,50,43,.22); border-radius:2px; padding:3px 7px;
+}
+.biz-card-output{
+  font-family:var(--biz-sans) !important; font-size:11px !important;
+  color:#7A6A50 !important; border-top:1px dashed var(--biz-line); padding-top:10px;
+}
+
+/* ===== 技术壁垒 ===== */
+.biz-moat-wrap{
+  display:grid; grid-template-columns:0.85fr 2fr; gap:18px;
+  background:var(--biz-ink-deep); border:1px solid var(--biz-gold);
+  border-radius:6px; padding:20px; box-shadow:0 8px 26px rgba(43,29,22,.2);
+}
+.biz-moat-intro{border-right:1px solid rgba(212,175,55,.3); padding-right:16px;}
+.biz-moat-intro span{
+  font-family:Georgia,serif !important; font-size:10.5px !important;
+  letter-spacing:2px !important; color:#C9A94E !important;
+}
+.biz-moat-intro p{
+  font-family:var(--biz-sans) !important; font-size:13px !important;
+  line-height:1.95 !important; color:#DCCFB2 !important; margin:12px 0 0;
+}
+.biz-moat-list{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+.biz-moat{display:flex; gap:12px; background:rgba(212,175,55,.06); border:1px solid rgba(212,175,55,.20); border-radius:4px; padding:13px;}
+.biz-moat-no{font-family:Georgia,serif !important; font-size:22px !important; color:#C9A94E !important; flex:0 0 auto;}
+.biz-moat-body h4{
+  font-family:var(--biz-sans) !important; font-size:13.5px !important;
+  font-weight:700 !important; color:#F3D98A !important; margin:0 0 6px !important;
+}
+.biz-moat-spec{
+  font-family:var(--biz-sans) !important; font-size:11px !important;
+  line-height:1.7 !important; color:#B8C7C0 !important;
+}
+.biz-moat-value{
+  font-family:var(--biz-sans) !important; font-size:11px !important;
+  color:#EFE2C4 !important; margin-top:7px; border-left:2px solid var(--biz-gold); padding-left:8px;
+}
+
+/* ===== 服务方案 ===== */
+.biz-plan{
+  position:relative; background:var(--biz-paper); border:1px solid var(--biz-line);
+  border-radius:6px; padding:22px 20px 18px; box-shadow:0 4px 16px rgba(43,29,22,.09);
+  display:flex; flex-direction:column;
+}
+.biz-plan.is-featured{border:2px solid var(--biz-red); box-shadow:0 10px 30px rgba(142,31,26,.20);}
+.biz-plan-badge{
+  position:absolute; top:-12px; right:16px; background:var(--biz-red);
+  color:#FFF3D6 !important; font-family:var(--biz-sans) !important;
+  font-size:11px !important; font-weight:700 !important; letter-spacing:1px;
+  padding:4px 12px; border-radius:20px; border:1px solid var(--biz-gold);
+}
+.biz-plan-en{font-family:Georgia,serif !important; font-size:10.5px !important; letter-spacing:2px !important; color:#A8801F !important;}
+.biz-plan h3{
+  font-family:var(--biz-sans) !important; font-size:19px !important;
+  font-weight:800 !important; color:var(--biz-red-deep) !important; margin:5px 0 3px !important;
+}
+.biz-plan-desc{font-family:var(--biz-sans) !important; font-size:11.5px !important; color:var(--biz-mute) !important; margin-bottom:12px;}
+.biz-plan-price{
+  font-family:Georgia,var(--biz-sans) !important; font-size:26px !important;
+  font-weight:700 !important; color:var(--biz-ink) !important;
+  border-bottom:1px solid var(--biz-line); padding-bottom:12px; margin-bottom:12px;
+}
+.biz-plan-price small{
+  font-family:var(--biz-sans) !important; font-size:11px !important;
+  color:var(--biz-mute) !important; margin-left:8px; font-weight:400 !important;
+}
+.biz-plan-list{list-style:none; margin:0 0 16px; padding:0; flex:1;}
+.biz-plan-list li{
+  font-family:var(--biz-sans) !important; font-size:12px !important;
+  color:#4A3B2C !important; margin:7px 0; display:flex; gap:8px; line-height:1.6;
+}
+.biz-plan-list li span{color:var(--biz-red) !important; font-weight:700 !important;}
+.biz-plan-cta{
+  text-align:center; font-family:var(--biz-sans) !important; font-size:12.5px !important;
+  font-weight:700 !important; color:var(--biz-red-deep) !important;
+  border:1px solid rgba(196,50,43,.4); border-radius:3px; padding:9px;
+  background:rgba(196,50,43,.06); letter-spacing:1px;
+}
+.biz-plan.is-featured .biz-plan-cta{background:var(--biz-red); color:#FFF3D6 !important; border-color:var(--biz-red);}
+.biz-plan-note{
+  font-family:var(--biz-sans) !important; font-size:11px !important;
+  color:#8A7B60 !important; margin-top:12px; line-height:1.7;
+}
+
+/* ===== 合作流程 ===== */
+.biz-process{display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:12px; counter-reset:step;}
+.biz-step{
+  position:relative; background:rgba(253,248,236,.9); border:1px solid var(--biz-line);
+  border-radius:5px; padding:16px 15px 14px;
+}
+.biz-step::after{
+  content:"→"; position:absolute; right:-13px; top:38%; z-index:2;
+  font-family:var(--biz-sans) !important; color:var(--biz-gold) !important;
+  font-size:18px !important; font-weight:700;
+}
+.biz-step:last-child::after{display:none;}
+.biz-step-no{
+  width:28px; height:28px; display:flex; align-items:center; justify-content:center;
+  background:var(--biz-red-deep); color:#FFF3D6; border-radius:50%;
+  font-family:var(--gf-li),"LiSu",serif !important; font-size:14px !important; margin-bottom:10px;
+}
+.biz-step h4{font-family:var(--biz-sans) !important; font-size:14px !important; font-weight:700 !important; color:var(--biz-ink) !important; margin:0 0 6px !important;}
+.biz-step p{font-family:var(--biz-sans) !important; font-size:11.5px !important; line-height:1.75 !important; color:#5C4C39 !important; margin:0;}
+
+/* ===== FAQ ===== */
+.biz-faq{display:grid; gap:9px;}
+.biz-faq-item{
+  background:var(--biz-paper); border:1px solid var(--biz-line);
+  border-radius:4px; overflow:hidden;
+}
+.biz-faq-item summary{
+  font-family:var(--biz-sans) !important; font-size:13.5px !important;
+  font-weight:700 !important; color:var(--biz-ink) !important;
+  padding:13px 16px; cursor:pointer; list-style:none;
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+}
+.biz-faq-item summary::-webkit-details-marker{display:none;}
+.biz-faq-item[open] summary{color:var(--biz-red-deep) !important; border-bottom:1px solid var(--biz-line);}
+.biz-faq-plus{font-size:16px !important; color:var(--biz-red) !important; flex:0 0 auto;}
+.biz-faq-item[open] .biz-faq-plus{transform:rotate(45deg);}
+.biz-faq-body{
+  font-family:var(--biz-sans) !important; font-size:12.5px !important;
+  line-height:1.9 !important; color:#4A3B2C !important; padding:12px 16px 15px;
+  background:rgba(247,238,220,.55);
+}
+
+/* ===== CTA 与企业页脚 ===== */
+.biz-cta{
+  margin:28px 0 18px; border-radius:6px; border:1px solid var(--biz-gold);
+  background:linear-gradient(110deg,#231812,#5A231C 62%,#8E1F1A);
+  box-shadow:0 8px 26px rgba(43,29,22,.22); overflow:hidden;
+}
+.biz-cta-inner{display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap; padding:24px 28px;}
+.biz-cta-en{font-family:Georgia,serif !important; font-size:10.5px !important; letter-spacing:2.4px !important; color:#E8C86A !important;}
+.biz-cta h2{
+  font-family:var(--biz-sans) !important; font-size:24px !important;
+  font-weight:800 !important; color:#FFF3D6 !important; letter-spacing:2px !important;
+  margin:6px 0 6px !important;
+}
+.biz-cta p{font-family:var(--biz-sans) !important; font-size:12.5px !important; color:#E3D3B4 !important; margin:0 0 8px;}
+.biz-cta-sub{font-family:var(--biz-sans) !important; font-size:11px !important; color:#C9A94E !important; letter-spacing:1px;}
+.biz-footer{
+  margin:16px 0 6px; border-radius:6px; border:1px solid rgba(212,175,55,.5);
+  background:var(--biz-ink-deep); color:#DCCFB2;
+}
+.biz-footer-inner{display:grid; grid-template-columns:1.1fr 1.4fr 1.3fr; gap:22px; padding:22px 24px 18px;}
+.biz-footer-brand{display:flex; align-items:center; gap:10px;}
+.biz-footer-brand span:last-child{
+  font-family:var(--biz-sans) !important; font-size:17px !important;
+  font-weight:700 !important; color:#F7EEDC !important; letter-spacing:1px;
+}
+.biz-footer-brand b{font-family:Georgia,serif !important; font-size:12px !important; color:var(--biz-gold) !important;}
+.biz-footer-full{font-family:var(--biz-sans) !important; font-size:12px !important; color:#C9B990 !important; margin-top:10px;}
+.biz-footer-slogan{font-family:var(--gf-kai),"KaiTi",serif !important; font-size:15px !important; color:#F3D98A !important; margin-top:6px; letter-spacing:2px;}
+.biz-footer-col h5{
+  font-family:var(--biz-sans) !important; font-size:12px !important;
+  font-weight:700 !important; color:#F3D98A !important;
+  letter-spacing:1.5px !important; margin:0 0 10px !important;
+  padding-bottom:7px; border-bottom:1px solid rgba(212,175,55,.28);
+}
+.biz-footer-line{
+  font-family:var(--biz-sans) !important; font-size:11.5px !important;
+  line-height:1.9 !important; color:#BDAE90 !important;
+}
+.biz-footer-bottom{
+  display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap;
+  border-top:1px solid rgba(212,175,55,.25); padding:12px 24px 14px;
+  font-family:var(--biz-sans) !important; font-size:10.5px !important;
+  color:#9C8D72 !important; line-height:1.7;
+}
+.biz-footer-bottom span:first-child{color:#C9A94E !important; font-weight:700;}
+
+/* ===== 内页品牌条 / 演示页 ===== */
+.biz-rail-slogan{
+  display:flex; align-items:center; justify-content:center; gap:12px;
+  font-family:var(--biz-sans) !important; font-size:12px !important;
+  color:var(--biz-mute) !important; padding-top:9px; white-space:nowrap;
+}
+.biz-rail-slogan b{color:var(--biz-red-deep) !important; font-size:13px !important; letter-spacing:1px;}
+.biz-rail-slogan span{color:#7A6A50 !important;}
+.biz-rail-slogan em{font-style:normal; color:#A8801F !important; border-left:1px solid var(--biz-line); padding-left:12px; font-size:11px !important;}
+.biz-demo-head{margin:8px 0 18px;}
+.biz-demo-aside{
+  background:var(--biz-ink-deep); border:1px solid var(--biz-gold); border-radius:6px;
+  padding:20px 22px; color:#DCCFB2;
+}
+.biz-demo-aside h4{
+  font-family:var(--biz-sans) !important; font-size:14px !important;
+  font-weight:700 !important; color:#F3D98A !important; margin:0 0 12px !important;
+}
+.biz-demo-aside ul{margin:0; padding-left:18px;}
+.biz-demo-aside li{
+  font-family:var(--biz-sans) !important; font-size:12px !important;
+  line-height:2 !important; color:#D6C7A8 !important;
+}
+.biz-demo-aside-note{
+  font-family:var(--biz-sans) !important; font-size:11px !important;
+  color:#A89878 !important; border-top:1px solid rgba(212,175,55,.28);
+  margin-top:14px; padding-top:12px; line-height:1.7;
+}
+.biz-success{
+  background:rgba(253,248,236,.95); border:1px solid var(--biz-gold);
+  border-left:4px solid var(--biz-red); border-radius:6px;
+  padding:22px 24px; margin:16px 0;
+}
+.biz-success-mark{
+  width:38px; height:38px; border-radius:50%; background:var(--biz-red);
+  color:#FFF3D6; display:flex; align-items:center; justify-content:center;
+  font-size:20px !important; font-weight:700; margin-bottom:10px;
+}
+.biz-success h3{
+  font-family:var(--biz-sans) !important; font-size:18px !important;
+  font-weight:800 !important; color:var(--biz-red-deep) !important; margin:0 0 8px !important;
+}
+.biz-success p{font-family:var(--biz-sans) !important; font-size:13px !important; line-height:1.85 !important; color:#4A3B2C !important; margin:0 0 12px;}
+.biz-success-warn{
+  font-family:var(--biz-sans) !important; font-size:11.5px !important;
+  line-height:1.8 !important; color:#8E1F1A !important;
+  background:rgba(196,50,43,.08); border:1px dashed rgba(196,50,43,.35);
+  border-radius:3px; padding:10px 12px;
+}
+
+@media (max-width: 900px){
+  .biz-h1{font-size:30px !important;}
+  .biz-moat-wrap{grid-template-columns:1fr;}
+  .biz-moat-intro{border-right:none; border-bottom:1px solid rgba(212,175,55,.3); padding:0 0 12px;}
+  .biz-footer-inner{grid-template-columns:1fr 1fr;}
+  .biz-step::after{display:none;}
+}
+@media (max-width: 700px){
+  .biz-nav-inner{padding:10px 12px;}
+  .biz-nav-tag{display:none;}
+  .biz-nav-link{font-size:11.5px !important; padding:6px 8px;}
+  .biz-h1{font-size:25px !important; letter-spacing:2px !important;}
+  .biz-hero{padding:20px 18px;}
+  .biz-moat-list{grid-template-columns:1fr;}
+  .biz-footer-inner{grid-template-columns:1fr;}
+  .biz-trust-badge{margin-left:0;}
+  .biz-rail-slogan{display:none;}
+}
+</style>
+"""
+st.markdown(_BIZ_CSS, unsafe_allow_html=True)
+
+# 商业化文案模块为可选增强：即使部署环境只刷新了 app.py、commerce.py 还是旧缓存，
+# 主站功能照常运行，仅跳过商业化板块，绝不出现整站红页。
+try:
+    import commerce as biz
+    _BIZ_OK = True
+except Exception:
+    biz = None
+    _BIZ_OK = False
+
 
 # ---------------------------------------------------------------- 通用组件
 def banner(image_name: str, title: str, subtitle: str = ""):
@@ -689,9 +1141,20 @@ def enter_animation():
 
 
 def back_button():
-    """程序页顶部的返回按钮。"""
-    if st.button("←　返回总览", key="back_home"):
-        goto("home")
+    """程序页顶部的返回条：品牌标语 + 商务演示入口（商业化版）。"""
+    if _BIZ_OK:
+        _c1, _c2, _c3 = st.columns([1, 2.2, 1.2])
+        with _c1:
+            if st.button("←　返回总览", key="back_home"):
+                goto("home")
+        with _c2:
+            st.markdown(biz.rail_slogan(), unsafe_allow_html=True)
+        with _c3:
+            if st.button("预约商业演示 →", key="back_demo"):
+                goto("demo")
+    else:
+        if st.button("←　返回总览", key="back_home"):
+            goto("home")
 
 
 def cloud_divider(text: str = ""):
@@ -745,13 +1208,38 @@ def ai_polish_block(text_key: str, label: str = "文献描述", dynasty_key: str
             st.caption("润色采用内置文物考证书面语规则，无需联网；结果仅供描述优化参考。")
 
 
-# ---------------------------------------------------------------- 页头
+# ---------------------------------------------------------------- 页头（商业化品牌识别）
 enter_animation()
 st.markdown('<div class="gf-top-rule"></div>', unsafe_allow_html=True)
-st.markdown(
-    '<div class="gf-title">文物色彩考证与修复辅助系统</div>',
-    unsafe_allow_html=True,
-)
+if _BIZ_OK:
+    # 主页由完整导航条承担品牌展示；内页显示精简品牌栏（避免品牌信息重复出现）。
+    _hdr_view = st.query_params.get("view") or st.session_state.get("view", "home")
+    if _hdr_view != "home":
+        st.markdown(
+            '<div class="biz-nav" id="biz-brand">'
+            '<div class="biz-nav-inner">'
+            '<div class="biz-nav-brand">'
+            '<span class="biz-seal">考</span>'
+            '<span class="biz-nav-name">考色 <b>KAOSE</b></span>'
+            '<span class="biz-nav-tag" style="font-size:11.5px;">'
+            '文物色彩智能考证平台 · Heritage Color Intelligence Platform</span>'
+            '</div>'
+            '<div style="font-family:var(--biz-sans);font-size:11px;color:#C9A94E;'
+            'letter-spacing:1.5px;white-space:nowrap;">数字文保 · 智能决策平台 '
+            '<b style="font-family:Georgia,serif;color:#F3D98A;">v2.0</b></div>'
+            '</div></div>',
+            unsafe_allow_html=True,
+        )
+    st.markdown(
+        '<div class="gf-title" style="font-size:34px;letter-spacing:6px;">'
+        '考色 · 让千年色彩，有据可循</div>',
+        unsafe_allow_html=True,
+    )
+else:
+    st.markdown(
+        '<div class="gf-title">文物色彩考证与修复辅助系统</div>',
+        unsafe_allow_html=True,
+    )
 cloud_divider()
 _hdr_l, _hdr_r = _icon_uri("lantern"), _icon_uri("dragon")
 _hdr_icons = (
@@ -764,7 +1252,7 @@ _hdr_icons = (
 st.markdown(
     f'<div class="gf-subtitle">'
     f'{_hdr_icons}'
-    '&nbsp;以色彩证源流 · 以颜料推古法 · 以风格辨建制 · 以材质续华章&nbsp;'
+    '&nbsp;让千年色彩，有据可循　·　以色彩证源流 · 以颜料推古法 · 以风格辨建制 · 以材质续华章&nbsp;'
     f'{_hdr_icons}'
     '</div>',
     unsafe_allow_html=True,
@@ -773,7 +1261,7 @@ st.markdown(
 # ---------------------------------------------------------------- 视图路由
 # 支持三种导航：① 环形门牌用 ?view=xxx 链接；② 程序页按钮用 session_state；
 # ③ 古建案例页用 ?view=hc_<key> 链接。
-_VALID_VIEWS = ("home", "auth", "infer", "style", "restore", "material", "tech")
+_VALID_VIEWS = ("home", "auth", "infer", "style", "restore", "material", "tech", "demo")
 _qp_view = st.query_params.get("view")
 if _qp_view:
     if _qp_view in _VALID_VIEWS or _qp_view.startswith("hc_"):
@@ -787,6 +1275,34 @@ view = st.session_state["view"]
 
 # ================================================================ 门户首页
 if view == "home":
+    # ======================== 商业化官网首屏（可选增强，缺失模块时自动跳过） ======
+    if _BIZ_OK:
+        st.markdown(biz.nav(), unsafe_allow_html=True)
+        _hl, _hr = st.columns([1.16, 0.84])
+        with _hl:
+            st.markdown(biz.hero(), unsafe_allow_html=True)
+            _hc1, _hc2 = st.columns([1, 1])
+            with _hc1:
+                if st.button("▶　免费体验五大能力", key="hero_experience",
+                             use_container_width=True):
+                    goto("auth")
+            with _hc2:
+                if st.button("预约商业演示　→", key="hero_demo",
+                             use_container_width=True):
+                    goto("demo")
+        with _hr:
+            st.markdown(biz.metrics(), unsafe_allow_html=True)
+        st.markdown(biz.trust_bar(), unsafe_allow_html=True)
+        st.markdown(
+            biz.section_head(
+                "01", "PRODUCT CAPABILITIES", "核心能力 · 五大模块",
+                "从色彩考证、颜料推演、风格辨识到修复决策与材质配材，"
+                "覆盖文物色彩工作全链路；点击下方门牌即可进入对应程序。",
+                "biz-capability",
+            ),
+            unsafe_allow_html=True,
+        )
+    # ======================== 原有首页内容（结构与文案保持不变） =================
     heritage_carousel()
     st.markdown(
         '<div style="text-align:center;color:#7A6A50;font-size:15px;'
@@ -849,6 +1365,136 @@ if view == "home":
         unsafe_allow_html=True,
     )
     st.markdown('<div class="gf-bottom-rule"></div>', unsafe_allow_html=True)
+
+    # ======================== 商业化官网：解决方案 / 技术 / 商务 / CTA ==========
+    if _BIZ_OK:
+        st.markdown(
+            biz.section_head(
+                "02", "INDUSTRY SOLUTIONS", "面向真实文保场景的解决方案",
+                "不同机构、不同阶段的色彩工作，需要不同的证据链与交付物。",
+                "biz-solution",
+            ),
+            unsafe_allow_html=True,
+        )
+        st.markdown(biz.solutions(), unsafe_allow_html=True)
+
+        st.markdown(
+            biz.section_head(
+                "03", "TECHNOLOGY MOAT", "技术壁垒 · 数智中枢",
+                "以色彩科学与概率推断为内核，而非滤镜式上色；每条结论都可回到物理与文献证据。",
+                "biz-tech",
+            ),
+            unsafe_allow_html=True,
+        )
+        st.markdown(biz.tech_moat(), unsafe_allow_html=True)
+        _ml, _mm, _mr = st.columns([1, 1.5, 1])
+        with _mm:
+            if st.button("◈　进入数智中枢 · 查看算法内核", key="moat_tech",
+                         use_container_width=True):
+                goto("tech")
+
+        st.markdown(
+            biz.section_head(
+                "04", "SERVICE PLANS", "服务方案",
+                "从在线试用到机构私有化部署，按项目规模与数据合规要求灵活选择。",
+                "biz-pricing",
+            ),
+            unsafe_allow_html=True,
+        )
+        st.markdown(biz.pricing(), unsafe_allow_html=True)
+
+        st.markdown(
+            biz.section_head(
+                "05", "COOPERATION PROCESS", "合作流程",
+                "四步完成从需求沟通到交付上线，全程有明确的验收口径。",
+                "biz-process",
+            ),
+            unsafe_allow_html=True,
+        )
+        st.markdown(biz.process(), unsafe_allow_html=True)
+
+        st.markdown(
+            biz.section_head(
+                "06", "FREQUENTLY ASKED QUESTIONS", "常见问题",
+                "关于结论效力、数据合规与部署方式，先把边界说清楚。",
+                "biz-faq",
+            ),
+            unsafe_allow_html=True,
+        )
+        st.markdown(biz.faq(), unsafe_allow_html=True)
+
+        st.markdown(biz.cta_band(), unsafe_allow_html=True)
+        _ca, _cb1, _cb2, _cd = st.columns([0.8, 1.3, 1.3, 0.8])
+        with _cb1:
+            if st.button("▶　立即免费体验", key="cta_experience",
+                         use_container_width=True):
+                goto("auth")
+        with _cb2:
+            if st.button("预约商业演示　→", key="cta_demo",
+                         use_container_width=True):
+                goto("demo")
+
+
+# ================================================================ 预约商业演示（商务入口）
+elif view == "demo":
+    back_button()
+    if _BIZ_OK:
+        _dl, _dr = st.columns([1.35, 0.85])
+        with _dl:
+            st.markdown(biz.demo_head(), unsafe_allow_html=True)
+        with _dr:
+            st.markdown(biz.demo_aside(), unsafe_allow_html=True)
+
+        with st.form("demo_form", clear_on_submit=False):
+            _f1, _f2 = st.columns([1, 1])
+            with _f1:
+                org = st.text_input("机构 / 单位名称 *", placeholder="如：某博物院文物保护部")
+                contact = st.text_input("联系人 *", placeholder="姓名")
+            with _f2:
+                org_type = st.selectbox("机构类型", [
+                    "文博单位 / 博物馆", "文物保护工程机构", "数字展陈 / 文创机构",
+                    "高校 / 科研院所", "其他",
+                ])
+                channel = st.text_input("联系方式 *", placeholder="邮箱或电话（演示站不发送）")
+            interest = st.multiselect("关注方向", [
+                "色彩考证与数字档案", "修复方案论证", "虚拟复原与展陈配色",
+                "光谱与不确定度分析", "私有化部署 / API 对接", "教学与科研",
+            ], default=["色彩考证与数字档案"])
+            demand = st.text_area("需求描述", height=110,
+                                  placeholder="简述文保对象、现有资料与期望产出…")
+            submitted = st.form_submit_button("提交演示预约", use_container_width=True)
+
+        if submitted:
+            if not (org.strip() and contact.strip() and channel.strip()):
+                st.warning("请至少填写机构名称、联系人与联系方式。")
+            else:
+                st.session_state["demo_record"] = {
+                    "机构": org, "联系人": contact, "机构类型": org_type,
+                    "联系方式": channel, "关注方向": "、".join(interest) or "未填写",
+                    "需求描述": demand or "未填写",
+                }
+                st.session_state["demo_submitted"] = True
+
+        if st.session_state.get("demo_submitted"):
+            rec = st.session_state.get("demo_record", {})
+            st.markdown(biz.demo_success(rec.get("机构", ""), rec.get("联系人", "")),
+                        unsafe_allow_html=True)
+            lines = ["考色 KAOSE · 商业演示需求确认单", "=" * 34]
+            lines += [f"{k}：{v}" for k, v in rec.items()]
+            lines += ["", "※ 本文件由在线演示站生成，仅保存在当前会话，"
+                      "未上传服务器，也未用于任何商务跟进。"]
+            st.download_button(
+                "↓　下载需求确认单（.txt）",
+                data="\n".join(lines).encode("utf-8-sig"),
+                file_name="考色_演示预约确认单.txt",
+                mime="text/plain",
+                use_container_width=True,
+            )
+            if st.button("重新填写", key="demo_reset"):
+                st.session_state["demo_submitted"] = False
+                st.rerun()
+    else:
+        st.info("商务演示模块暂未加载，请重新部署或重启应用后刷新页面。")
 
 
 # ================================================================ 数智中枢（技术内核）
@@ -1512,3 +2158,9 @@ elif view == "material":
             st.info("上传照片或在上方选定材质与病害后点击「生成修复配材方案」")
     st.markdown("</div>", unsafe_allow_html=True)
     st.markdown('<div class="gf-bottom-rule"></div>', unsafe_allow_html=True)
+
+
+# ---------------------------------------------------------------- 全局企业页脚
+# 放在路由链之后：首页、各功能模块、技术页与案例详情页统一带上品牌与合规信息。
+if _BIZ_OK:
+    st.markdown(biz.footer(), unsafe_allow_html=True)

@@ -113,6 +113,7 @@ div[data-testid="stVerticalBlock"]:has(.gf-ring-stage-marker):not(:has(div[data-
     position: relative;
     flex: 0 0 auto !important;
     --r: clamp(195px, 21vw, 225px);
+    --rx: clamp(205px, 24vw, 255px);
     width: 100%; max-width: 1100px;
     height: calc(var(--r) + var(--r) + 290px);
     margin: -100px auto 6px !important;
@@ -157,10 +158,10 @@ div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker):not(:has(div[data-t
     transition: transform .28s cubic-bezier(.34,1.56,.64,1);
 }}
 div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker.n1):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-node-marker)) {{ left: 50%; top: calc(50% - var(--r)); }}
-div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker.n2):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-node-marker)) {{ left: calc(50% + var(--r) * 0.951); top: calc(50% - var(--r) * 0.309); }}
-div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker.n3):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-node-marker)) {{ left: calc(50% + var(--r) * 0.588); top: calc(50% + var(--r) * 0.809); }}
-div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker.n4):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-node-marker)) {{ left: calc(50% - var(--r) * 0.588); top: calc(50% + var(--r) * 0.809); }}
-div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker.n5):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-node-marker)) {{ left: calc(50% - var(--r) * 0.951); top: calc(50% - var(--r) * 0.309); }}
+div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker.n2):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-node-marker)) {{ left: calc(50% + var(--rx) * 0.951); top: calc(50% - var(--r) * 0.309); }}
+div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker.n3):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-node-marker)) {{ left: calc(50% + var(--rx) * 0.588); top: calc(50% + var(--r) * 0.809); }}
+div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker.n4):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-node-marker)) {{ left: calc(50% - var(--rx) * 0.588); top: calc(50% + var(--r) * 0.809); }}
+div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker.n5):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-node-marker)) {{ left: calc(50% - var(--rx) * 0.951); top: calc(50% - var(--r) * 0.309); }}
 div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-node-marker)):hover {{ z-index: 6; }}
 div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker.n1):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-node-marker)):hover {{ transform: translate(-50%, calc(-50% - 8px)) scale(1.03); }}
 div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker.n2):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-node-marker)):hover,

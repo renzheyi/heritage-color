@@ -32,30 +32,31 @@ GUOFENG_CSS = """
 /* 背景图 bg_arch.jpg 已烘焙：网络古建筑照片描边抠主体 + 虚化 + 方框回纹花纹。
    这里再用一层极淡 SVG 回纹点缀，蒙版压得很低，让描边建筑隐约可见而不喧宾夺主。 */
 [data-testid="stAppViewContainer"] {
-    background-color: #F4ECD8;
+    background-color: #F7EEDC;
     background-image:
-        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 56 56'><path d='M8 8 H47 V47 H8 V8 M15 15 H40 V40 H15 Z M24 8 V15 M24 40 V47 M8 24 H15 M40 24 H47 M27 27 H33 V33 H27 Z' fill='none' stroke='%23B08D4F' stroke-opacity='0.07' stroke-width='1'/></svg>"),
-        linear-gradient(rgba(244,236,216,0.30), rgba(244,236,216,0.24)),
+        radial-gradient(circle at 50% 42%, rgba(212,175,55,0.16), transparent 58%),
+        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 56 56'><path d='M8 8 H47 V47 H8 V8 M15 15 H40 V40 H15 Z M24 8 V15 M24 40 V47 M8 24 H15 M40 24 H47 M27 27 H33 V33 H27 Z' fill='none' stroke='%23A8801F' stroke-opacity='0.10' stroke-width='1'/></svg>"),
+        linear-gradient(rgba(247,238,220,0.26), rgba(228,210,172,0.30)),
         url("data:image/jpeg;base64,__BG_URI__");
-    background-size: 56px 56px, cover, cover;
-    background-position: center, center, center center;
-    background-attachment: fixed, fixed, fixed;
-    background-repeat: repeat, no-repeat, no-repeat;
+    background-size: cover, 56px 56px, cover, cover;
+    background-position: center, center, center, center center;
+    background-attachment: fixed, fixed, fixed, fixed;
+    background-repeat: no-repeat, repeat, no-repeat, no-repeat;
 }
 [data-testid="stApp"] { color: #2E2A24; font-family: var(--gf-song); font-size: 15px; }
-h1, h2, h3, [data-testid="stHeader"] { color: #6E2B23 !important; font-family: var(--gf-kai) !important; }
+h1, h2, h3, [data-testid="stHeader"] { color: #8E1F1A !important; font-family: var(--gf-kai) !important; }
 
 /* 页首 / 页脚回纹金线带 */
 .gf-top-rule, .gf-bottom-rule {
     height: 12px; margin: 0 0 6px;
-    background-color: #7A2E24;
+    background-color: #8E1F1A;
     background-image:
         repeating-linear-gradient(90deg,
             transparent 0, transparent 8px,
-            rgba(247,239,224,0.85) 8px, rgba(247,239,224,0.85) 10px,
+            rgba(255,243,220,0.85) 8px, rgba(255,243,220,0.85) 10px,
             transparent 10px, transparent 18px),
-        linear-gradient(180deg, transparent 0 4px, rgba(176,141,79,0.9) 4px 6px, transparent 6px);
-    border-top: 1px solid #B08D4F; border-bottom: 1px solid #B08D4F;
+        linear-gradient(180deg, transparent 0 4px, rgba(212,175,55,0.9) 4px 6px, transparent 6px);
+    border-top: 1px solid #D4AF37; border-bottom: 1px solid #D4AF37;
     border-radius: 2px; opacity: 0.85;
 }
 .gf-bottom-rule { margin: 16px 0 4px; }
@@ -65,15 +66,15 @@ h1, h2, h3, [data-testid="stHeader"] { color: #6E2B23 !important; font-family: v
     position: relative;
     font-family: var(--gf-kai);
     font-size: 42px; font-weight: 700; letter-spacing: 10px;
-    color: #7A2E24; text-align: center;
+    color: #8E1F1A; text-align: center;
     padding: 16px 0 10px; margin: 0;
-    border-bottom: 2px solid #B08D4F;
+    border-bottom: 2px solid #D4AF37;
     text-shadow: 1px 1px 0 rgba(255,255,255,0.75);
 }
 .gf-title::before, .gf-title::after {
     content: ""; position: absolute; top: 14px; width: 64px; height: 40px;
     background-repeat: no-repeat; background-size: contain; opacity: 0.75;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 50'><path d='M2 40 Q2 18 24 18 Q40 18 40 32 Q40 44 30 44 Q22 44 22 36 M40 40 Q40 22 58 22 Q74 22 74 40' fill='none' stroke='%239E3329' stroke-width='3'/><circle cx='30' cy='32' r='3' fill='%23B08D4F'/></svg>");
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 50'><path d='M2 40 Q2 18 24 18 Q40 18 40 32 Q40 44 30 44 Q22 44 22 36 M40 40 Q40 22 58 22 Q74 22 74 40' fill='none' stroke='%23C4322B' stroke-width='3'/><circle cx='30' cy='32' r='3' fill='%23D4AF37'/></svg>");
 }
 .gf-title::before { left: 2%; }
 .gf-title::after { right: 2%; transform: scaleX(-1); }
@@ -87,11 +88,11 @@ h1, h2, h3, [data-testid="stHeader"] { color: #6E2B23 !important; font-family: v
 /* 云纹分隔带（替代原来的"云纹"二字） */
 .gf-cloud-band {
     height: 26px; margin: 8px 0 6px; position: relative;
-    background: no-repeat center / 120px 26px url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 26'><g fill='none' stroke='%23B08D4F' stroke-width='1.6'><path d='M10 18 Q10 8 22 8 Q30 8 30 14 Q30 19 26 19 Q22 19 22 15 M30 18 Q30 10 42 10 Q54 10 54 17 M60 18 Q60 8 72 8 Q84 8 84 17 M90 18 Q90 10 102 10 Q114 10 114 17'/><circle cx='60' cy='6' r='2.4' fill='%239E3329' stroke='none'/></g></svg>");
+    background: no-repeat center / 120px 26px url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 26'><g fill='none' stroke='%23D4AF37' stroke-width='1.6'><path d='M10 18 Q10 8 22 8 Q30 8 30 14 Q30 19 26 19 Q22 19 22 15 M30 18 Q30 10 42 10 Q54 10 54 17 M60 18 Q60 8 72 8 Q84 8 84 17 M90 18 Q90 10 102 10 Q114 10 114 17'/><circle cx='60' cy='6' r='2.4' fill='%23C4322B' stroke='none'/></g></svg>");
 }
 .gf-cloud-band::before, .gf-cloud-band::after {
     content: ""; position: absolute; top: 50%; width: 32%; height: 1px;
-    background: linear-gradient(90deg, transparent, #B08D4F);
+    background: linear-gradient(90deg, transparent, #D4AF37);
 }
 .gf-cloud-band::before { left: 4%; }
 .gf-cloud-band::after  { right: 4%; transform: scaleX(-1); }
@@ -100,39 +101,39 @@ h1, h2, h3, [data-testid="stHeader"] { color: #6E2B23 !important; font-family: v
 .gf-wadang {
     display: inline-flex; align-items: center; justify-content: center;
     width: 62px; height: 62px; border-radius: 50%;
-    background: #9E3329; color: #F7EFE0;
-    border: 3px double #F7EFE0; outline: 2px solid #9E3329;
+    background: #C4322B; color: #FFF3DC;
+    border: 3px double #FFF3DC; outline: 2px solid #C4322B;
     font-family: var(--gf-li); font-size: 20px; font-weight: 700;
     box-shadow: 2px 3px 6px rgba(0,0,0,0.18);
     position: relative;
 }
 .gf-wadang::after {
     content: ""; position: absolute; inset: 6px; border-radius: 50%;
-    border: 1px dashed rgba(247,239,224,0.55);
+    border: 1px dashed rgba(255,243,220,0.55);
 }
 .gf-seal {
     display: inline-block; font-family: var(--gf-li);
-    background: #9E3329; color: #F7EFE0; font-size: 14px;
+    background: #C4322B; color: #FFF3DC; font-size: 14px;
     padding: 4px 8px; border-radius: 3px; letter-spacing: 2px;
     margin: 0 4px; box-shadow: 2px 2px 0 rgba(0,0,0,0.12);
-    border: 1px solid #7A2E24;
+    border: 1px solid #8E1F1A;
 }
 
 /* ============ 4. 卡片：四角祥云 + 缠枝 + 朱印标题（行楷） ============ */
 .gf-ornate-card {
     position: relative;
-    background-color: #FBF6EA;
+    background-color: #FDF8EC;
     background-image:
-        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'><path d='M4 56 L4 20 Q4 8 16 8 Q28 8 28 20 Q28 30 18 30 Q10 30 10 22 M30 4 L56 4 L56 30' fill='none' stroke='%239E3329' stroke-width='3'/><circle cx='18' cy='20' r='3' fill='%23B08D4F'/></svg>"),
-        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'><g transform='scale(-1,1) translate(-60,0)'><path d='M4 56 L4 20 Q4 8 16 8 Q28 8 28 20 Q28 30 18 30 Q10 30 10 22 M30 4 L56 4 L56 30' fill='none' stroke='%239E3329' stroke-width='3'/><circle cx='18' cy='20' r='3' fill='%23B08D4F'/></g></svg>"),
-        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'><g transform='scale(1,-1) translate(0,-60)'><path d='M4 56 L4 20 Q4 8 16 8 Q28 8 28 20 Q28 30 18 30 Q10 30 10 22 M30 4 L56 4 L56 30' fill='none' stroke='%239E3329' stroke-width='3'/><circle cx='18' cy='20' r='3' fill='%23B08D4F'/></g></svg>"),
-        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'><g transform='rotate(180 30 30)'><path d='M4 56 L4 20 Q4 8 16 8 Q28 8 28 20 Q28 30 18 30 Q10 30 10 22 M30 4 L56 4 L56 30' fill='none' stroke='%239E3329' stroke-width='3'/><circle cx='18' cy='20' r='3' fill='%23B08D4F'/></g></svg>");
+        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'><path d='M4 56 L4 20 Q4 8 16 8 Q28 8 28 20 Q28 30 18 30 Q10 30 10 22 M30 4 L56 4 L56 30' fill='none' stroke='%23C4322B' stroke-width='3'/><circle cx='18' cy='20' r='3' fill='%23D4AF37'/></svg>"),
+        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'><g transform='scale(-1,1) translate(-60,0)'><path d='M4 56 L4 20 Q4 8 16 8 Q28 8 28 20 Q28 30 18 30 Q10 30 10 22 M30 4 L56 4 L56 30' fill='none' stroke='%23C4322B' stroke-width='3'/><circle cx='18' cy='20' r='3' fill='%23D4AF37'/></g></svg>"),
+        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'><g transform='scale(1,-1) translate(0,-60)'><path d='M4 56 L4 20 Q4 8 16 8 Q28 8 28 20 Q28 30 18 30 Q10 30 10 22 M30 4 L56 4 L56 30' fill='none' stroke='%23C4322B' stroke-width='3'/><circle cx='18' cy='20' r='3' fill='%23D4AF37'/></g></svg>"),
+        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'><g transform='rotate(180 30 30)'><path d='M4 56 L4 20 Q4 8 16 8 Q28 8 28 20 Q28 30 18 30 Q10 30 10 22 M30 4 L56 4 L56 30' fill='none' stroke='%23C4322B' stroke-width='3'/><circle cx='18' cy='20' r='3' fill='%23D4AF37'/></g></svg>");
     background-repeat: no-repeat;
     background-position: top left, top right, bottom left, bottom right;
     background-size: 46px 46px;
-    border: 1px solid #D9C8A6;
-    border-top: 2px solid #9E3329;
-    border-bottom: 2px solid #B08D4F;
+    border: 1px solid #E0CB95;
+    border-top: 2px solid #C4322B;
+    border-bottom: 2px solid #D4AF37;
     border-radius: 4px;
     padding: 24px 24px 18px; margin: 10px 0 18px;
     box-shadow: 0 2px 8px rgba(90,70,40,0.10);
@@ -140,19 +141,19 @@ h1, h2, h3, [data-testid="stHeader"] { color: #6E2B23 !important; font-family: v
 .gf-ornate-card::before {
     content: ""; position: absolute; left: 0; right: 0; top: 0; height: 6px;
     background-image: repeating-linear-gradient(90deg,
-        #9E3329 0, #9E3329 6px, transparent 6px, transparent 12px);
+        #C4322B 0, #C4322B 6px, transparent 6px, transparent 12px);
     opacity: 0.35;
 }
 .gf-card-title {
     font-family: var(--gf-xing);
-    font-size: 22px; font-weight: 700; color: #6E2B23;
+    font-size: 22px; font-weight: 700; color: #8E1F1A;
     letter-spacing: 3px; margin: 0 0 4px;
     padding-left: 32px; position: relative;
 }
 .gf-card-title::before {
     content: "印"; position: absolute; left: 0; top: 1px;
     width: 22px; height: 22px; line-height: 22px; text-align: center;
-    font-size: 12px; color: #F7EFE0; background: #9E3329; border-radius: 2px;
+    font-size: 12px; color: #FFF3DC; background: #C4322B; border-radius: 2px;
     letter-spacing: 0;
 }
 .gf-card-desc { font-family: var(--gf-song); font-size: 13px; color: #7A6A50; margin-bottom: 12px; }
@@ -165,17 +166,17 @@ h1, h2, h3, [data-testid="stHeader"] { color: #6E2B23 !important; font-family: v
 /* ============ 5. 门牌方块：四角云纹 + 回纹冠 + 编号印（楷/隶） ============ */
 .gf-nav-card {
     position: relative;
-    background-color: #FBF6EA;
+    background-color: #FDF8EC;
     background-image:
-        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'><path d='M4 36 L4 16 Q4 6 14 6 Q24 6 24 16 Q24 24 16 24' fill='none' stroke='%23B08D4F' stroke-width='2'/></svg>"),
-        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'><g transform='scale(-1,1) translate(-40,0)'><path d='M4 36 L4 16 Q4 6 14 6 Q24 6 24 16 Q24 24 16 24' fill='none' stroke='%23B08D4F' stroke-width='2'/></g></svg>"),
-        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'><g transform='scale(1,-1) translate(0,-40)'><path d='M4 36 L4 16 Q4 6 14 6 Q24 6 24 16 Q24 24 16 24' fill='none' stroke='%23B08D4F' stroke-width='2'/></g></svg>"),
-        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'><g transform='rotate(180 20 20)'><path d='M4 36 L4 16 Q4 6 14 6 Q24 6 24 16 Q24 24 16 24' fill='none' stroke='%23B08D4F' stroke-width='2'/></g></svg>");
+        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'><path d='M4 36 L4 16 Q4 6 14 6 Q24 6 24 16 Q24 24 16 24' fill='none' stroke='%23D4AF37' stroke-width='2'/></svg>"),
+        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'><g transform='scale(-1,1) translate(-40,0)'><path d='M4 36 L4 16 Q4 6 14 6 Q24 6 24 16 Q24 24 16 24' fill='none' stroke='%23D4AF37' stroke-width='2'/></g></svg>"),
+        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'><g transform='scale(1,-1) translate(0,-40)'><path d='M4 36 L4 16 Q4 6 14 6 Q24 6 24 16 Q24 24 16 24' fill='none' stroke='%23D4AF37' stroke-width='2'/></g></svg>"),
+        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'><g transform='rotate(180 20 20)'><path d='M4 36 L4 16 Q4 6 14 6 Q24 6 24 16 Q24 24 16 24' fill='none' stroke='%23D4AF37' stroke-width='2'/></g></svg>");
     background-repeat: no-repeat;
     background-position: top left, top right, bottom left, bottom right;
     background-size: 28px 28px;
-    border: 1px solid #D9C8A6;
-    border-top: 4px solid #9E3329;
+    border: 1px solid #E0CB95;
+    border-top: 4px solid #C4322B;
     border-radius: 6px 6px 2px 2px;
     padding: 18px 16px 14px; height: 158px;
     box-shadow: 0 3px 10px rgba(90,70,40,0.12);
@@ -184,26 +185,26 @@ h1, h2, h3, [data-testid="stHeader"] { color: #6E2B23 !important; font-family: v
 .gf-nav-card::before {
     content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 5px;
     background-image: repeating-linear-gradient(90deg,
-        transparent 0, transparent 6px, #B08D4F 6px, #B08D4F 8px);
+        transparent 0, transparent 6px, #D4AF37 6px, #D4AF37 8px);
     opacity: 0.6;
 }
 .gf-nav-card::after {
     content: "❖"; position: absolute; top: 6px; right: 10px;
-    color: #9E3329; font-size: 14px;
+    color: #C4322B; font-size: 14px;
 }
 .gf-nav-num {
     font-family: var(--gf-li);
-    font-size: 26px; line-height: 42px; color: #F7EFE0;
+    font-size: 26px; line-height: 42px; color: #FFF3DC;
     letter-spacing: 1px; margin-bottom: 8px;
     display: inline-block; width: 42px; height: 42px;
-    text-align: center; background: #9E3329;
-    border: 1px solid #7A2E24; border-radius: 3px;
+    text-align: center; background: #C4322B;
+    border: 1px solid #8E1F1A; border-radius: 3px;
     box-shadow: 2px 2px 0 rgba(0,0,0,0.12);
     flex-shrink: 0;
 }
 .gf-nav-title {
     font-family: var(--gf-kai);
-    font-size: 21px; font-weight: 700; color: #6E2B23;
+    font-size: 21px; font-weight: 700; color: #8E1F1A;
     letter-spacing: 3px; margin-bottom: 6px;
 }
 .gf-nav-desc { font-family: var(--gf-song); font-size: 12.5px; color: #7A6A50; line-height: 1.6; }
@@ -215,7 +216,7 @@ h1, h2, h3, [data-testid="stHeader"] { color: #6E2B23 !important; font-family: v
     transition: transform .3s cubic-bezier(.34,1.56,.64,1), filter .3s;
     pointer-events: none;
 }
-.gf-nav-card:hover .gf-nav-icon { transform: rotate(-12deg) scale(1.18); filter: sepia(0.12) saturate(1.05) drop-shadow(0 2px 4px rgba(158,51,41,0.35)); }
+.gf-nav-card:hover .gf-nav-icon { transform: rotate(-12deg) scale(1.18); filter: sepia(0.12) saturate(1.05) drop-shadow(0 2px 4px rgba(196,50,43,0.35)); }
 /* 页眉 / 标题旁的小图标 */
 .gf-inline-icon { width: 30px; height: 30px; vertical-align: middle; object-fit: contain; filter: sepia(0.3) saturate(0.8); margin: 0 3px; }
 .gf-icon-strip { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 2px 0 6px; }
@@ -225,10 +226,10 @@ h1, h2, h3, [data-testid="stHeader"] { color: #6E2B23 !important; font-family: v
 .gf-nav-card { transition: transform .28s cubic-bezier(.34,1.56,.64,1), box-shadow .28s, border-color .28s; }
 .gf-nav-card:hover {
     transform: translateY(-9px) scale(1.02);
-    box-shadow: 0 14px 28px rgba(122,46,36,0.22), 0 0 0 1px #B08D4F, inset 0 0 22px rgba(176,141,79,0.12);
-    border-top-color: #B08D4F; z-index: 2;
+    box-shadow: 0 14px 28px rgba(142,31,26,0.22), 0 0 0 1px #D4AF37, inset 0 0 22px rgba(212,175,55,0.12);
+    border-top-color: #D4AF37; z-index: 2;
 }
-.gf-nav-card:hover .gf-nav-title { color: #9E3329; letter-spacing: 4px; }
+.gf-nav-card:hover .gf-nav-title { color: #C4322B; letter-spacing: 4px; }
 .gf-nav-title { transition: color .25s, letter-spacing .25s; }
 .gf-nav-card:hover .gf-nav-num { animation: gfNumTilt .5s cubic-bezier(.34,1.56,.64,1); }
 @keyframes gfNumTilt { 40% { transform: rotate(-9deg) scale(1.1); } }
@@ -239,164 +240,115 @@ h1, h2, h3, [data-testid="stHeader"] { color: #6E2B23 !important; font-family: v
 }
 .gf-card-glow::before {
     content: ""; position: absolute; inset: 0;
-    background: linear-gradient(115deg, transparent 32%, rgba(247,239,224,0.62) 48%, rgba(176,141,79,0.25) 53%, transparent 70%);
+    background: linear-gradient(115deg, transparent 32%, rgba(255,243,220,0.62) 48%, rgba(212,175,55,0.25) 53%, transparent 70%);
     transform: translateX(-125%);
 }
 .gf-nav-card:hover .gf-card-glow::before { animation: gfCardSheen .9s ease-out; }
 @keyframes gfCardSheen { to { transform: translateX(125%); } }
 
-/* ============ 6. 环心徽记（旋转金环 + 朱印核心） ============ */
-.gf-orbit-wrap {
-    position: relative; border-radius: 8px; padding: 22px 12px;
-    background: radial-gradient(ellipse at center, rgba(251,246,234,0.55), rgba(251,246,234,0) 70%);
-}
-.gf-orbit-center {
-    position: relative; width: 148px; height: 148px; margin: 6px auto 0;
-    display: flex; align-items: center; justify-content: center;
-}
-.gf-orbit-ring {
-    position: absolute; inset: 0; border-radius: 50%;
-    border: 2px solid #B08D4F;
-    box-shadow: 0 0 0 6px rgba(176,141,79,0.10), inset 0 0 0 6px rgba(158,51,41,0.07);
-    animation: gfSpin 26s linear infinite;
-}
-/* 中心球体外再套一圈更大的虚线轨道，强化"五门拱卫"的环绕感 */
-.gf-orbit-wrap { position: relative; }
-.gf-orbit-wrap::before {
-    content: ""; position: absolute; left: 50%; top: 50%;
-    width: 330px; height: 330px; border-radius: 50%;
-    border: 2px dashed rgba(176,141,79,0.42);
-    box-shadow: inset 0 0 0 1px rgba(158,51,41,0.06);
-    transform: translate(-50%, -50%); pointer-events: none;
-}
-.gf-orbit-wrap::after {
-    content: "❖"; position: absolute; left: 50%; top: calc(50% - 175px);
-    transform: translateX(-50%); color: #9E3329; font-size: 17px;
-    background: rgba(244,236,216,0.85); padding: 0 6px; pointer-events: none;
-}
-.gf-orbit-ring::before {
-    content: ""; position: absolute; inset: 8px; border-radius: 50%;
-    border: 1px dashed rgba(158,51,41,0.38);
-}
-.gf-orbit-ring::after {
-    content: "❖"; position: absolute; top: -11px; left: 50%; transform: translateX(-50%);
-    color: #9E3329; font-size: 16px; background: #F4ECD8; padding: 0 4px;
-}
-.gf-orbit-core {
-    width: 118px; height: 118px; border-radius: 50%;
-    background:
-        radial-gradient(circle at 33% 28%, rgba(255,240,215,0.55) 0%, rgba(255,240,215,0) 42%),
-        radial-gradient(circle at 66% 74%, rgba(60,18,14,0.45) 0%, rgba(60,18,14,0) 55%),
-        radial-gradient(circle at 38% 32%, #B74738, #8E2E24 60%, #6E2119 100%);
-    color: #F7EFE0; display: flex; align-items: center; justify-content: center;
-    flex-direction: column; font-family: var(--gf-li); font-size: 24px; font-weight: 700;
-    letter-spacing: 3px; line-height: 1.35; text-align: center;
-    border: 3px double #F0DFB8;
-    box-shadow:
-        inset -8px -10px 22px rgba(50,14,10,0.55),
-        inset 6px 6px 18px rgba(255,235,205,0.28),
-        0 8px 24px rgba(90,30,22,0.42), 0 0 0 5px rgba(176,141,79,0.18);
-    z-index: 1;
-    text-shadow: 0 2px 3px rgba(50,14,10,0.5);
-}
-/* 球体高光点 */
-.gf-orbit-core::before {
-    content: ""; position: absolute; left: 26px; top: 20px;
-    width: 30px; height: 18px; border-radius: 50%;
-    background: radial-gradient(ellipse, rgba(255,248,232,0.7), rgba(255,248,232,0) 70%);
-    transform: rotate(-28deg); pointer-events: none;
-}
-.gf-orbit-core small { font-family: var(--gf-song); font-size: 10px; letter-spacing: 2px; opacity: 0.85; }
-.gf-orbit-center { transition: transform .3s cubic-bezier(.34,1.56,.64,1); }
-.gf-orbit-center:hover { transform: scale(1.06); }
-.gf-orbit-center:hover .gf-orbit-ring { animation-duration: 5s; box-shadow: 0 0 0 8px rgba(176,141,79,0.18), inset 0 0 0 6px rgba(158,51,41,0.1); }
-.gf-orbit-center:hover .gf-orbit-core { box-shadow: 2px 6px 20px rgba(158,51,41,0.45); }
-@keyframes gfSpin { to { transform: rotate(360deg); } }
-
-/* ============ 6b. 五门环形舞台：五门牌均匀绕中心圆摆放 ============ */
-.gf-ring-stage {
+/* ============ 6. 中心「考色」球体：外部圆圈已去除，只留圆形主标识 ============ */
+.gf-ring-stage-marker, .gf-ring-node-marker { display: none; }
+div[data-testid="stVerticalBlock"]:has(.gf-ring-stage-marker):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-stage-marker)) {
     position: relative;
-    width: 100%; max-width: 1040px;
-    height: 660px; margin: 4px auto 10px;
+    flex: 0 0 auto !important;
+    --r: clamp(195px, 21vw, 225px);
+    width: 100%; max-width: 1100px;
+    height: calc(var(--r) + var(--r) + 290px);
+    margin: -100px auto 6px !important;
 }
-/* 双层轨道圆：外实内虚，鎏金赭色 */
-.gf-ring-track, .gf-ring-track-inner {
-    position: absolute; left: 50%; top: 50%;
-    border-radius: 50%; pointer-events: none;
-    transform: translate(-50%, -50%);
-}
-.gf-ring-track {
-    width: 560px; height: 560px;
-    border: 2px dashed rgba(176,141,79,0.55);
-    box-shadow: 0 0 0 1px rgba(158,51,41,0.10), inset 0 0 0 1px rgba(158,51,41,0.10);
-    animation: gfSpin 90s linear infinite;
-}
-.gf-ring-track::before {
-    content: "❖"; position: absolute; top: -13px; left: 50%;
-    transform: translateX(-50%); color: #9E3329; font-size: 18px; background: #F4ECD8; padding: 0 6px;
-}
-.gf-ring-track-inner {
-    width: 300px; height: 300px;
-    border: 1px dotted rgba(158,51,41,0.35);
-}
+/* 取消舞台内部容器的定位上下文，让圆心与门牌相对舞台绝对定位 */
+div[data-testid="stVerticalBlock"]:has(.gf-ring-stage-marker):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-stage-marker)) [data-testid="stElementContainer"],
+div[data-testid="stVerticalBlock"]:has(.gf-ring-stage-marker):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-stage-marker)) [data-testid="stMarkdown"],
+div[data-testid="stVerticalBlock"]:has(.gf-ring-stage-marker):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-stage-marker)) [data-testid="stMarkdownContainer"],
+div[data-testid="stVerticalBlock"]:has(.gf-ring-stage-marker):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-stage-marker)) [data-testid="stLayoutWrapper"] { position: static !important; }
 .gf-ring-center {
     position: absolute; left: 50%; top: 50%;
-    transform: translate(-50%, -50%); z-index: 3;
+    transform: translate(-50%, -50%); z-index: 2;
 }
-.gf-ring-center .gf-orbit-center { margin: 0; }
-/* 门牌节点：绝对定位到圆周五个角度（正上 / 右上 / 右下 / 左下 / 左上） */
-.gf-ring-node {
-    position: absolute; z-index: 4; width: 232px;
-    text-decoration: none !important; color: inherit !important;
-    display: block;
+.gf-orbit-ring, .gf-orbit-wrap::before, .gf-orbit-wrap::after,
+.gf-ring-track, .gf-ring-track-inner { display: none !important; }
+.gf-ring-center .gf-orbit-core {
+    position: relative;
+    width: 132px; height: 132px; border-radius: 50%;
+    background:
+        radial-gradient(circle at 32% 26%, rgba(255,244,218,0.65), rgba(255,244,218,0) 44%),
+        radial-gradient(circle at 68% 76%, rgba(80,12,10,0.55), rgba(80,12,10,0) 56%),
+        radial-gradient(circle at 38% 32%, #E05A4A, #C4322B 58%, #7E1712 100%);
+    color: #FFF3DC; display: flex; align-items: center; justify-content: center;
+    flex-direction: column; font-family: var(--gf-li); font-size: 26px; font-weight: 700;
+    letter-spacing: 3px; line-height: 1.35; text-align: center;
+    border: 3px double #F3D98A;
+    box-shadow:
+        inset -9px -11px 24px rgba(70,10,8,0.55),
+        inset 7px 7px 20px rgba(255,238,200,0.30),
+        0 0 0 6px rgba(212,175,55,0.18),
+        0 10px 30px rgba(142,31,26,0.45);
+    text-shadow: 0 2px 3px rgba(50,14,10,0.5);
+    transition: transform .3s cubic-bezier(.34,1.56,.64,1);
 }
-.gf-ring-node .gf-nav-card { height: 150px; padding: 14px 14px 12px; }
-.gf-ring-node .gf-nav-num { width: 36px; height: 36px; line-height: 36px; font-size: 22px; margin-bottom: 5px; }
-.gf-ring-node .gf-nav-title { font-size: 18px; letter-spacing: 2px; margin-bottom: 4px; }
-.gf-ring-node .gf-nav-desc { font-size: 11.5px; line-height: 1.5; }
-/* 顶门居中；两侧四门贴圆周左右 */
-.gf-ring-node.n1 { left: 50%; top: 2%;  transform: translateX(-50%); }
-.gf-ring-node.n2 { right: 1%;  top: 30%; }
-.gf-ring-node.n3 { right: 3%;  top: 66%; }
-.gf-ring-node.n4 { left: 3%;   top: 66%; }
-.gf-ring-node.n5 { left: 1%;   top: 30%; }
-/* 悬停：节点整体上浮，卡片沿用 .gf-nav-card:hover 动效 */
-.gf-ring-node { transition: transform .28s cubic-bezier(.34,1.56,.64,1); }
-.gf-ring-node:hover { z-index: 6; }
-.gf-ring-node.n1:hover { transform: translateX(-50%) translateY(-8px) scale(1.03); }
-.gf-ring-node.n2:hover, .gf-ring-node.n3:hover,
-.gf-ring-node.n4:hover, .gf-ring-node.n5:hover { transform: translateY(-8px) scale(1.03); }
-/* 窄屏降级：舞台变高、门牌缩窄，避免重叠 */
-@media (max-width: 900px) {
-    .gf-ring-stage { height: 980px; }
-    .gf-ring-track { width: 440px; height: 440px; }
-    .gf-ring-track-inner { width: 240px; height: 240px; }
-    .gf-ring-node { width: 190px; }
-    .gf-ring-node.n1 { top: 0; }
-    .gf-ring-node.n2, .gf-ring-node.n5 { top: 27%; }
-    .gf-ring-node.n3, .gf-ring-node.n4 { top: 63%; }
+.gf-ring-center .gf-orbit-core:hover { transform: scale(1.07); }
+.gf-orbit-core::before {
+    content: ""; position: absolute; left: 28px; top: 22px;
+    width: 32px; height: 19px; border-radius: 50%;
+    background: radial-gradient(ellipse, rgba(255,248,232,0.72), rgba(255,248,232,0) 70%);
+    transform: rotate(-28deg); pointer-events: none;
+}
+.gf-orbit-core small { font-family: var(--gf-song); font-size: 10px; letter-spacing: 2px; opacity: 0.85; color: #F3D98A; }
+
+/* ============ 6b. 五门环形舞台：五门牌均匀绕中心圆摆放 ============ */
+div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-node-marker)) {
+    position: absolute; width: 224px; z-index: 3;
+    transform: translate(-50%, -50%);
+    transition: transform .28s cubic-bezier(.34,1.56,.64,1);
+}
+div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker.n1):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-node-marker)) { left: 50%; top: calc(50% - var(--r)); }
+div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker.n2):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-node-marker)) { left: calc(50% + var(--r) * 0.951); top: calc(50% - var(--r) * 0.309); }
+div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker.n3):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-node-marker)) { left: calc(50% + var(--r) * 0.588); top: calc(50% + var(--r) * 0.809); }
+div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker.n4):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-node-marker)) { left: calc(50% - var(--r) * 0.588); top: calc(50% + var(--r) * 0.809); }
+div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker.n5):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-node-marker)) { left: calc(50% - var(--r) * 0.951); top: calc(50% - var(--r) * 0.309); }
+div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-node-marker)):hover { z-index: 6; }
+div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker.n1):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-node-marker)):hover,
+div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker.n2):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-node-marker)):hover,
+div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker.n3):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-node-marker)):hover,
+div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker.n4):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-node-marker)):hover,
+div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker.n5):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-node-marker)):hover {
+    transform: translate(-50%, calc(-50% - 8px)) scale(1.03);
+}
+/* 窄屏降级：改为纵向卷轴，仍保留中心在上、五门依次排布 */
+@media (max-width: 760px) {
+    div[data-testid="stVerticalBlock"]:has(.gf-ring-stage-marker):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-stage-marker)) {
+        height: auto; margin-top: 0 !important; display: flex; flex-direction: column; align-items: center; gap: 14px;
+    }
+    .gf-ring-center { position: relative; left: auto; top: auto; transform: none; order: -1; }
+    div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-node-marker)) {
+        position: relative; left: auto !important; top: auto !important;
+        transform: none !important; width: min(100%, 320px);
+    }
+    div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-node-marker)):hover {
+        transform: translateY(-6px) scale(1.02) !important;
+    }
 }
 
 /* ============ 7. 回纹带 / 云纹分隔 ============ */
 .gf-meander {
     height: 14px; margin: 14px 0;
-    background-color: #9E3329;
+    background-color: #C4322B;
     background-image:
         repeating-linear-gradient(90deg,
             transparent 0, transparent 8px,
-            rgba(247,239,224,0.85) 8px, rgba(247,239,224,0.85) 10px,
+            rgba(255,243,220,0.85) 8px, rgba(255,243,220,0.85) 10px,
             transparent 10px, transparent 18px),
-        linear-gradient(180deg, transparent 0 5px, #B08D4F 5px 9px, transparent 9px);
+        linear-gradient(180deg, transparent 0 5px, #D4AF37 5px 9px, transparent 9px);
     opacity: 0.8; border-radius: 2px;
 }
 .gf-cloud-divider {
-    text-align: center; color: #9E3329; font-size: 18px;
+    text-align: center; color: #C4322B; font-size: 18px;
     letter-spacing: 14px; margin: 2px 0 14px; opacity: 0.9;
     font-family: var(--gf-kai); position: relative;
 }
 .gf-cloud-divider::before, .gf-cloud-divider::after {
     content: ""; position: absolute; top: 50%; width: 26%; height: 1px;
-    background: linear-gradient(90deg, transparent, #B08D4F, transparent);
+    background: linear-gradient(90deg, transparent, #D4AF37, transparent);
 }
 .gf-cloud-divider::before { left: 4%; }
 .gf-cloud-divider::after { right: 4%; transform: scaleX(-1); }
@@ -404,10 +356,10 @@ h1, h2, h3, [data-testid="stHeader"] { color: #6E2B23 !important; font-family: v
 /* ============ 8. 图片横幅：双金线 + 行楷题字 ============ */
 .gf-banner {
     position: relative; border-radius: 4px; overflow: hidden;
-    border: 1px solid #B08D4F; outline: 1px solid #9E3329;
+    border: 1px solid #D4AF37; outline: 1px solid #C4322B;
     outline-offset: 3px; margin: 8px 0 20px;
     box-shadow: 0 3px 12px rgba(90,70,40,0.15);
-    background: #7A2E24;
+    background: #8E1F1A;
 }
 .gf-banner img { display: block; width: 100%; height: 220px; object-fit: cover; }
 .gf-banner-cap {
@@ -416,7 +368,7 @@ h1, h2, h3, [data-testid="stHeader"] { color: #6E2B23 !important; font-family: v
     background: linear-gradient(transparent, rgba(43,38,30,0.82));
     color: #F5EFE1; font-family: var(--gf-xing);
     font-size: 17px; letter-spacing: 4px;
-    border-top: 1px solid rgba(176,141,79,0.7);
+    border-top: 1px solid rgba(212,175,55,0.7);
 }
 .gf-banner-cap small {
     display: block; font-family: var(--gf-song);
@@ -427,26 +379,26 @@ h1, h2, h3, [data-testid="stHeader"] { color: #6E2B23 !important; font-family: v
 /* ============ 9. 结果区：整洁排版（分区 / 键值 / 徽章 / 冰裂纹面板） ============ */
 .gf-result-label {
     font-family: var(--gf-xing);
-    font-size: 18px; font-weight: 700; color: #1F5C57;
+    font-size: 18px; font-weight: 700; color: #126A66;
     letter-spacing: 3px; border-bottom: 1px dashed #9CB3AF;
     padding-bottom: 5px; margin: 10px 0 12px;
 }
-.gf-result-label::before { content: "◆ "; color: #B08D4F; font-size: 12px; }
+.gf-result-label::before { content: "◆ "; color: #D4AF37; font-size: 12px; }
 .gf-result-panel {
     position: relative; background: rgba(251,246,234,0.86);
-    border: 1px solid #D9C8A6; border-left: 3px solid #9E3329;
+    border: 1px solid #E0CB95; border-left: 3px solid #C4322B;
     border-radius: 4px; padding: 14px 16px 14px; margin: 8px 0 14px;
     box-shadow: 0 1px 6px rgba(90,70,40,0.08);
     background-image:
-        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'><path d='M0 12 L12 0 M28 40 L40 28 M0 28 L12 40 M28 0 L40 12' stroke='%23B08D4F' stroke-opacity='0.18' stroke-width='1' fill='none'/></svg>");
+        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'><path d='M0 12 L12 0 M28 40 L40 28 M0 28 L12 40 M28 0 L40 12' stroke='%23D4AF37' stroke-opacity='0.18' stroke-width='1' fill='none'/></svg>");
     transition: box-shadow .28s, border-left-color .28s, transform .28s;
     /* 横向排列：每个小节成为一张卡片，自动换行铺开 */
     display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px 16px; align-items: start;
 }
 .gf-result-panel:hover {
-    border-left-color: #B08D4F;
-    box-shadow: 0 4px 16px rgba(90,70,40,0.14), inset 0 0 24px rgba(176,141,79,0.08);
+    border-left-color: #D4AF37;
+    box-shadow: 0 4px 16px rgba(90,70,40,0.14), inset 0 0 24px rgba(212,175,55,0.08);
     transform: translateX(3px);
 }
 /* 窄结果列或手机端退回单列 */
@@ -454,21 +406,21 @@ h1, h2, h3, [data-testid="stHeader"] { color: #6E2B23 !important; font-family: v
     .gf-result-panel { grid-template-columns: 1fr; }
 }
 .gf-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 2px 0; }
-.gf-table th { font-family: var(--gf-kai); color: #F7EFE0; background: #9E3329; padding: 7px 9px; text-align: left; font-weight: 600; letter-spacing: 1px; }
-.gf-table td { padding: 7px 9px; border-bottom: 1px dotted #E2D5B6; color: #3E372D; }
-.gf-table tr:nth-child(even) td { background: rgba(176,141,79,0.06); }
-.gf-table tr:hover td { background: rgba(158,51,41,0.07); }
-.gf-note { font-family: var(--gf-song); font-size: 13px; line-height: 1.8; color: #6E5C42; background: rgba(176,141,79,0.07); border-left: 2px solid #B08D4F; padding: 6px 10px; margin: 4px 0 8px; }
-.gf-style-item { padding: 6px 0 10px; border-bottom: 1px dotted #E2D5B6; }
+.gf-table th { font-family: var(--gf-kai); color: #FFF3DC; background: #C4322B; padding: 7px 9px; text-align: left; font-weight: 600; letter-spacing: 1px; }
+.gf-table td { padding: 7px 9px; border-bottom: 1px dotted #E6D6A8; color: #3E372D; }
+.gf-table tr:nth-child(even) td { background: rgba(212,175,55,0.06); }
+.gf-table tr:hover td { background: rgba(196,50,43,0.07); }
+.gf-note { font-family: var(--gf-song); font-size: 13px; line-height: 1.8; color: #6E5C42; background: rgba(212,175,55,0.07); border-left: 2px solid #D4AF37; padding: 6px 10px; margin: 4px 0 8px; }
+.gf-style-item { padding: 6px 0 10px; border-bottom: 1px dotted #E6D6A8; }
 .gf-style-item:last-child { border-bottom: none; }
 .gf-step-line { display: flex; gap: 10px; align-items: flex-start; padding: 4px 0; line-height: 1.7; }
-.gf-step-no { flex: 0 0 22px; height: 22px; line-height: 22px; text-align: center; background: #9E3329; color: #F7EFE0; border-radius: 2px; font-family: var(--gf-li); font-size: 12px; }
-.gf-risk { font-family: var(--gf-song); font-size: 13px; line-height: 1.75; color: #8A3329; background: rgba(158,51,41,0.08); border-left: 3px solid #9E3329; padding: 8px 10px; margin: 4px 0 8px; }
+.gf-step-no { flex: 0 0 22px; height: 22px; line-height: 22px; text-align: center; background: #C4322B; color: #FFF3DC; border-radius: 2px; font-family: var(--gf-li); font-size: 12px; }
+.gf-risk { font-family: var(--gf-song); font-size: 13px; line-height: 1.75; color: #A82821; background: rgba(196,50,43,0.08); border-left: 3px solid #C4322B; padding: 8px 10px; margin: 4px 0 8px; }
 /* 结果列整体面板化：整列成为一张古风卷宗 */
 [data-testid="stColumn"]:has(.gf-result-label) {
     background: rgba(251,246,234,0.66);
-    border: 1px solid #E4D6B4;
-    border-top: 3px solid #9E3329;
+    border: 1px solid #E8D7A8;
+    border-top: 3px solid #C4322B;
     border-radius: 5px;
     padding: 16px 18px !important;
     box-shadow: 0 2px 12px rgba(90,70,40,0.09);
@@ -476,29 +428,29 @@ h1, h2, h3, [data-testid="stHeader"] { color: #6E2B23 !important; font-family: v
 .gf-sec { margin: 0 0 14px; }
 .gf-sec:last-child { margin-bottom: 8px; }
 .gf-sec-title {
-    font-family: var(--gf-kai); font-size: 15px; color: #7A2E24;
+    font-family: var(--gf-kai); font-size: 15px; color: #8E1F1A;
     letter-spacing: 2px; padding: 0 0 5px 20px; position: relative;
     border-bottom: 1px solid #E6D9B8; margin-bottom: 8px;
 }
-.gf-sec-title::before { content: "◆"; position: absolute; left: 0; top: 0; color: #B08D4F; font-size: 11px; }
+.gf-sec-title::before { content: "◆"; position: absolute; left: 0; top: 0; color: #D4AF37; font-size: 11px; }
 .gf-sec-body { font-size: 14px; line-height: 1.85; color: #3E372D; padding-left: 2px; }
-.gf-kv { display: flex; gap: 10px; padding: 2px 0; border-bottom: 1px dotted #E2D5B6; }
+.gf-kv { display: flex; gap: 10px; padding: 2px 0; border-bottom: 1px dotted #E6D6A8; }
 .gf-kv:last-child { border-bottom: none; }
-.gf-kv-key { font-family: var(--gf-song); color: #8A7B60; flex: 0 0 76px; }
+.gf-kv-key { font-family: var(--gf-song); color: #6E5C42; flex: 0 0 76px; }
 .gf-kv-val { flex: 1; color: #3E372D; }
 .gf-badge {
     display: inline-block; font-family: var(--gf-li); font-size: 13px;
     padding: 3px 11px; border-radius: 2px; margin: 0 6px 6px 0; letter-spacing: 1px;
 }
-.gf-badge-red  { background: #9E3329; color: #F7EFE0; border: 1px solid #7A2E24; }
-.gf-badge-gold { background: #B08D4F; color: #FBF6EA; border: 1px solid #8A6A34; }
-.gf-badge-teal { background: #1F5C57; color: #F1EADB; border: 1px solid #16443F; }
-.gf-num { font-family: var(--gf-num); font-size: 21px; color: #9E3329; font-weight: bold; }
+.gf-badge-red  { background: #C4322B; color: #FFF3DC; border: 1px solid #8E1F1A; }
+.gf-badge-gold { background: #D4AF37; color: #FDF8EC; border: 1px solid #8A6A34; }
+.gf-badge-teal { background: #126A66; color: #F1EADB; border: 1px solid #16443F; }
+.gf-num { font-family: var(--gf-num); font-size: 21px; color: #C4322B; font-weight: bold; }
 .gf-swatch-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .gf-swatch {
     display: inline-block; width: 46px; height: 46px;
-    border: 2px solid #FBF6EA; border-radius: 3px;
-    box-shadow: 0 0 0 1px #B8A986, 1px 2px 4px rgba(0,0,0,0.2);
+    border: 2px solid #FDF8EC; border-radius: 3px;
+    box-shadow: 0 0 0 1px #C9B477, 1px 2px 4px rgba(0,0,0,0.2);
     vertical-align: middle; margin-right: 8px;
 }
 .gf-swatch-label {
@@ -508,33 +460,34 @@ h1, h2, h3, [data-testid="stHeader"] { color: #6E2B23 !important; font-family: v
 /* ============ 10. 按钮：按压回弹 + 金色流光 + 墨晕扩散点击特效 ============ */
 [data-testid="stButton"] button {
     font-family: var(--gf-kai) !important;
-    background: #9E3329 !important; color: #F7EFE0 !important;
-    border: 1px solid #7A2E24 !important; border-radius: 3px !important;
+    background: linear-gradient(180deg, #D9483B, #A82821) !important; color: #FFF3DC !important;
+    border: 1px solid #D4AF37 !important; border-radius: 3px !important;
     letter-spacing: 2px; font-size: 15px !important;
     position: relative; overflow: hidden;
+    box-shadow: 0 4px 12px rgba(142,31,26,0.38);
     transition: transform .12s cubic-bezier(.34,1.56,.64,1), box-shadow .2s, background .2s, color .2s;
 }
 [data-testid="stButton"] button:hover {
-    background: #7A2E24 !important; color: #FFF6E6 !important;
-    box-shadow: 0 0 0 1px #B08D4F, 0 4px 12px rgba(158,51,41,0.35);
+    background: linear-gradient(180deg, #C4322B, #8E1F1A) !important; color: #FFF6E6 !important;
+    box-shadow: 0 0 0 1px #F3D98A, 0 8px 20px rgba(142,31,26,0.48);
     transform: translateY(-2px);
 }
 [data-testid="stButton"] button::before {
     content: ""; position: absolute; top: 0; left: -60%; width: 40%; height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(247,239,224,0.5), transparent);
+    background: linear-gradient(90deg, transparent, rgba(255,243,220,0.5), transparent);
     transform: skewX(-25deg); pointer-events: none;
 }
 [data-testid="stButton"] button:hover::before { animation: gfSheen .75s ease-out; }
 @keyframes gfSheen { to { left: 130%; } }
 [data-testid="stButton"] button:active {
     transform: translateY(1px) scale(.95);
-    box-shadow: inset 0 2px 8px rgba(0,0,0,0.35), 0 0 0 2px #B08D4F;
-    background: #6E2B23 !important;
+    box-shadow: inset 0 2px 8px rgba(0,0,0,0.35), 0 0 0 2px #D4AF37;
+    background: #8E1F1A !important;
 }
 [data-testid="stButton"] button::after {
     content: ""; position: absolute; left: 50%; top: 50%;
     width: 12px; height: 12px; margin: -6px 0 0 -6px; border-radius: 50%;
-    background: radial-gradient(circle, rgba(247,239,224,0.6), rgba(176,141,79,0.3) 55%, transparent 72%);
+    background: radial-gradient(circle, rgba(255,243,220,0.6), rgba(212,175,55,0.3) 55%, transparent 72%);
     transform: scale(0); opacity: 0; pointer-events: none;
 }
 [data-testid="stButton"] button:active::after { animation: gfInkRipple .5s ease-out; }
@@ -544,36 +497,36 @@ h1, h2, h3, [data-testid="stHeader"] { color: #6E2B23 !important; font-family: v
 }
 
 [data-testid="stAlert"] {
-    background: #F3E9D2 !important;
-    border: 1px solid #D9C8A6 !important;
-    border-left: 4px solid #9E3329 !important;
+    background: #F7EEDC !important;
+    border: 1px solid #E0CB95 !important;
+    border-left: 4px solid #C4322B !important;
     border-radius: 3px !important;
 }
-.stCaption { color: #8A7B60 !important; }
-hr { border-color: #D9C8A6 !important; }
-[data-baseweb="tab-list"] { gap: 6px; border-bottom: 2px solid #B08D4F; }
+.stCaption { color: #6E5C42 !important; }
+hr { border-color: #E0CB95 !important; }
+[data-baseweb="tab-list"] { gap: 6px; border-bottom: 2px solid #D4AF37; }
 [data-baseweb="tab"] {
     font-family: var(--gf-kai) !important;
     font-size: 16px !important; letter-spacing: 2px;
-    color: #6E5C42 !important; background: #EDE2CC !important;
-    border: 1px solid #D9C8A6 !important; border-bottom: none !important;
+    color: #6E5C42 !important; background: #E8D9B8 !important;
+    border: 1px solid #E0CB95 !important; border-bottom: none !important;
     border-radius: 4px 4px 0 0 !important; padding: 10px 18px !important;
 }
 [aria-selected="true"][data-baseweb="tab"] {
-    background: #9E3329 !important; color: #F7EFE0 !important;
-    border-color: #9E3329 !important;
+    background: #C4322B !important; color: #FFF3DC !important;
+    border-color: #C4322B !important;
 }
 
 /* 小标题上的朱砂方印（楷体） */
 .gf-step-title {
     font-family: var(--gf-kai); font-size: 16px;
-    color: #6E2B23; letter-spacing: 2px; margin: 6px 0 10px;
+    color: #8E1F1A; letter-spacing: 2px; margin: 6px 0 10px;
     padding-left: 26px; position: relative;
 }
 .gf-step-title::before {
     content: "壹"; position: absolute; left: 0; top: 0;
     width: 20px; height: 20px; line-height: 20px; text-align: center;
-    font-size: 11px; color: #F7EFE0; background: #9E3329;
+    font-size: 11px; color: #FFF3DC; background: #C4322B;
     border-radius: 2px; letter-spacing: 0;
 }
 
@@ -617,21 +570,21 @@ hr { border-color: #D9C8A6 !important; }
 /* 揭幕转场层 */
 .gf-curtain {
     position: fixed; inset: 0; z-index: 9999; pointer-events: none;
-    background: #F4ECD8;
+    background: #F7EEDC;
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
     animation: gfCurtainLift 0.7s cubic-bezier(0.65, 0, 0.35, 1) forwards;
 }
 .gf-curtain-seal {
     width: 76px; height: 76px; line-height: 76px; text-align: center;
-    background: #9E3329; color: #F7EFE0;
+    background: #C4322B; color: #FFF3DC;
     font-family: var(--gf-li); font-size: 30px;
-    border: 3px double #F7EFE0; outline: 2px solid #9E3329;
+    border: 3px double #FFF3DC; outline: 2px solid #C4322B;
     box-shadow: 3px 4px 10px rgba(0,0,0,0.2);
     animation: gfSealPulse 0.7s ease-out both;
 }
 .gf-curtain-line {
-    margin-top: 18px; width: 160px; height: 3px; background: #B08D4F;
+    margin-top: 18px; width: 160px; height: 3px; background: #D4AF37;
     animation: gfLineGrow 0.7s ease-out both;
 }
 @keyframes gfCurtainLift {

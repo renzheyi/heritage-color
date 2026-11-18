@@ -78,35 +78,131 @@ if "background_uri" in _inspect.signature(apply_theme).parameters:
 else:
     apply_theme()
 
-# Streamlit Cloud 偶发只刷新 app.py、theme.py 仍是旧缓存。旧主题没有 .gf-nav-icon
-# 规则，导致门牌图标按原始尺寸撑开卡片，文字被按钮遮住。这里把新版关键样式
-# 随 app.py 一起注入，任何缓存状态下都能正确显示门牌、图标与描边建筑背景。
+# Streamlit Cloud 偶发只刷新 app.py、theme.py 仍是旧缓存。这里把新版关键样式
+# 随 app.py 一起注入：圆周布局、去外部圆环、图标尺寸、门牌高度、全新朱砂鎏金配色，
+# 任何缓存状态下都能正确显示，不依赖 theme.py 是否刷新。
 _BG_URI_FOR_PATCH = _background_uri()
 _CRITICAL_CSS = f"""
 <style>
+:root {{
+    --gf-red: #C4322B; --gf-red-deep: #8E1F1A; --gf-red-ink: #6E1713;
+    --gf-gold: #D4AF37; --gf-gold-deep: #A8801F;
+    --gf-paper: #F7EEDC; --gf-card: #FDF8EC; --gf-teal: #126A66; --gf-ink: #2B1D16;
+}}
 [data-testid="stAppViewContainer"] {{
-    background-color: #F4ECD8 !important;
+    background-color: #F7EEDC !important;
     background-image:
-        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 56 56'><path d='M8 8 H47 V47 H8 V8 M15 15 H40 V40 H15 Z M24 8 V15 M24 40 V47 M8 24 H15 M40 24 H47 M27 27 H33 V33 H27 Z' fill='none' stroke='%23B08D4F' stroke-opacity='0.07' stroke-width='1'/></svg>"),
-        linear-gradient(rgba(244,236,216,0.30), rgba(244,236,216,0.24)),
+        radial-gradient(circle at 50% 42%, rgba(212,175,55,0.16), transparent 58%),
+        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 56 56'><path d='M8 8 H47 V47 H8 V8 M15 15 H40 V40 H15 Z M24 8 V15 M24 40 V47 M8 24 H15 M40 24 H47 M27 27 H33 V33 H27 Z' fill='none' stroke='%23A8801F' stroke-opacity='0.10' stroke-width='1'/></svg>"),
+        linear-gradient(rgba(247,238,220,0.26), rgba(228,210,172,0.30)),
         url("{_BG_URI_FOR_PATCH}") !important;
-    background-size: 56px 56px, cover, cover !important;
-    background-position: center, center, center center !important;
-    background-attachment: fixed, fixed, fixed !important;
-    background-repeat: repeat, no-repeat, no-repeat !important;
+    background-size: cover, 56px 56px, cover, cover !important;
+    background-position: center, center, center, center center !important;
+    background-attachment: fixed, fixed, fixed, fixed !important;
+    background-repeat: no-repeat, repeat, no-repeat, no-repeat !important;
 }}
+h1, h2, h3, [data-testid="stHeader"] {{ color: #8E1F1A !important; }}
+.gf-title {{ color: #8E1F1A !important; border-bottom-color: #D4AF37 !important; }}
+.gf-subtitle {{ color: #6E5C42 !important; }}
+.gf-top-rule, .gf-bottom-rule, .gf-meander {{
+    background-color: #8E1F1A !important; border-color: #D4AF37 !important;
+}}
+
+/* ===== 五门环形舞台：正上 / 右上 / 右下 / 左下 / 左上，间隔 72° ===== */
+div[data-testid="stVerticalBlock"]:has(.gf-ring-stage-marker):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-stage-marker)) {{
+    position: relative;
+    flex: 0 0 auto !important;
+    --r: clamp(195px, 21vw, 225px);
+    width: 100%; max-width: 1100px;
+    height: calc(var(--r) + var(--r) + 290px);
+    margin: -100px auto 6px !important;
+}}
+/* 取消舞台内部容器的定位上下文，让圆心与门牌相对舞台绝对定位 */
+div[data-testid="stVerticalBlock"]:has(.gf-ring-stage-marker):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-stage-marker)) [data-testid="stElementContainer"],
+div[data-testid="stVerticalBlock"]:has(.gf-ring-stage-marker):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-stage-marker)) [data-testid="stMarkdown"],
+div[data-testid="stVerticalBlock"]:has(.gf-ring-stage-marker):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-stage-marker)) [data-testid="stMarkdownContainer"],
+div[data-testid="stVerticalBlock"]:has(.gf-ring-stage-marker):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-stage-marker)) [data-testid="stLayoutWrapper"] {{ position: static !important; }}
+.gf-ring-stage-marker, .gf-ring-node-marker {{ display: none !important; }}
+.gf-ring-center {{
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 2;
+}}
+/* 去除「考色」外部圆环，只留圆形球体本身 */
+.gf-orbit-ring, .gf-orbit-wrap::before, .gf-orbit-wrap::after,
+.gf-ring-track, .gf-ring-track-inner {{ display: none !important; }}
+.gf-ring-center .gf-orbit-core {{
+    position: relative;
+    width: 132px !important; height: 132px !important; font-size: 26px !important;
+    background:
+        radial-gradient(circle at 32% 26%, rgba(255,244,218,0.65), rgba(255,244,218,0) 44%),
+        radial-gradient(circle at 68% 76%, rgba(80,12,10,0.55), rgba(80,12,10,0) 56%),
+        radial-gradient(circle at 38% 32%, #E05A4A, #C4322B 58%, #7E1712 100%) !important;
+    border: 3px double #F3D98A !important;
+    box-shadow:
+        inset -9px -11px 24px rgba(70,10,8,0.55),
+        inset 7px 7px 20px rgba(255,238,200,0.30),
+        0 0 0 6px rgba(212,175,55,0.18),
+        0 10px 30px rgba(142,31,26,0.45) !important;
+}}
+.gf-ring-center .gf-orbit-core small {{ color: #F3D98A !important; }}
+.gf-ring-center .gf-orbit-core::before {{
+    content: ""; position: absolute; left: 28px; top: 22px;
+    width: 32px; height: 19px; border-radius: 50%;
+    background: radial-gradient(ellipse, rgba(255,248,232,0.72), rgba(255,248,232,0) 70%);
+    transform: rotate(-28deg); pointer-events: none;
+}}
+
+div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-node-marker)) {{
+    position: absolute; width: 224px; z-index: 3;
+    transform: translate(-50%, -50%);
+    transition: transform .28s cubic-bezier(.34,1.56,.64,1);
+}}
+div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker.n1):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-node-marker)) {{ left: 50%; top: calc(50% - var(--r)); }}
+div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker.n2):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-node-marker)) {{ left: calc(50% + var(--r) * 0.951); top: calc(50% - var(--r) * 0.309); }}
+div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker.n3):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-node-marker)) {{ left: calc(50% + var(--r) * 0.588); top: calc(50% + var(--r) * 0.809); }}
+div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker.n4):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-node-marker)) {{ left: calc(50% - var(--r) * 0.588); top: calc(50% + var(--r) * 0.809); }}
+div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker.n5):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-node-marker)) {{ left: calc(50% - var(--r) * 0.951); top: calc(50% - var(--r) * 0.309); }}
+div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-node-marker)):hover {{ z-index: 6; }}
+div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker.n1):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-node-marker)):hover {{ transform: translate(-50%, calc(-50% - 8px)) scale(1.03); }}
+div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker.n2):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-node-marker)):hover,
+div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker.n3):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-node-marker)):hover,
+div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker.n4):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-node-marker)):hover,
+div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker.n5):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-node-marker)):hover {{ transform: translate(-50%, calc(-50% - 8px)) scale(1.03); }}
+
 .gf-nav-card {{
-    box-sizing: border-box !important;
+    box-sizing: border-box !important; width: 100% !important;
     height: 158px !important; min-height: 158px; max-height: 158px;
-    overflow: hidden;
+    overflow: hidden; background-color: #FDF8EC !important;
+    border-color: #D4AF37 !important; border-top-color: #C4322B !important;
+    border-bottom-color: #D4AF37 !important;
 }}
+.gf-nav-num {{ background: #C4322B !important; border-color: #8E1F1A !important; }}
+.gf-nav-title {{ color: #8E1F1A !important; }}
 .gf-nav-icon {{
     position: absolute !important; right: 12px !important; top: 12px !important;
     width: 34px !important; height: 34px !important;
     object-fit: contain; pointer-events: none;
 }}
-.gf-orbit-core {{ width: 118px !important; height: 118px !important; }}
-.gf-orbit-wrap::before {{ width: 330px; height: 330px; }}
+[data-testid="stButton"] button {{
+    background: linear-gradient(180deg, #D9483B, #A82821) !important;
+    border: 1px solid #D4AF37 !important;
+    box-shadow: 0 4px 12px rgba(142,31,26,0.38) !important;
+}}
+[data-testid="stButton"] button:hover {{
+    background: linear-gradient(180deg, #C4322B, #8E1F1A) !important;
+    box-shadow: 0 0 0 1px #F3D98A, 0 8px 20px rgba(142,31,26,0.48) !important;
+}}
+
+@media (max-width: 760px) {{
+    div[data-testid="stVerticalBlock"]:has(.gf-ring-stage-marker):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-stage-marker)) {{
+        height: auto; margin-top: 0 !important; display: flex; flex-direction: column; align-items: center; gap: 14px;
+    }}
+    .gf-ring-center {{ position: relative; left: auto; top: auto; transform: none; order: -1; }}
+    div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-node-marker)) {{
+        position: relative; left: auto !important; top: auto !important;
+        transform: none !important; width: min(100%, 320px);
+    }}
+    div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-node-marker)):hover {{ transform: translateY(-6px) scale(1.02) !important; }}
+}}
 </style>
 """
 st.markdown(_CRITICAL_CSS, unsafe_allow_html=True)
@@ -163,16 +259,23 @@ def _icon_uri(name: str) -> str:
         return "data:image/png;base64," + base64.b64encode(f.read()).decode()
 
 
-def nav_block(num: str, title: str, desc: str, btn_key: str, icon: str = ""):
+def nav_block(num: str, title: str, desc: str, btn_key: str,
+              icon: str = "", slot_class: str = ""):
     """渲染一个导航方块（含真实 st.button），返回是否被点击。整块视觉即一个门牌。"""
     icon_html = ""
     if icon:
         uri = _icon_uri(icon)
         if uri:
             icon_html = f'<img class="gf-nav-icon" src="{uri}" alt="">'
+    cls = "gf-nav-card" + ((" " + slot_class) if slot_class else "")
+    marker = ""
+    if slot_class:
+        node_cls = slot_class.split()[-1]  # n1 ... n5
+        marker = f'<div class="gf-ring-node-marker {node_cls}"></div>'
     with st.container():
         st.markdown(
-            f'<div class="gf-nav-card">'
+            marker
+            + f'<div class="{cls}">'
             f'<span class="gf-card-glow"></span>'
             f'{icon_html}'
             f'<div class="gf-nav-num">{num}</div>'
@@ -372,51 +475,37 @@ if view == "home":
         'letter-spacing:2px;margin:6px 0 6px;">择一门而入，探文物色彩之奥</div>',
         unsafe_allow_html=True,
     )
-    # 五门环绕中心「考色」球体：保留真实 st.button 的门牌形式，
-    # 以 3×3 网格环绕排布（上壹 / 左伍-中心球-右贰 / 左肆-右叁），
-    # 任何 CSS 缓存状态下按钮都可见可点，不会退化成蓝色下划线链接。
-    # —— 上：壹 色彩考证 ——
-    _, c1, _ = st.columns([1, 1.15, 1], gap="large")
-    with c1:
-        if nav_block("壹", "色彩考证",
-                     "参酌现存残留色、文献与朝代，推求文物彩画之初色。",
-                     "go_auth", icon="palette"):
-            goto("auth")
-
-    # —— 中：伍 · 考色球体 · 贰 ——
-    m1, m2, m3 = st.columns([1, 1.15, 1], gap="large")
-    with m1:
-        if nav_block("伍", "材质辨识与配材",
-                     "上传照片辨识木石金属等材质，据病害给出修复所需材料。",
-                     "go_material", icon="rock"):
-            goto("material")
-    with m2:
+    # 五门真正沿圆周均匀环绕：正上 → 右上 → 右下 → 左下 → 左上，
+    # 每门间隔 72°，中心只保留「考色 / 五门拱卫」球体，外部圆圈全部去除。
+    # 门牌仍是原来的卡片 + 真实 st.button，样式与文案一字未改。
+    with st.container():
+        st.markdown('<div class="gf-ring-stage-marker"></div>', unsafe_allow_html=True)
         st.markdown(
-            '<div class="gf-orbit-wrap">'
-            '<div class="gf-orbit-center" style="margin:14px auto 0;">'
-            '<div class="gf-orbit-ring"></div>'
+            '<div class="gf-ring-center">'
             '<div class="gf-orbit-core">考色<small>五门拱卫</small></div>'
-            '</div></div>',
+            '</div>',
             unsafe_allow_html=True,
         )
-    with m3:
+        if nav_block("壹", "色彩考证",
+                     "参酌现存残留色、文献与朝代，推求文物彩画之初色。",
+                     "go_auth", icon="palette", slot_class="gf-ring-slot n1"):
+            goto("auth")
         if nav_block("贰", "颜料推演",
                      "由一色反求所用颜料与调配之法，青绿朱黄，皆溯其源。",
-                     "go_infer", icon="brush"):
+                     "go_infer", icon="brush", slot_class="gf-ring-slot n2"):
             goto("infer")
-
-    # —— 下：肆 修复决策 · 叁 建筑风格识别 ——
-    b1, b2, b3 = st.columns([1, 1.15, 1], gap="large")
-    with b1:
-        if nav_block("肆", "修复决策",
-                     "察颜料之性、病害之由、环境之宜，出最小干预之修复策。",
-                     "go_restore", icon="scroll"):
-            goto("restore")
-    with b3:
         if nav_block("叁", "建筑风格识别",
                      "由色彩与用色制度，辨识和玺、旋子、苏式、敦煌等彩画风格。",
-                     "go_style", icon="castle"):
+                     "go_style", icon="castle", slot_class="gf-ring-slot n3"):
             goto("style")
+        if nav_block("肆", "修复决策",
+                     "察颜料之性、病害之由、环境之宜，出最小干预之修复策。",
+                     "go_restore", icon="scroll", slot_class="gf-ring-slot n4"):
+            goto("restore")
+        if nav_block("伍", "材质辨识与配材",
+                     "上传照片辨识木石金属等材质，据病害给出修复所需材料。",
+                     "go_material", icon="rock", slot_class="gf-ring-slot n5"):
+            goto("material")
 
     meander()
     st.markdown(

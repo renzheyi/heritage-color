@@ -120,20 +120,24 @@ FAQS = [
 
 
 # ---------------------------------------------------------------- 组件
-def nav(active: str = "home") -> str:
-    """官网顶部导航条（同页锚点滚动，右侧由 app.py 放真实 CTA 按钮）。"""
+def nav(active: str = "home", qs: str = "") -> str:
+    """官网顶部导航条：点击板块跳转到对应独立页面。
+
+    qs 为需沿用的查询参数（如 "&sharecode=T3T3IUSVPP"），
+    发布平台要求站内跳转也必须带分享码，否则会返回 403。
+    """
     items = [
-        ("#biz-capability", "核心能力"),
-        ("#biz-solution", "解决方案"),
-        ("#biz-tech", "技术壁垒"),
-        ("#biz-pricing", "服务方案"),
-        ("#biz-process", "合作流程"),
-        ("#biz-faq", "常见问题"),
+        ("home", "核心能力"),
+        ("solutions", "解决方案"),
+        ("moat", "技术壁垒"),
+        ("pricing", "服务方案"),
+        ("process", "合作流程"),
+        ("faq", "常见问题"),
     ]
     links = "".join(
-        f'<a class="biz-nav-link{" is-active" if active == "home" and i == 0 else ""}" '
-        f'href="{href}" target="_self">{_esc_text(label)}</a>'
-        for i, (href, label) in enumerate(items)
+        f'<a class="biz-nav-link{" is-active" if active == key else ""}" '
+        f'href="?view={key}{qs}" target="_self">{_esc_text(label)}</a>'
+        for key, label in items
     )
     return (
         '<div class="biz-nav" id="biz-top">'
@@ -209,6 +213,57 @@ def section_head(no: str, en: str, title: str, desc: str, anchor: str) -> str:
     )
 
 
+# 首页「板块入口」：只放功能方块，点击整块跳转到对应独立页面。
+# 各板块的具体内容不再平铺在首页，避免首屏过长、过密。
+BOARDS = [
+    ("01", "解", "解决方案", "面向文博机构、保护工程、数字展陈与科研教学的落地场景", "solutions"),
+    ("02", "技", "技术壁垒", "36 通道光谱 · Kubelka-Munk 混色 · 贝叶斯与蒙特卡洛", "moat"),
+    ("03", "案", "服务方案", "体验版 / 专业版 / 机构版，按规模与数据合规灵活选择", "pricing"),
+    ("04", "程", "合作流程", "需求沟通 → 场景评估 → 方案试用 → 交付与持续服务", "process"),
+    ("05", "问", "常见问题", "结论效力、数据合规、系统对接与不确定度说明", "faq"),
+    ("06", "约", "预约演示", "留下机构与需求，按真实文保场景准备演示内容", "demo"),
+    ("07", "购", "在线支付", "微信 / 支付宝 / 云闪付 / 数字人民币 / 对公转账", "pay"),
+]
+
+
+def boards(qs: str = "", compact: bool = False, active: str = "") -> str:
+    """板块入口网格（真实链接，点击整块自动跳转到对应功能页）。
+
+    compact=True 用于板块页底部：只显示一行小标题，不重复大标题；
+    active 为当前板块 key，对应方块高亮，避免又跳回本页。
+    """
+    cards = "".join(
+        f'<a class="biz-board{" is-current" if active == key else ""}" '
+        f'href="?view={key}{qs}" target="_self">'
+        f'<span class="biz-board-no">{no}</span>'
+        f'<span class="biz-board-icon">{icon}</span>'
+        f'<span class="biz-board-title">{_esc_text(title)}</span>'
+        f'<span class="biz-board-desc">{_esc_text(desc)}</span>'
+        '<span class="biz-board-go">进入板块　→</span>'
+        '</a>'
+        for no, icon, title, desc, key in BOARDS
+    )
+    if compact:
+        head = (
+            '<div class="biz-boards-head is-compact">'
+            '<div class="biz-section-no">CONTINUE EXPLORING / 继续浏览</div>'
+            '<h2 class="biz-h2">其它板块</h2>'
+            '<div class="biz-section-line"></div>'
+            '</div>'
+        )
+    else:
+        head = (
+            '<div class="biz-boards-head">'
+            '<div class="biz-section-no">PLATFORM SECTIONS / 平台板块</div>'
+            '<h2 class="biz-h2">按需进入 · 各板块独立呈现</h2>'
+            '<p class="biz-section-desc">首页只保留入口与核心能力，点击下方任一板块，'
+            '自动跳转到该功能的完整内容页；看完可一键返回总览。</p>'
+            '<div class="biz-section-line"></div>'
+            '</div>'
+        )
+    return head + f'<div class="biz-boards">{cards}</div>'
+
+
 def solutions() -> str:
     cards = ""
     for s in SOLUTIONS:
@@ -250,12 +305,13 @@ def tech_moat() -> str:
     )
 
 
-def pricing() -> str:
+def pricing(qs: str = "") -> str:
     cards = ""
     for p in PLANS:
         items = "".join(f'<li><span>✓</span>{_esc_text(x)}</li>' for x in p["items"])
         badge = '<div class="biz-plan-badge">推荐方案</div>' if p["featured"] else ""
-        href = p.get("href", "?view=home")
+        # href 里已含 ?view=xxx，追加分享码等参数（形如 "&sharecode=..."）
+        href = p.get("href", "?view=home") + qs
         cards += (
             f'<article class="biz-plan{" is-featured" if p["featured"] else ""}">'
             f'{badge}'

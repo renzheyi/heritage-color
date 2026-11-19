@@ -88,6 +88,40 @@ if "background_uri" in _inspect.signature(apply_theme).parameters:
 else:
     apply_theme()
 
+# ---------------------------------------------------------------- 站内跳转配置
+# 发布平台要求访问链接带分享码：裸 "?view=xxx" 会返回 403。
+# 因此所有 HTML 站内链接都沿用当前 URL 上的 sharecode 等参数（view/product 除外）。
+from urllib.parse import quote as _urlquote
+
+
+def _build_share_qs() -> str:
+    parts = []
+    for _k, _v in st.query_params.items():
+        if _k in ("view", "product"):
+            continue
+        _val = _v if isinstance(_v, str) else (_v[0] if _v else "")
+        if _val:
+            parts.append(f"{_urlquote(str(_k))}={_urlquote(str(_val))}")
+    return ("&" + "&".join(parts)) if parts else ""
+
+
+_QS = _build_share_qs()
+
+# 首页只放板块入口；各板块的具体内容在这些独立页面里呈现。
+# (编号, 英文标签, 标题, 说明, commerce 中的渲染函数名)
+_BOARD_PAGES = {
+    "solutions": ("02", "INDUSTRY SOLUTIONS", "面向真实文保场景的解决方案",
+                  "不同机构、不同阶段的色彩工作，需要不同的证据链与交付物。", "solutions"),
+    "moat": ("03", "TECHNOLOGY MOAT", "技术壁垒 · 数智中枢",
+             "以色彩科学与概率推断为内核，而非滤镜式上色；每条结论都可回到物理与文献证据。", "tech_moat"),
+    "pricing": ("04", "SERVICE PLANS", "服务方案",
+                "从在线试用到机构私有化部署，按项目规模与数据合规要求灵活选择。", "pricing"),
+    "process": ("05", "COOPERATION PROCESS", "合作流程",
+                "四步完成从需求沟通到交付上线，全程有明确的验收口径。", "process"),
+    "faq": ("06", "FREQUENTLY ASKED QUESTIONS", "常见问题",
+            "关于结论效力、数据合规与部署方式，先把边界说清楚。", "faq"),
+}
+
 # Streamlit Cloud 偶发只刷新 app.py、theme.py 仍是旧缓存。这里把新版关键样式
 # 随 app.py 一起注入：圆周布局、去外部圆环、图标尺寸、门牌高度、全新朱砂鎏金配色，
 # 任何缓存状态下都能正确显示，不依赖 theme.py 是否刷新。
@@ -910,6 +944,77 @@ _BIZ_CSS = """
   color:var(--biz-red-deep) !important; letter-spacing:1.5px;
   border-top:1px solid var(--biz-line); padding-top:14px; margin-top:16px;
 }
+
+/* ===== 首页板块入口方块：整块可点，点击进入独立页面 ===== */
+.biz-boards-head{margin:34px 0 18px; scroll-margin-top:18px;}
+.biz-boards-head.is-compact{margin:34px 0 14px;}
+.biz-boards{
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(212px,1fr));
+  gap:16px; margin:0 0 20px;
+}
+.biz-board{
+  position:relative; display:flex; flex-direction:column; align-items:flex-start;
+  box-sizing:border-box; min-height:186px; padding:18px 18px 16px;
+  background:linear-gradient(165deg,#FDF8EC 0%,#F7EEDC 100%);
+  border:1px solid var(--biz-line); border-top:4px solid var(--biz-red);
+  border-radius:6px; text-decoration:none !important; color:inherit !important;
+  box-shadow:0 4px 14px rgba(43,29,22,.10); overflow:hidden;
+  transition:transform .28s cubic-bezier(.34,1.56,.64,1),box-shadow .28s,border-color .28s;
+}
+.biz-board::before{
+  content:""; position:absolute; inset:4px; border:1px solid rgba(212,175,55,.22);
+  border-radius:3px; pointer-events:none;
+}
+.biz-board::after{
+  content:""; position:absolute; right:-30px; bottom:-30px;
+  width:96px; height:96px; border:1px solid rgba(196,50,43,.14);
+  border-radius:50%; pointer-events:none; transition:transform .4s;
+}
+.biz-board:hover{
+  transform:translateY(-6px); border-color:var(--biz-gold);
+  border-top-color:var(--biz-red);
+  box-shadow:0 14px 30px rgba(142,31,26,.22);
+}
+.biz-board:hover::after{transform:scale(1.5) rotate(20deg);}
+.biz-board:active{transform:translateY(-2px) scale(.99);}
+.biz-board-no{
+  position:absolute; top:14px; right:16px;
+  font-family:Georgia,serif !important; font-size:22px !important;
+  color:#D9C398 !important; letter-spacing:1px;
+}
+.biz-board-icon{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:38px; height:38px; flex:0 0 38px; margin-bottom:12px;
+  background:var(--biz-red); color:#FFF3D6;
+  font-family:var(--gf-kai),"KaiTi",serif !important; font-size:21px !important;
+  border:1px solid var(--biz-gold); border-radius:4px;
+  box-shadow:inset 0 0 0 2px rgba(255,243,214,.25);
+}
+.biz-board-title{
+  font-family:var(--biz-sans) !important; font-size:17px !important;
+  font-weight:800 !important; color:var(--biz-red-deep) !important;
+  letter-spacing:2px !important; margin:0 0 8px !important;
+}
+.biz-board-desc{
+  font-family:var(--biz-sans) !important; font-size:12.5px !important;
+  line-height:1.8 !important; color:#5C4C39 !important; flex:1; margin-bottom:12px;
+}
+.biz-board-go{
+  font-family:var(--biz-sans) !important; font-size:12px !important;
+  font-weight:700 !important; letter-spacing:1px;
+  color:var(--biz-red-deep) !important;
+  border-top:1px dashed var(--biz-line); padding-top:10px; width:100%;
+}
+.biz-board:hover .biz-board-go{color:var(--biz-red) !important;}
+.biz-board.is-current{
+  border-color:var(--biz-gold) !important; border-top-color:var(--biz-gold) !important;
+  background:linear-gradient(165deg,#FBF3DD,#F2E4C0);
+  opacity:.62;
+}
+.biz-board.is-current .biz-board-go::after{content:"　· 当前板块"; font-weight:400;}
+@media (max-width:900px){
+  .biz-boards{grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:12px;}
+}
 </style>
 """
 st.markdown(_BIZ_CSS, unsafe_allow_html=True)
@@ -1056,6 +1161,17 @@ _MOBILE_CSS = """
   /* ---- 首页标语 / 免责声明（覆盖 inline style 的过密小字） ---- */
   div[style*="color:#7A6A50;font-size:15px"]{ font-size: 13.5px !important; letter-spacing: 1.5px !important; }
   div[style*="color:#8A7B60;font-size:12px"]{ font-size: 12.5px !important; }
+
+  /* ---- 板块入口方块：单列、留白充足、触控区够大 ---- */
+  .biz-boards-head{ margin: 30px 0 16px !important; }
+  .biz-boards{ grid-template-columns: 1fr !important; gap: 14px !important; margin-bottom: 16px !important; }
+  .biz-board{ min-height: 0 !important; padding: 18px 18px 16px !important; }
+  .biz-board-icon{ width: 40px !important; height: 40px !important; flex-basis: 40px !important; margin-bottom: 12px !important; }
+  .biz-board-title{ font-size: 18px !important; margin-bottom: 8px !important; }
+  .biz-board-desc{ font-size: 13px !important; line-height: 1.85 !important; margin-bottom: 14px !important; }
+  .biz-board-go{ font-size: 13px !important; padding-top: 12px !important; }
+  .biz-board-no{ font-size: 22px !important; }
+  .biz-boards-head.is-compact{ margin: 28px 0 14px !important; }
 }
 </style>
 """
@@ -1146,7 +1262,7 @@ def heritage_carousel():
             continue
         data = _carousel_thumb(path)
         slides += (
-            f'<a class="gf-slide" href="?view=hc_{_esc(h["key"])}" target="_self" '
+            f'<a class="gf-slide" href="?view=hc_{_esc(h["key"])}{_QS}" target="_self" '
             f'title="点击进入 · {_esc(h["name"])}">'
             f'<img src="data:image/jpeg;base64,{data}" alt="{_esc(h["caption"])}">'
             f'<div class="gf-slide-cap">'
@@ -1450,9 +1566,12 @@ def ai_polish_block(text_key: str, label: str = "文献描述", dynasty_key: str
 enter_animation()
 st.markdown('<div class="gf-top-rule"></div>', unsafe_allow_html=True)
 if _BIZ_OK:
-    # 主页由完整导航条承担品牌展示；内页显示精简品牌栏（避免品牌信息重复出现）。
+    # 主页与各板块页显示完整导航（板块页高亮当前板块，便于互相跳转）；
+    # 功能/收银台等内页显示精简品牌栏（避免品牌信息重复出现）。
     _hdr_view = st.query_params.get("view") or st.session_state.get("view", "home")
-    if _hdr_view != "home":
+    if _hdr_view in _BOARD_PAGES:
+        st.markdown(biz.nav(active=_hdr_view, qs=_QS), unsafe_allow_html=True)
+    elif _hdr_view != "home":
         st.markdown(
             '<div class="biz-nav" id="biz-brand">'
             '<div class="biz-nav-inner">'
@@ -1500,7 +1619,8 @@ st.markdown(
 # 支持三种导航：① 环形门牌用 ?view=xxx 链接；② 程序页按钮用 session_state；
 # ③ 古建案例页用 ?view=hc_<key> 链接。
 _VALID_VIEWS = ("home", "auth", "infer", "style", "restore", "material",
-                "tech", "demo", "pay", "inquiries")
+                "tech", "demo", "pay", "inquiries",
+                "solutions", "moat", "pricing", "process", "faq")
 _qp_view = st.query_params.get("view")
 if _qp_view:
     if _qp_view in _VALID_VIEWS or _qp_view.startswith("hc_"):
@@ -1516,7 +1636,7 @@ view = st.session_state["view"]
 if view == "home":
     # ======================== 商业化官网首屏（可选增强，缺失模块时自动跳过） ======
     if _BIZ_OK:
-        st.markdown(biz.nav(), unsafe_allow_html=True)
+        st.markdown(biz.nav(active="home", qs=_QS), unsafe_allow_html=True)
         _hl, _hr = st.columns([1.16, 0.84])
         with _hl:
             st.markdown(biz.hero(), unsafe_allow_html=True)
@@ -1605,73 +1725,51 @@ if view == "home":
     )
     st.markdown('<div class="gf-bottom-rule"></div>', unsafe_allow_html=True)
 
-    # ======================== 商业化官网：解决方案 / 技术 / 商务 / CTA ==========
+    # ============ 平台板块入口（首页只放入口，具体内容在各独立页面） ============
     if _BIZ_OK:
-        st.markdown(
-            biz.section_head(
-                "02", "INDUSTRY SOLUTIONS", "面向真实文保场景的解决方案",
-                "不同机构、不同阶段的色彩工作，需要不同的证据链与交付物。",
-                "biz-solution",
-            ),
-            unsafe_allow_html=True,
-        )
-        st.markdown(biz.solutions(), unsafe_allow_html=True)
+        st.markdown(biz.boards(_QS), unsafe_allow_html=True)
 
-        st.markdown(
-            biz.section_head(
-                "03", "TECHNOLOGY MOAT", "技术壁垒 · 数智中枢",
-                "以色彩科学与概率推断为内核，而非滤镜式上色；每条结论都可回到物理与文献证据。",
-                "biz-tech",
-            ),
-            unsafe_allow_html=True,
-        )
-        st.markdown(biz.tech_moat(), unsafe_allow_html=True)
-        _ml, _mm, _mr = st.columns([1, 1.5, 1])
-        with _mm:
-            if st.button("◈　进入数智中枢 · 查看算法内核", key="moat_tech",
-                         use_container_width=True):
-                goto("tech")
 
-        st.markdown(
-            biz.section_head(
-                "04", "SERVICE PLANS", "服务方案",
-                "从在线试用到机构私有化部署，按项目规模与数据合规要求灵活选择。",
-                "biz-pricing",
-            ),
-            unsafe_allow_html=True,
-        )
-        st.markdown(biz.pricing(), unsafe_allow_html=True)
-
-        st.markdown(
-            biz.section_head(
-                "05", "COOPERATION PROCESS", "合作流程",
-                "四步完成从需求沟通到交付上线，全程有明确的验收口径。",
-                "biz-process",
-            ),
-            unsafe_allow_html=True,
-        )
-        st.markdown(biz.process(), unsafe_allow_html=True)
-
-        st.markdown(
-            biz.section_head(
-                "06", "FREQUENTLY ASKED QUESTIONS", "常见问题",
-                "关于结论效力、数据合规与部署方式，先把边界说清楚。",
-                "biz-faq",
-            ),
-            unsafe_allow_html=True,
-        )
-        st.markdown(biz.faq(), unsafe_allow_html=True)
-
-        st.markdown(biz.cta_band(), unsafe_allow_html=True)
-        _ca, _cb1, _cb2, _cd = st.columns([0.8, 1.3, 1.3, 0.8])
-        with _cb1:
-            if st.button("▶　立即免费体验", key="cta_experience",
-                         use_container_width=True):
-                goto("auth")
-        with _cb2:
-            if st.button("预约商业演示　→", key="cta_demo",
-                         use_container_width=True):
-                goto("demo")
+# ================================================================ 板块独立页
+# 首页只保留入口；解决方案 / 技术壁垒 / 服务方案 / 合作流程 / 常见问题
+# 各自成为独立页面，点击首页方块或顶部导航自动跳转过来。
+elif view in _BOARD_PAGES:
+    back_button()
+    _no, _en, _title, _desc, _render_name = _BOARD_PAGES[view]
+    st.markdown(
+        biz.section_head(_no, _en, _title, _desc, "biz-" + view),
+        unsafe_allow_html=True,
+    )
+    if _BIZ_OK:
+        _render = getattr(biz, _render_name, None)
+        if _render is not None:
+            # 服务方案的价格卡含站内跳转链接，需沿用 sharecode
+            _html = _render(_QS) if view == "pricing" else _render()
+            st.markdown(_html, unsafe_allow_html=True)
+        if view == "moat":
+            _ml, _mm, _mr = st.columns([1, 1.5, 1])
+            with _mm:
+                if st.button("◈　进入数智中枢 · 查看算法内核", key="board_moat_tech",
+                             use_container_width=True):
+                    goto("tech")
+        if view == "pricing":
+            st.markdown(biz.cta_band(), unsafe_allow_html=True)
+            _ca, _cb1, _cb2, _cd = st.columns([0.8, 1.3, 1.3, 0.8])
+            with _cb1:
+                if st.button("▶　立即免费体验", key="board_cta_experience",
+                             use_container_width=True):
+                    goto("auth")
+            with _cb2:
+                if st.button("预约商业演示　→", key="board_cta_demo",
+                             use_container_width=True):
+                    goto("demo")
+    else:
+        st.info("该板块内容暂未加载，请返回总览后重新进入。")
+    # 板块页底部：其它板块快捷入口，方便连续浏览（精简版，避免重复大标题）
+    if _BIZ_OK:
+        st.markdown(biz.boards(_QS, compact=True, active=view), unsafe_allow_html=True)
+    meander()
+    st.markdown('<div class="gf-bottom-rule"></div>', unsafe_allow_html=True)
 
 
 # ================================================================ 预约商业演示（商务入口）

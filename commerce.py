@@ -381,7 +381,7 @@ def demo_head() -> str:
         '<div class="biz-eyebrow"><i></i> BUSINESS INQUIRY / 商务合作</div>'
         '<h2 class="biz-h2">预约商业演示</h2>'
         '<p class="biz-section-desc">留下机构与需求信息，我们会按您的真实文保场景准备演示内容。'
-        '当前为在线演示站，表单仅保存在本次会话中。</p>'
+        '提交后将真实保存至本站需求库并生成需求编号。</p>'
         '</div>'
     )
 
@@ -402,15 +402,30 @@ def demo_aside() -> str:
     )
 
 
-def demo_success(org: str, name: str) -> str:
+def demo_success(org: str, name: str, saved: bool = False,
+                 cloud_saved: bool = False, ref: str = "") -> str:
+    ref_line = (f'<p style="margin:6px 0 0;font-size:12px;opacity:.8;">需求编号：'
+                f'{_esc_text(ref)}</p>') if ref else ""
+    if cloud_saved:
+        title = "需求已提交"
+        note = ('<div class="biz-success-warn">本次填写内容已保存至本站需求库并同步至云端，'
+                '我们将通过你留下的联系方式跟进；上方同步条显示云端写入状态。</div>')
+    elif saved:
+        title = "需求已提交"
+        note = ('<div class="biz-success-warn">本次填写内容已真实保存至本站需求库，'
+                '我们将通过你留下的联系方式跟进。如需留存，可点击下方按钮下载需求确认单；'
+                '管理员可在「需求记录」页查看与导出全部预约。</div>')
+    else:
+        title = "需求已记录（演示环境）"
+        note = ('<div class="biz-success-warn">注意：本演示站暂未接入存储，信息不会存入数据库。'
+                '正式商务对接请通过应用发布方提供的联系方式。</div>')
     return (
         '<div class="biz-success">'
         '<div class="biz-success-mark">✓</div>'
-        '<h3>需求已记录（演示环境）</h3>'
+        f'<h3>{title}</h3>'
         f'<p>感谢 {_esc_text(org or "您")}{("，") if org else ""}{_esc_text(name or "")} 的关注。'
         '我们已按本次填写的内容生成一份需求确认单，可点击下方按钮下载留存。</p>'
-        '<div class="biz-success-warn">注意：本演示站未接入后端，信息不会发送给我们，也不会存入数据库。'
-        '正式商务对接请通过应用发布方提供的联系方式，或在部署正式版后启用 CRM / 邮件通知。</div>'
+        f'{note}{ref_line}'
         '</div>'
     )
 

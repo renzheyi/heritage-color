@@ -931,6 +931,22 @@ except Exception:
     pay_mod = None
     _PAY_OK = False
 
+# 云服务接入同为可选增强：配置未就绪时自动降级为本地需求库，主站照常运行。
+try:
+    import cloud as cloud_mod
+    _CLOUD_OK = True
+except Exception:
+    cloud_mod = None
+    _CLOUD_OK = False
+
+# 预约需求本地持久化：模块缺失时提交页仍可用，仅不落库并给出明确提示。
+try:
+    import demo_store as demo_db
+    _DEMO_OK = True
+except Exception:
+    demo_db = None
+    _DEMO_OK = False
+
 
 # ---------------------------------------------------------------- 通用组件
 def banner(image_name: str, title: str, subtitle: str = ""):
@@ -1336,7 +1352,8 @@ st.markdown(
 # ---------------------------------------------------------------- 视图路由
 # 支持三种导航：① 环形门牌用 ?view=xxx 链接；② 程序页按钮用 session_state；
 # ③ 古建案例页用 ?view=hc_<key> 链接。
-_VALID_VIEWS = ("home", "auth", "infer", "style", "restore", "material", "tech", "demo", "pay")
+_VALID_VIEWS = ("home", "auth", "infer", "style", "restore", "material",
+                "tech", "demo", "pay", "inquiries")
 _qp_view = st.query_params.get("view")
 if _qp_view:
     if _qp_view in _VALID_VIEWS or _qp_view.startswith("hc_"):
@@ -1748,21 +1765,41 @@ elif view == "demo":
             if not (org.strip() and contact.strip() and channel.strip()):
                 st.warning("请至少填写机构名称、联系人与联系方式。")
             else:
-                st.session_state["demo_record"] = {
+                rec = {
                     "机构": org, "联系人": contact, "机构类型": org_type,
                     "联系方式": channel, "关注方向": "、".join(interest) or "未填写",
                     "需求描述": demand or "未填写",
                 }
+                st.session_state["demo_record"] = rec
+                # 只在「本次提交」写一次库；后续 rerun（下载、刷新）不重复落库。
+                try:
+                    row = demo_db.save_request(rec) if _DEMO_OK else None
+                except Exception:
+                    row = None
+                st.session_state["demo_ref"] = (row or {}).get("id", "")
                 st.session_state["demo_submitted"] = True
 
         if st.session_state.get("demo_submitted"):
             rec = st.session_state.get("demo_record", {})
-            st.markdown(biz.demo_success(rec.get("机构", ""), rec.get("联系人", "")),
+            _ref = st.session_state.get("demo_ref", "")
+            _cloud_saved = bool(_CLOUD_OK and cloud_mod.cloud_ready())
+            if _cloud_saved:
+                cloud_mod.demo_sync_component(rec, ref=_ref)
+            st.markdown(biz.demo_success(rec.get("机构", ""), rec.get("联系人", ""),
+                                         saved=bool(_ref), cloud_saved=_cloud_saved,
+                                         ref=_ref),
                         unsafe_allow_html=True)
             lines = ["考色 KAOSE · 商业演示需求确认单", "=" * 34]
             lines += [f"{k}：{v}" for k, v in rec.items()]
-            lines += ["", "※ 本文件由在线演示站生成，仅保存在当前会话，"
-                      "未上传服务器，也未用于任何商务跟进。"]
+            if _cloud_saved:
+                lines += ["", "※ 本文件由在线演示站生成；本次需求已保存至本站需求库"
+                          "并同步至云端，此确认单供你自行留存核对。"]
+            elif _ref:
+                lines += ["", f"※ 需求编号：{_ref}；本次填写内容已保存至本站需求库，"
+                          "此确认单供你自行留存核对。"]
+            else:
+                lines += ["", "※ 本文件由在线演示站生成，仅保存在当前会话，"
+                          "未上传服务器，也未用于任何商务跟进。"]
             st.download_button(
                 "↓　下载需求确认单（.txt）",
                 data="\n".join(lines).encode("utf-8-sig"),
@@ -1773,8 +1810,50 @@ elif view == "demo":
             if st.button("重新填写", key="demo_reset"):
                 st.session_state["demo_submitted"] = False
                 st.rerun()
+        if st.button("需求记录（管理员）", key="demo_inquiries"):
+            goto("inquiries")
     else:
         st.info("商务演示模块暂未加载，请重新部署或重启应用后刷新页面。")
+
+
+# ================================================================ 需求记录（管理员）
+elif view == "inquiries":
+    back_button()
+    st.markdown(
+        '<div class="biz-demo-head"><div class="biz-eyebrow"><i></i> INQUIRIES / 需求记录</div>'
+        '<h2 class="biz-h2">已收到的预约需求</h2>'
+        '<p>此页仅供站点管理员查看。数据真实保存在应用服务器本地需求库；'
+        '重新发布应用会清空历史记录，请及时导出 CSV 留存。</p></div>',
+        unsafe_allow_html=True,
+    )
+    _expect_tok = os.environ.get("DEMO_ADMIN_TOKEN") or "kaose-admin"
+    _tok = st.text_input("管理员口令", type="password", key="inq_token",
+                         placeholder="请输入管理员口令")
+    if not _tok:
+        st.info("请输入管理员口令查看预约记录。")
+    elif _tok != _expect_tok:
+        st.error("口令不正确。")
+    elif not _DEMO_OK:
+        st.error("需求库模块未加载，请重新部署后重试。")
+    else:
+        _rows = demo_db.list_requests(50)
+        st.caption(f"存储方式：{demo_db.storage_kind()} ｜ 最近 {len(_rows)} 条")
+        st.download_button(
+            "↓　导出全部预约（CSV）",
+            data=demo_db.csv_bytes(),
+            file_name="考色_预约需求记录.csv",
+            mime="text/csv",
+            use_container_width=True,
+        )
+        if _rows:
+            st.dataframe([{
+                "需求编号": r["id"], "提交时间": r["created_at"],
+                "机构": r["org"], "联系人": r["contact_person"],
+                "联系方式": r["contact_method"], "机构类型": r["org_type"],
+                "关注方向": r["directions"], "需求描述": r["message"],
+            } for r in _rows], use_container_width=True, hide_index=True)
+        else:
+            st.info("暂无预约记录。提交一次「预约商业演示」后即可在此查看。")
 
 
 # ================================================================ 数智中枢（技术内核）

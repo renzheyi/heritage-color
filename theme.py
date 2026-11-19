@@ -43,7 +43,7 @@ GUOFENG_CSS = """
     background-attachment: fixed, fixed, fixed, fixed;
     background-repeat: no-repeat, repeat, no-repeat, no-repeat;
 }
-[data-testid="stApp"] { color: #2E2A24; font-family: var(--gf-song); font-size: 15px; }
+[data-testid="stApp"] { color: #2E2A24; font-family: var(--gf-song); font-size: 16px; }
 h1, h2, h3, [data-testid="stHeader"] { color: #8E1F1A !important; font-family: var(--gf-kai) !important; }
 
 /* 页首 / 页脚回纹金线带 */
@@ -65,7 +65,7 @@ h1, h2, h3, [data-testid="stHeader"] { color: #8E1F1A !important; font-family: v
 .gf-title {
     position: relative;
     font-family: var(--gf-kai);
-    font-size: 42px; font-weight: 700; letter-spacing: 10px;
+    font-size: 16px; font-weight: 700; letter-spacing: 10px;
     color: #8E1F1A; text-align: center;
     padding: 16px 0 10px; margin: 0;
     border-bottom: 2px solid #D4AF37;
@@ -81,7 +81,7 @@ h1, h2, h3, [data-testid="stHeader"] { color: #8E1F1A !important; font-family: v
 
 .gf-subtitle {
     font-family: var(--gf-li);
-    font-size: 15px; letter-spacing: 3px; color: #7A6A50;
+    font-size: 16px; letter-spacing: 3px; color: #7A6A50;
     text-align: center; margin: 10px 0 22px;
 }
 
@@ -103,7 +103,7 @@ h1, h2, h3, [data-testid="stHeader"] { color: #8E1F1A !important; font-family: v
     width: 62px; height: 62px; border-radius: 50%;
     background: #C4322B; color: #FFF3DC;
     border: 3px double #FFF3DC; outline: 2px solid #C4322B;
-    font-family: var(--gf-li); font-size: 20px; font-weight: 700;
+    font-family: var(--gf-li); font-size: 16px; font-weight: 700;
     box-shadow: 2px 3px 6px rgba(0,0,0,0.18);
     position: relative;
 }
@@ -113,7 +113,7 @@ h1, h2, h3, [data-testid="stHeader"] { color: #8E1F1A !important; font-family: v
 }
 .gf-seal {
     display: inline-block; font-family: var(--gf-li);
-    background: #C4322B; color: #FFF3DC; font-size: 14px;
+    background: #C4322B; color: #FFF3DC; font-size: 16px;
     padding: 4px 8px; border-radius: 3px; letter-spacing: 2px;
     margin: 0 4px; box-shadow: 2px 2px 0 rgba(0,0,0,0.12);
     border: 1px solid #8E1F1A;
@@ -146,17 +146,17 @@ h1, h2, h3, [data-testid="stHeader"] { color: #8E1F1A !important; font-family: v
 }
 .gf-card-title {
     font-family: var(--gf-xing);
-    font-size: 22px; font-weight: 700; color: #8E1F1A;
+    font-size: 16px; font-weight: 700; color: #8E1F1A;
     letter-spacing: 3px; margin: 0 0 4px;
     padding-left: 32px; position: relative;
 }
 .gf-card-title::before {
     content: "印"; position: absolute; left: 0; top: 1px;
     width: 22px; height: 22px; line-height: 22px; text-align: center;
-    font-size: 12px; color: #FFF3DC; background: #C4322B; border-radius: 2px;
+    font-size: 16px; color: #FFF3DC; background: #C4322B; border-radius: 2px;
     letter-spacing: 0;
 }
-.gf-card-desc { font-family: var(--gf-song); font-size: 13px; color: #7A6A50; margin-bottom: 12px; }
+.gf-card-desc { font-family: var(--gf-song); font-size: 16px; color: #7A6A50; margin-bottom: 12px; }
 /* 模块页卡片上的古风小图标 */
 .gf-card-icon {
     float: right; width: 40px; height: 40px; object-fit: contain; margin: -2px 0 0 10px;
@@ -190,11 +190,11 @@ h1, h2, h3, [data-testid="stHeader"] { color: #8E1F1A !important; font-family: v
 }
 .gf-nav-card::after {
     content: "❖"; position: absolute; top: 6px; right: 10px;
-    color: #C4322B; font-size: 14px;
+    color: #C4322B; font-size: 16px;
 }
 .gf-nav-num {
     font-family: var(--gf-li);
-    font-size: 26px; line-height: 42px; color: #FFF3DC;
+    font-size: 16px; line-height: 42px; color: #FFF3DC;
     letter-spacing: 1px; margin-bottom: 8px;
     display: inline-block; width: 42px; height: 42px;
     text-align: center; background: #C4322B;
@@ -204,10 +204,10 @@ h1, h2, h3, [data-testid="stHeader"] { color: #8E1F1A !important; font-family: v
 }
 .gf-nav-title {
     font-family: var(--gf-kai);
-    font-size: 21px; font-weight: 700; color: #8E1F1A;
+    font-size: 16px; font-weight: 700; color: #8E1F1A;
     letter-spacing: 3px; margin-bottom: 6px;
 }
-.gf-nav-desc { font-family: var(--gf-song); font-size: 12.5px; color: #7A6A50; line-height: 1.6; }
+.gf-nav-desc { font-family: var(--gf-song); font-size: 16px; color: #7A6A50; line-height: 1.6; }
 /* 门牌上的古风小图像（网络检索的 emoji 图标） */
 .gf-nav-icon {
     position: absolute; right: 12px; top: 12px;
@@ -276,7 +276,7 @@ div[data-testid="stVerticalBlock"]:has(.gf-ring-stage-marker):not(:has(div[data-
         radial-gradient(circle at 68% 76%, rgba(80,12,10,0.55), rgba(80,12,10,0) 56%),
         radial-gradient(circle at 38% 32%, #E05A4A, #C4322B 58%, #7E1712 100%);
     color: #FFF3DC; display: flex; align-items: center; justify-content: center;
-    flex-direction: column; font-family: var(--gf-li); font-size: 26px; font-weight: 700;
+    flex-direction: column; font-family: var(--gf-li); font-size: 16px; font-weight: 700;
     letter-spacing: 3px; line-height: 1.35; text-align: center;
     border: 3px double #F3D98A;
     box-shadow:
@@ -294,7 +294,7 @@ div[data-testid="stVerticalBlock"]:has(.gf-ring-stage-marker):not(:has(div[data-
     background: radial-gradient(ellipse, rgba(255,248,232,0.72), rgba(255,248,232,0) 70%);
     transform: rotate(-28deg); pointer-events: none;
 }
-.gf-orbit-core small { font-family: var(--gf-song); font-size: 10px; letter-spacing: 2px; opacity: 0.85; color: #F3D98A; }
+.gf-orbit-core small { font-family: var(--gf-song); font-size: 16px; letter-spacing: 2px; opacity: 0.85; color: #F3D98A; }
 
 /* ============ 6b. 五门环形舞台：五门牌均匀绕中心圆摆放 ============ */
 div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-node-marker)) {
@@ -343,7 +343,7 @@ div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker.n5):not(:has(div[dat
     opacity: 0.8; border-radius: 2px;
 }
 .gf-cloud-divider {
-    text-align: center; color: #C4322B; font-size: 18px;
+    text-align: center; color: #C4322B; font-size: 16px;
     letter-spacing: 14px; margin: 2px 0 14px; opacity: 0.9;
     font-family: var(--gf-kai); position: relative;
 }
@@ -368,23 +368,23 @@ div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker.n5):not(:has(div[dat
     padding: 26px 20px 10px;
     background: linear-gradient(transparent, rgba(43,38,30,0.82));
     color: #F5EFE1; font-family: var(--gf-xing);
-    font-size: 17px; letter-spacing: 4px;
+    font-size: 16px; letter-spacing: 4px;
     border-top: 1px solid rgba(212,175,55,0.7);
 }
 .gf-banner-cap small {
     display: block; font-family: var(--gf-song);
-    font-size: 11px; letter-spacing: 1px;
+    font-size: 16px; letter-spacing: 1px;
     opacity: 0.85; margin-top: 3px;
 }
 
 /* ============ 9. 结果区：整洁排版（分区 / 键值 / 徽章 / 冰裂纹面板） ============ */
 .gf-result-label {
     font-family: var(--gf-xing);
-    font-size: 18px; font-weight: 700; color: #126A66;
+    font-size: 16px; font-weight: 700; color: #126A66;
     letter-spacing: 3px; border-bottom: 1px dashed #9CB3AF;
     padding-bottom: 5px; margin: 10px 0 12px;
 }
-.gf-result-label::before { content: "◆ "; color: #D4AF37; font-size: 12px; }
+.gf-result-label::before { content: "◆ "; color: #D4AF37; font-size: 16px; }
 .gf-result-panel {
     position: relative; background: rgba(251,246,234,0.86);
     border: 1px solid #E0CB95; border-left: 3px solid #C4322B;
@@ -406,13 +406,13 @@ div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker.n5):not(:has(div[dat
 @media (max-width: 700px) {
     .gf-result-panel { grid-template-columns: 1fr; }
 }
-.gf-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 2px 0; }
+.gf-table { width: 100%; border-collapse: collapse; font-size: 16px; margin: 2px 0; }
 /* 表头是英文/技术字段名，用清晰黑体，避免行楷连笔看不清 */
-.gf-table th { font-family: "Noto Sans CJK SC","Microsoft YaHei","PingFang SC",Arial,sans-serif; color: #FFF3DC; background: #C4322B; padding: 7px 9px; text-align: left; font-weight: 700; font-size: 13px; font-style: normal; letter-spacing: 0.5px; }
+.gf-table th { font-family: "Noto Sans CJK SC","Microsoft YaHei","PingFang SC",Arial,sans-serif; color: #FFF3DC; background: #C4322B; padding: 7px 9px; text-align: left; font-weight: 700; font-size: 16px; font-style: normal; letter-spacing: 0.5px; }
 .gf-table td { padding: 7px 9px; border-bottom: 1px dotted #E6D6A8; color: #3E372D; }
 .gf-table tr:nth-child(even) td { background: rgba(212,175,55,0.06); }
 .gf-table tr:hover td { background: rgba(196,50,43,0.07); }
-.gf-note { font-family: var(--gf-song); font-size: 13px; line-height: 1.8; color: #6E5C42; background: rgba(212,175,55,0.07); border-left: 2px solid #D4AF37; padding: 6px 10px; margin: 4px 0 8px; }
+.gf-note { font-family: var(--gf-song); font-size: 16px; line-height: 1.8; color: #6E5C42; background: rgba(212,175,55,0.07); border-left: 2px solid #D4AF37; padding: 6px 10px; margin: 4px 0 8px; }
 /* 风格候选横向并排：宽度足够时多个小卡并排一行，窄屏自动回退单列 */
 .gf-sec-wide { grid-column: 1 / -1; }
 .gf-style-list {
@@ -429,8 +429,8 @@ div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker.n5):not(:has(div[dat
     .gf-style-list { grid-template-columns: 1fr; }
 }
 .gf-step-line { display: flex; gap: 10px; align-items: flex-start; padding: 4px 0; line-height: 1.7; }
-.gf-step-no { flex: 0 0 22px; height: 22px; line-height: 22px; text-align: center; background: #C4322B; color: #FFF3DC; border-radius: 2px; font-family: var(--gf-li); font-size: 12px; }
-.gf-risk { font-family: var(--gf-song); font-size: 13px; line-height: 1.75; color: #A82821; background: rgba(196,50,43,0.08); border-left: 3px solid #C4322B; padding: 8px 10px; margin: 4px 0 8px; }
+.gf-step-no { flex: 0 0 22px; height: 22px; line-height: 22px; text-align: center; background: #C4322B; color: #FFF3DC; border-radius: 2px; font-family: var(--gf-li); font-size: 16px; }
+.gf-risk { font-family: var(--gf-song); font-size: 16px; line-height: 1.75; color: #A82821; background: rgba(196,50,43,0.08); border-left: 3px solid #C4322B; padding: 8px 10px; margin: 4px 0 8px; }
 /* 结果列整体面板化：整列成为一张古风卷宗 */
 [data-testid="stColumn"]:has(.gf-result-label) {
     background: rgba(251,246,234,0.66);
@@ -443,24 +443,24 @@ div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker.n5):not(:has(div[dat
 .gf-sec { margin: 0 0 14px; }
 .gf-sec:last-child { margin-bottom: 8px; }
 .gf-sec-title {
-    font-family: var(--gf-kai); font-size: 15px; color: #8E1F1A;
+    font-family: var(--gf-kai); font-size: 16px; color: #8E1F1A;
     letter-spacing: 2px; padding: 0 0 5px 20px; position: relative;
     border-bottom: 1px solid #E6D9B8; margin-bottom: 8px;
 }
-.gf-sec-title::before { content: "◆"; position: absolute; left: 0; top: 0; color: #D4AF37; font-size: 11px; }
-.gf-sec-body { font-size: 14px; line-height: 1.85; color: #3E372D; padding-left: 2px; }
+.gf-sec-title::before { content: "◆"; position: absolute; left: 0; top: 0; color: #D4AF37; font-size: 16px; }
+.gf-sec-body { font-size: 16px; line-height: 1.85; color: #3E372D; padding-left: 2px; }
 .gf-kv { display: flex; gap: 10px; padding: 2px 0; border-bottom: 1px dotted #E6D6A8; }
 .gf-kv:last-child { border-bottom: none; }
 .gf-kv-key { font-family: var(--gf-song); color: #6E5C42; flex: 0 0 76px; }
 .gf-kv-val { flex: 1; color: #3E372D; }
 .gf-badge {
-    display: inline-block; font-family: var(--gf-li); font-size: 13px;
+    display: inline-block; font-family: var(--gf-li); font-size: 16px;
     padding: 3px 11px; border-radius: 2px; margin: 0 6px 6px 0; letter-spacing: 1px;
 }
 .gf-badge-red  { background: #C4322B; color: #FFF3DC; border: 1px solid #8E1F1A; }
 .gf-badge-gold { background: #D4AF37; color: #FDF8EC; border: 1px solid #8A6A34; }
 .gf-badge-teal { background: #126A66; color: #F1EADB; border: 1px solid #16443F; }
-.gf-num { font-family: var(--gf-num); font-size: 21px; color: #C4322B; font-weight: bold; }
+.gf-num { font-family: var(--gf-num); font-size: 16px; color: #C4322B; font-weight: bold; }
 .gf-swatch-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .gf-swatch {
     display: inline-block; width: 46px; height: 46px;
@@ -469,7 +469,7 @@ div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker.n5):not(:has(div[dat
     vertical-align: middle; margin-right: 8px;
 }
 .gf-swatch-label {
-    font-family: var(--gf-num); font-size: 15px; color: #4A4034; letter-spacing: 1px;
+    font-family: var(--gf-num); font-size: 16px; color: #4A4034; letter-spacing: 1px;
 }
 
 /* ============ 10. 按钮：按压回弹 + 金色流光 + 墨晕扩散点击特效 ============ */
@@ -477,7 +477,7 @@ div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker.n5):not(:has(div[dat
     font-family: var(--gf-kai) !important;
     background: linear-gradient(180deg, #D9483B, #A82821) !important; color: #FFF3DC !important;
     border: 1px solid #D4AF37 !important; border-radius: 3px !important;
-    letter-spacing: 2px; font-size: 15px !important;
+    letter-spacing: 2px; font-size: 16px !important;
     position: relative; overflow: hidden;
     box-shadow: 0 4px 12px rgba(142,31,26,0.38);
     transition: transform .12s cubic-bezier(.34,1.56,.64,1), box-shadow .2s, background .2s, color .2s;
@@ -541,7 +541,7 @@ hr { border-color: #E0CB95 !important; }
 .gf-step-title::before {
     content: "壹"; position: absolute; left: 0; top: 0;
     width: 20px; height: 20px; line-height: 20px; text-align: center;
-    font-size: 11px; color: #FFF3DC; background: #C4322B;
+    font-size: 16px; color: #FFF3DC; background: #C4322B;
     border-radius: 2px; letter-spacing: 0;
 }
 
@@ -593,7 +593,7 @@ hr { border-color: #E0CB95 !important; }
 .gf-curtain-seal {
     width: 76px; height: 76px; line-height: 76px; text-align: center;
     background: #C4322B; color: #FFF3DC;
-    font-family: var(--gf-li); font-size: 30px;
+    font-family: var(--gf-li); font-size: 16px;
     border: 3px double #FFF3DC; outline: 2px solid #C4322B;
     box-shadow: 3px 4px 10px rgba(0,0,0,0.2);
     animation: gfSealPulse 0.7s ease-out both;
@@ -621,7 +621,7 @@ hr { border-color: #E0CB95 !important; }
 /* ============ 11. 古建照片轮播（横向自动滚动 + 悬停暂停 + 点击进入详情） ============ */
 .gf-carousel-hint {
     text-align: center; margin: 6px 0 0;
-    font-family: var(--gf-song); font-size: 13px; letter-spacing: 1px;
+    font-family: var(--gf-song); font-size: 16px; letter-spacing: 1px;
     color: #6E5C42;
 }
 .gf-carousel {
@@ -677,18 +677,18 @@ hr { border-color: #E0CB95 !important; }
 }
 .gf-slide-title {
     font-family: var(--gf-xing); color: #F3D98A;
-    font-size: 18px; font-weight: 700; letter-spacing: 2px;
+    font-size: 16px; font-weight: 700; letter-spacing: 2px;
     text-shadow: 0 2px 4px rgba(0,0,0,0.6);
 }
 .gf-slide-sub {
     font-family: var(--gf-song); color: #FDF8EC;
-    font-size: 12px; line-height: 1.45;
+    font-size: 16px; line-height: 1.45;
     text-shadow: 0 1px 3px rgba(0,0,0,0.75);
     display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
 .gf-slide-more {
     margin-top: 3px; font-family: var(--gf-song);
-    font-size: 11px; letter-spacing: 1px; color: #F3D98A;
+    font-size: 16px; letter-spacing: 1px; color: #F3D98A;
 }
 @media (max-width: 760px) {
     .gf-slide { width: 268px; height: 196px; }
@@ -704,12 +704,12 @@ hr { border-color: #E0CB95 !important; }
     color: #DCE7DF;
 }
 .gf-tech-h {
-    font-family: Georgia,"Times New Roman",serif; font-size: 17px;
+    font-family: Georgia,"Times New Roman",serif; font-size: 16px;
     letter-spacing: 2px; color: #F3D98A; padding-bottom: 8px; margin-bottom: 6px;
     border-bottom: 1px solid rgba(212,175,55,0.28);
 }
 .gf-tech-sub {
-    font-size: 12px; color: #8FA8A2; letter-spacing: 0.5px;
+    font-size: 16px; color: #8FA8A2; letter-spacing: 0.5px;
     margin-bottom: 12px; line-height: 1.6;
 }
 .gf-tech-metrics {
@@ -721,14 +721,14 @@ hr { border-color: #E0CB95 !important; }
     border-radius: 4px; padding: 10px 8px; text-align: center;
 }
 .gf-tech-metrics b {
-    display: block; font-family: Georgia,serif; font-size: 22px;
+    display: block; font-family: Georgia,serif; font-size: 16px;
     color: #F3D98A; letter-spacing: 1px;
 }
-.gf-tech-metrics span { display: block; font-size: 11px; color: #8FA8A2; margin-top: 4px; }
+.gf-tech-metrics span { display: block; font-size: 16px; color: #8FA8A2; margin-top: 4px; }
 .gf-tech-note {
     margin: 10px 0 4px; padding: 10px 12px;
     background: rgba(87,207,195,0.06); border-left: 3px solid #57CFC3;
-    font-size: 12px; line-height: 1.75; color: #B9CDC7; border-radius: 0 4px 4px 0;
+    font-size: 16px; line-height: 1.75; color: #B9CDC7; border-radius: 0 4px 4px 0;
 }
 .gf-tech-compare {
     display: flex; align-items: center; justify-content: center;
@@ -736,7 +736,7 @@ hr { border-color: #E0CB95 !important; }
 }
 .gf-tech-compare > div { text-align: center; min-width: 130px; }
 .gf-tech-compare span {
-    display: block; font-size: 11px; color: #8FA8A2;
+    display: block; font-size: 16px; color: #8FA8A2;
     margin-bottom: 6px; letter-spacing: 1px;
 }
 .gf-tech-compare i {
@@ -746,12 +746,12 @@ hr { border-color: #E0CB95 !important; }
 }
 .gf-tech-compare b {
     display: block; margin-top: 6px; font-family: Georgia,serif;
-    font-size: 14px; color: #F3D98A; letter-spacing: 1px;
+    font-size: 16px; color: #F3D98A; letter-spacing: 1px;
 }
 .gf-tech-compare > .gf-tech-arrow {
-    color: #D4AF37; font-size: 13px; letter-spacing: 1px; min-width: 120px;
+    color: #D4AF37; font-size: 16px; letter-spacing: 1px; min-width: 120px;
 }
-.gf-tech-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.gf-tech-table { width: 100%; border-collapse: collapse; font-size: 16px; }
 .gf-tech-table th {
     background: rgba(196,50,43,0.30); color: #F3D98A; text-align: left;
     padding: 8px 10px; font-family: "Noto Sans CJK SC","Microsoft YaHei",Arial,sans-serif;

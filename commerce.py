@@ -460,7 +460,7 @@ def demo_aside() -> str:
 
 def demo_success(org: str, name: str, saved: bool = False,
                  cloud_saved: bool = False, ref: str = "") -> str:
-    ref_line = (f'<p style="margin:6px 0 0;font-size:12px;opacity:.8;">需求编号：'
+    ref_line = (f'<p style="margin:6px 0 0;font-size:16px;opacity:.8;">需求编号：'
                 f'{_esc_text(ref)}</p>') if ref else ""
     if cloud_saved:
         title = "需求已提交"

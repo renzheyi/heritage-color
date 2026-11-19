@@ -329,7 +329,7 @@ def footer() -> str:
         '<div class="biz-footer-line">预约演示 · 服务方案 · 私有化部署</div>'
         '<div class="biz-footer-line">在线支付 · 微信 / 支付宝 / 云闪付 / 数字人民币 / 对公</div>'
         '<div class="biz-footer-line">机构版支持内网部署与系统对接</div>'
-        '<div class="biz-footer-line">演示站表单仅存于当前会话，不会发送至服务器</div>'
+        '<div class="biz-footer-line">演示预约真实落库，可导出 CSV 留存</div>'
         '</div>'
         '</div>'
         '<div class="biz-footer-bottom">'

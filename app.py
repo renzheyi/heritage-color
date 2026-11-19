@@ -914,6 +914,153 @@ _BIZ_CSS = """
 """
 st.markdown(_BIZ_CSS, unsafe_allow_html=True)
 
+# 移动端排版优化：手机上压缩 Streamlit 默认大留白、强制分栏堆叠、
+# 拉开五门/卡片间距、放大过小的字号。仅在窄屏生效，桌面端布局不变。
+_MOBILE_CSS = """
+<style>
+@media (max-width: 640px){
+  /* ---- Streamlit 容器：顶部仍为悬浮 header 让位，但压缩无效留白 ---- */
+  [data-testid="stMainBlockContainer"]{ padding: 72px 12px 56px !important; }
+  [data-testid="stHorizontalBlock"]:has(> [data-testid="stColumn"]){
+    flex-direction: column !important; gap: 12px !important;
+  }
+  [data-testid="stColumn"]{ width: 100% !important; flex: 1 1 auto !important; }
+  [data-testid="stButton"] button{ min-height: 46px; font-size: 15px !important; }
+
+  /* ---- 门户大标题：缩小行楷标题与副标题 ---- */
+  .gf-title{ font-size: 30px !important; letter-spacing: 5px !important; padding: 12px 0 8px !important; }
+  .gf-subtitle{ font-size: 13px !important; margin: 8px 0 14px !important; }
+
+  /* ---- 五门舞台：拉开间距，门牌高度自适应、卡内更透气 ---- */
+  div[data-testid="stVerticalBlock"]:has(.gf-ring-stage-marker):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-stage-marker)){
+    gap: 18px !important; margin: 0 auto 10px !important;
+  }
+  .gf-ring-center .gf-orbit-core{ width: 120px !important; height: 120px !important; font-size: 23px !important; }
+  div[data-testid="stVerticalBlock"]:has(.gf-ring-node-marker):not(:has(div[data-testid="stVerticalBlock"] .gf-ring-node-marker)){
+    width: min(100%, 340px) !important;
+  }
+  .gf-nav-card{ height: auto !important; min-height: 176px; max-height: none !important; padding: 20px 18px 16px !important; }
+  .gf-nav-num{ font-size: 28px !important; width: 44px !important; height: 44px !important; line-height: 44px !important; margin-bottom: 10px !important; }
+  .gf-nav-title{ font-size: 22px !important; margin-bottom: 8px !important; }
+  .gf-nav-desc{ font-size: 13.5px !important; line-height: 1.75 !important; }
+
+  /* ---- 古建轮播：略缩卡片，标题更易读 ---- */
+  .gf-carousel{ margin: 12px auto 16px !important; }
+  .gf-slide{ width: 248px !important; height: 180px !important; }
+  .gf-slide-title{ font-size: 15px !important; }
+  .gf-carousel-hint{ font-size: 12.5px !important; }
+
+  /* ---- 数智中枢 ---- */
+  .gf-tech-card{ padding: 18px 16px !important; margin: 14px 0 !important; }
+  .gf-tech-h{ font-size: 16.5px !important; }
+  .gf-tech-sub{ font-size: 12.5px !important; line-height: 1.75 !important; }
+  .gf-tech-note{ font-size: 12.5px !important; line-height: 1.8 !important; }
+  .gf-tech-metrics > div{ padding: 12px 8px !important; }
+  .gf-tech-metrics b{ font-size: 24px !important; }
+  .gf-tech-metrics span{ font-size: 11.5px !important; }
+  .gf-tech-table{ font-size: 12.5px !important; }
+
+  /* ---- 品牌导航：链接加大触控区 ---- */
+  .biz-nav{ margin-bottom: 16px !important; }
+  .biz-nav-inner{ padding: 12px 14px !important; gap: 10px !important; }
+  .biz-nav-name{ font-size: 16px !important; }
+  .biz-nav-links{ gap: 6px !important; }
+  .biz-nav-link{ font-size: 12.5px !important; padding: 8px 12px !important; }
+
+  /* ---- Hero ---- */
+  .biz-hero{ padding: 24px 18px 20px !important; margin-bottom: 16px !important; }
+  .biz-h1{ padding: 0 !important; font-size: 28px !important; }
+  .biz-lead{ font-size: 14.5px !important; line-height: 2 !important; }
+  .biz-hero-points li{ font-size: 13.5px !important; line-height: 1.9 !important; margin: 7px 0 !important; }
+  .biz-hero-en{ margin-bottom: 14px !important; }
+
+  /* ---- 指标速览 ---- */
+  .biz-metrics-wrap{ padding: 20px 16px 16px !important; }
+  .biz-metrics{ gap: 12px !important; }
+  .biz-metric{ padding: 14px 12px !important; }
+  .biz-metric b{ font-size: 30px !important; }
+  .biz-metric-label{ font-size: 13px !important; }
+  .biz-metric-sub{ font-size: 11.5px !important; }
+
+  /* ---- 信任条 / 区块标题 ---- */
+  .biz-trust{ padding: 13px 14px !important; font-size: 13px !important; line-height: 1.85 !important; }
+  .biz-section-head{ margin: 36px 0 18px !important; }
+  .biz-h2{ padding: 4px 0 6px !important; font-size: 24px !important; }
+  .biz-section-desc{ font-size: 13.5px !important; line-height: 1.9 !important; }
+
+  /* ---- 解决方案卡片：单列下放开最小高度、放大正文 ---- */
+  .biz-grid-3, .biz-grid-4{ gap: 16px !important; }
+  .biz-card{ padding: 20px 18px 18px !important; }
+  .biz-card h3{ font-size: 16px !important; }
+  .biz-card p{ font-size: 13.5px !important; line-height: 1.85 !important; min-height: 0 !important; margin-bottom: 14px !important; }
+  .biz-tag{ font-size: 11px !important; padding: 4px 9px !important; }
+  .biz-card-output{ font-size: 12px !important; }
+
+  /* ---- 技术壁垒 ---- */
+  .biz-moat-wrap{ padding: 20px 16px !important; gap: 16px !important; }
+  .biz-moat-intro p{ font-size: 13.5px !important; }
+  .biz-moat-list{ gap: 12px !important; }
+  .biz-moat{ padding: 16px 14px !important; }
+  .biz-moat-body h4{ font-size: 14.5px !important; }
+  .biz-moat-spec{ font-size: 12.5px !important; line-height: 1.8 !important; }
+  .biz-moat-value{ font-size: 12px !important; }
+
+  /* ---- 服务方案 ---- */
+  .biz-plan{ padding: 24px 20px 20px !important; }
+  .biz-plan h3{ font-size: 20px !important; }
+  .biz-plan-desc{ font-size: 12.5px !important; }
+  .biz-plan-price{ font-size: 28px !important; }
+  .biz-plan-list li{ font-size: 13px !important; margin: 9px 0 !important; line-height: 1.7 !important; }
+  .biz-plan-cta{ padding: 13px !important; font-size: 14px !important; }
+  .biz-plan-note{ font-size: 12px !important; }
+
+  /* ---- 合作流程 / FAQ / CTA ---- */
+  .biz-process{ gap: 14px !important; }
+  .biz-step{ padding: 18px 16px !important; }
+  .biz-step h4{ font-size: 15px !important; }
+  .biz-step p{ font-size: 12.5px !important; line-height: 1.8 !important; }
+  .biz-faq{ gap: 11px !important; }
+  .biz-faq-item summary{ font-size: 14.5px !important; padding: 15px 16px !important; }
+  .biz-faq-body{ font-size: 13px !important; padding: 14px 16px !important; }
+  .biz-cta-inner{ padding: 26px 20px !important; }
+  .biz-cta h2{ padding: 4px 0 6px !important; font-size: 24px !important; }
+  .biz-cta p{ font-size: 13px !important; }
+  .biz-cta-sub{ font-size: 11.5px !important; }
+
+  /* ---- 页脚 ---- */
+  .biz-footer-inner{ padding: 24px 18px 20px !important; gap: 20px !important; }
+  .biz-footer-full{ font-size: 12.5px !important; line-height: 1.8 !important; }
+  .biz-footer-slogan{ font-size: 15px !important; }
+  .biz-footer-col h5{ font-size: 13px !important; }
+  .biz-footer-line{ font-size: 12.5px !important; line-height: 2 !important; }
+  .biz-footer-bottom{ font-size: 11.5px !important; padding: 12px 16px 14px !important; }
+
+  /* ---- 预约演示 / 提交成功 ---- */
+  .biz-demo-aside{ padding: 22px 18px !important; }
+  .biz-demo-aside li{ font-size: 12.5px !important; }
+  .biz-success{ padding: 24px 18px !important; }
+  .biz-success h3{ font-size: 19px !important; }
+  .biz-success p{ font-size: 13.5px !important; }
+  .biz-success-warn{ font-size: 12px !important; }
+
+  /* ---- 收银台 ---- */
+  .biz-pay-safety-item{ font-size: 12px !important; padding: 9px 10px !important; }
+  .biz-pay-card{ padding: 22px 18px !important; }
+  .biz-pay-amount{ font-size: 36px !important; }
+  .biz-pay-row{ font-size: 13px !important; }
+  .biz-pay-qrwrap img{ width: 200px !important; height: 200px !important; }
+  .biz-pay-bank div{ font-size: 13px !important; }
+  .biz-pay-note{ font-size: 12px !important; }
+  .biz-pay-qhead{ font-size: 13px !important; }
+
+  /* ---- 首页标语 / 免责声明（覆盖 inline style 的过密小字） ---- */
+  div[style*="color:#7A6A50;font-size:15px"]{ font-size: 13.5px !important; letter-spacing: 1.5px !important; }
+  div[style*="color:#8A7B60;font-size:12px"]{ font-size: 12.5px !important; }
+}
+</style>
+"""
+st.markdown(_MOBILE_CSS, unsafe_allow_html=True)
+
 # 商业化文案模块为可选增强：即使部署环境只刷新了 app.py、commerce.py 还是旧缓存，
 # 主站功能照常运行，仅跳过商业化板块，绝不出现整站红页。
 try:

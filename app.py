@@ -843,6 +843,73 @@ _BIZ_CSS = """
   .biz-trust-badge{margin-left:0;}
   .biz-rail-slogan{display:none;}
 }
+
+/* ===== 在线支付 / 收银台 ===== */
+.biz-pay-safety{display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:8px; margin:0 0 14px;}
+.biz-pay-safety-item{
+  font-family:var(--biz-sans) !important; font-size:11px !important; color:#6B5A40 !important;
+  background:rgba(253,248,236,.9); border:1px solid var(--biz-line);
+  border-radius:3px; padding:7px 10px; text-align:center;
+}
+.biz-pay-card{
+  background:linear-gradient(160deg,#2B1D16,#3D2A1D 60%,#2B1D16);
+  border:1px solid var(--biz-gold); border-radius:6px; padding:20px 24px;
+  margin:6px 0; box-shadow:0 10px 30px rgba(43,29,22,.25);
+}
+.biz-pay-card h4{
+  font-family:var(--biz-sans) !important; color:#F3D98A !important;
+  font-size:14px !important; font-weight:800 !important; letter-spacing:1.5px;
+  margin:0 0 10px !important;
+}
+.biz-pay-amount{
+  font-family:Georgia,serif !important; font-size:34px !important;
+  font-weight:700 !important; color:#FFF3D6 !important; margin:6px 0 10px;
+}
+.biz-pay-amount small{
+  font-family:var(--biz-sans) !important; font-size:12px !important;
+  color:#C9A94E !important; font-weight:400 !important; margin-left:10px;
+}
+.biz-pay-row{
+  display:flex; justify-content:space-between; gap:10px;
+  font-family:var(--biz-sans) !important; font-size:12px !important;
+  color:#EFE2C4 !important; margin:0; padding:6px 0;
+  border-bottom:1px dashed rgba(201,169,78,.25);
+}
+.biz-pay-row b{color:#F3D98A !important; font-weight:700 !important;}
+.biz-pay-badge{
+  display:inline-block; font-family:var(--biz-sans) !important; font-size:11px !important;
+  padding:3px 12px; border-radius:20px; letter-spacing:1px; white-space:nowrap;
+}
+.biz-pay-badge.demo{background:rgba(201,169,78,.18); color:#F3D98A !important; border:1px solid var(--biz-gold);}
+.biz-pay-badge.paid{background:rgba(110,180,110,.22); color:#C4ECBC !important; border:1px solid #6EB46E;}
+.biz-pay-badge.pending{background:rgba(230,160,60,.18); color:#F5C98A !important; border:1px solid #E6A03C;}
+.biz-pay-qrwrap{text-align:center; margin:16px 0 6px;}
+.biz-pay-qrwrap img{
+  width:186px; height:186px; border:6px solid #FFFFFF;
+  border-radius:6px; box-shadow:0 6px 18px rgba(0,0,0,.35);
+}
+.biz-pay-qr-hint{
+  font-family:var(--biz-sans) !important; font-size:11px !important;
+  color:#C9A94E !important; margin-top:8px; letter-spacing:.5px;
+}
+.biz-pay-bank{
+  background:rgba(253,248,236,.92); border:1px solid var(--biz-line);
+  border-radius:5px; padding:14px 16px; margin:10px 0;
+}
+.biz-pay-bank div{
+  font-family:var(--biz-sans) !important; font-size:12.5px !important;
+  color:#4A3B2C !important; margin:5px 0; line-height:1.6;
+}
+.biz-pay-bank b{color:var(--biz-red-deep) !important;}
+.biz-pay-note{
+  font-family:var(--biz-sans) !important; font-size:11px !important;
+  color:#8A7B60 !important; line-height:1.7; margin-top:8px;
+}
+.biz-pay-qhead{
+  font-family:var(--biz-sans) !important; font-size:12px !important; font-weight:800 !important;
+  color:var(--biz-red-deep) !important; letter-spacing:1.5px;
+  border-top:1px solid var(--biz-line); padding-top:14px; margin-top:16px;
+}
 </style>
 """
 st.markdown(_BIZ_CSS, unsafe_allow_html=True)
@@ -855,6 +922,14 @@ try:
 except Exception:
     biz = None
     _BIZ_OK = False
+
+# 在线支付模块同理：payments.py 缺失时收银台入口自动降级，不影响主站。
+try:
+    import payments as pay_mod
+    _PAY_OK = True
+except Exception:
+    pay_mod = None
+    _PAY_OK = False
 
 
 # ---------------------------------------------------------------- 通用组件
@@ -1261,7 +1336,7 @@ st.markdown(
 # ---------------------------------------------------------------- 视图路由
 # 支持三种导航：① 环形门牌用 ?view=xxx 链接；② 程序页按钮用 session_state；
 # ③ 古建案例页用 ?view=hc_<key> 链接。
-_VALID_VIEWS = ("home", "auth", "infer", "style", "restore", "material", "tech", "demo")
+_VALID_VIEWS = ("home", "auth", "infer", "style", "restore", "material", "tech", "demo", "pay")
 _qp_view = st.query_params.get("view")
 if _qp_view:
     if _qp_view in _VALID_VIEWS or _qp_view.startswith("hc_"):
@@ -1436,6 +1511,211 @@ if view == "home":
 
 
 # ================================================================ 预约商业演示（商务入口）
+elif view == "pay":
+    back_button()
+    if not (_BIZ_OK and _PAY_OK):
+        st.error("支付模块暂未加载：请确认 payments.py 与 commerce.py 已随项目部署，刷新页面即可恢复。")
+    else:
+        st.markdown(biz.pay_head(), unsafe_allow_html=True)
+        _pl, _pc, _pr = st.columns([1, 2.3, 1])
+        with _pc:
+            st.markdown(biz.pay_safety(), unsafe_allow_html=True)
+            step = st.session_state.get("pay_step", 1)
+
+            # ---------- ① 选品下单 ----------
+            if step == 1:
+                _prod_labels = [
+                    f'{p["plan"]} · {p["name"]}　—　¥{p["price"]} / {p["unit"]}'
+                    for p in pay_mod.PRODUCTS
+                ]
+                _qp_prod = st.query_params.get("product")
+                _default_idx = next(
+                    (i for i, p in enumerate(pay_mod.PRODUCTS) if p["id"] == _qp_prod), 0
+                )
+                sel_prod = st.radio(
+                    "① 选择服务商品", _prod_labels, index=_default_idx, key="pay_prod_sel"
+                )
+                _meth_labels = [
+                    f'{m["name"]}　·　{m["desc"]}' for m in pay_mod.PAYMENT_METHODS
+                ]
+                sel_meth = st.radio(
+                    "② 选择支付方式（五种方式任选）",
+                    _meth_labels, index=0, key="pay_meth_sel",
+                )
+                contact = st.text_input(
+                    "③ 联系方式（写入电子收据）", key="pay_contact",
+                    placeholder="邮箱或电话（演示环境不会发送）",
+                )
+                if st.button("确认下单　→", key="pay_create", type="primary",
+                             use_container_width=True):
+                    p = pay_mod.PRODUCTS[_prod_labels.index(sel_prod)]
+                    m = pay_mod.PAYMENT_METHODS[_meth_labels.index(sel_meth)]
+                    _order = pay_mod.create_order(p["id"], m["id"], contact)
+                    st.session_state["pay_order"] = _order["order_no"]
+                    st.session_state["pay_step"] = 2
+                    st.rerun()
+                st.markdown(
+                    '<div class="biz-pay-note">※ 当前为<b>演示收银台</b>：订单保存于本站订单库，'
+                    '扫码与支付结果均为流程模拟，不产生真实扣款；正式商户通道接入后自动切换真实收款。'
+                    f'订单存储：{pay_mod.storage_kind()}。</div>',
+                    unsafe_allow_html=True,
+                )
+
+            # ---------- ② 收银台 ----------
+            elif step == 2:
+                no = st.session_state.get("pay_order", "")
+                _o = pay_mod.get_order(no)
+                if not _o:
+                    st.warning("订单不存在或已被清理，请重新下单。")
+                    if st.button("← 重新下单", key="pay_reorder", use_container_width=True):
+                        st.session_state["pay_step"] = 1
+                        st.rerun()
+                else:
+                    _m = pay_mod.method(_o["method"]) or pay_mod.PAYMENT_METHODS[0]
+                    _status = _o["status"]
+                    _badge_cls = {"created": "demo", "pending": "pending", "paid": "paid"}.get(
+                        _status, "demo")
+                    _badge_txt = {"created": "待支付", "pending": "等待对账确认",
+                                  "paid": "已支付"}.get(_status, _status)
+                    _rows = (
+                        f'<div class="biz-pay-row"><span>订单编号</span><b>{_o["order_no"]}</b></div>'
+                        f'<div class="biz-pay-row"><span>商品</span><b>{_esc(_o["product_name"])}</b></div>'
+                        f'<div class="biz-pay-row"><span>支付方式</span><b>{_m["name"]}</b></div>'
+                        f'<div class="biz-pay-row"><span>下单时间</span><b>{_o["created_at"]}</b></div>'
+                        f'<div class="biz-pay-row"><span>订单状态</span>'
+                        f'<span class="biz-pay-badge {_badge_cls}">{_badge_txt}</span></div>'
+                    )
+                    st.markdown(
+                        '<div class="biz-pay-card">'
+                        '<h4>KAOSE 收银台</h4>'
+                        f'<div class="biz-pay-amount">¥ {_o["amount"]}'
+                        f'<small>演示环境 · 不产生真实扣款</small></div>'
+                        f'{_rows}</div>',
+                        unsafe_allow_html=True,
+                    )
+                    _kind, _qtext, _extra = pay_mod.checkout_payload(_o, _o["method"])
+                    if _kind == "qrcode":
+                        _uri = pay_mod.qrcode_data_uri(_qtext)
+                        if _uri:
+                            st.markdown(
+                                f'<div class="biz-pay-qrwrap"><img src="{_uri}" alt="支付二维码">'
+                                f'<div class="biz-pay-qr-hint">请使用{_m["name"]}扫码完成支付'
+                                '（演示二维码，不指向真实收款）</div></div>',
+                                unsafe_allow_html=True,
+                            )
+                        else:
+                            st.info("二维码组件未安装（pip install qrcode），可改用对公转账方式下单。")
+                        if pay_mod.gateway_status(_o["method"]) == "demo":
+                            if st.button("✓　模拟支付成功（演示通道）", key="pay_demo",
+                                         type="primary", use_container_width=True):
+                                pay_mod.mark_paid(no, f"DEMO-{no[-6:] if no else 'PAID'}")
+                                st.session_state["pay_step"] = 3
+                                st.rerun()
+                        else:
+                            st.info("真实商户通道已配置：请扫码完成支付，支付结果经回调自动确认。")
+                    else:  # 对公转账
+                        _bank_rows = "".join(
+                            f'<div><b>{_esc(k)}：</b>{_esc(v)}</div>'
+                            for k, v in pay_mod.BANK_ACCOUNT.items()
+                        )
+                        st.markdown(
+                            f'<div class="biz-pay-bank">{_bank_rows}'
+                            '<div style="margin-top:6px;font-size:11px;color:#8A7B60;">'
+                            '转账时请注明订单编号，转账完成后在下方登记回单凭证号，'
+                            '我们将在 1 个工作日内对账确认。</div></div>',
+                            unsafe_allow_html=True,
+                        )
+                        _receipt_no = st.text_input(
+                            "转账凭证号 / 回单编号", key="pay_bank_receipt",
+                            placeholder="如：TXT-20261119-001",
+                        )
+                        if st.button("提交转账凭证（提交后等待对账确认）",
+                                     key="pay_bank_submit", use_container_width=True):
+                            if _receipt_no.strip():
+                                pay_mod.submit_bank_receipt(no, _receipt_no.strip())
+                                st.session_state["pay_step"] = 3
+                                st.rerun()
+                            else:
+                                st.warning("请填写银行回单上的凭证号。")
+                    if st.button("← 取消订单并返回", key="pay_cancel", use_container_width=True):
+                        pay_mod.update_order(no, status="cancelled")
+                        st.session_state["pay_step"] = 1
+                        st.rerun()
+
+            # ---------- ③ 支付结果 ----------
+            else:
+                no = st.session_state.get("pay_order", "")
+                _o = pay_mod.get_order(no) or {}
+                _paid = _o.get("status") == "paid"
+                st.markdown(
+                    '<div class="biz-success">'
+                    f'<div class="biz-success-mark">{"✓" if _paid else "⏳"}</div>'
+                    f'<h3>{"支付成功（演示通道）" if _paid else "凭证已登记，等待对账确认"}</h3>'
+                    f'<p>订单 <b>{no}</b> · {_esc(_o.get("product_name", ""))}'
+                    f'　·　¥{_o.get("amount", 0)}　·　'
+                    f'{pay_mod.method(_o.get("method", "")).get("name", "") if _o else ""}</p>'
+                    '<div class="biz-success-warn">演示环境不产生真实扣款；正式商户通道接入后，'
+                    '本页将展示真实支付结果与电子发票开具入口。</div>'
+                    '</div>',
+                    unsafe_allow_html=True,
+                )
+                if _o:
+                    st.download_button(
+                        "↓　下载电子收据（.txt）",
+                        data=pay_mod.receipt_text(_o).encode("utf-8-sig"),
+                        file_name=f"考色_电子收据_{no}.txt",
+                        mime="text/plain",
+                        use_container_width=True,
+                    )
+                _c1, _c2 = st.columns(2)
+                with _c1:
+                    if st.button("再下一单", key="pay_again", use_container_width=True):
+                        st.session_state["pay_step"] = 1
+                        st.rerun()
+                with _c2:
+                    if st.button("返回主页", key="pay_home", use_container_width=True):
+                        goto("home")
+
+            # ---------- 订单查询 ----------
+            st.markdown('<div class="biz-pay-qhead">ORDER LOOKUP · 订单查询</div>',
+                        unsafe_allow_html=True)
+            _qno = st.text_input("输入订单编号查询支付状态", key="pay_query_no",
+                                 placeholder="KA2026…………")
+            if st.button("查询订单", key="pay_query", use_container_width=True):
+                _qo = pay_mod.get_order(_qno.strip())
+                if _qo:
+                    _bm = pay_mod.method(_qo["method"]) or {}
+                    _badge_cls = {"paid": "paid", "pending": "pending"}.get(
+                        _qo["status"], "demo")
+                    _badge_txt = pay_mod.ORDER_STATUS.get(_qo["status"], _qo["status"])
+                    st.markdown(
+                        '<div class="biz-pay-card">'
+                        f'<div class="biz-pay-row"><span>订单编号</span><b>{_esc(_qo["order_no"])}</b></div>'
+                        f'<div class="biz-pay-row"><span>商品</span><b>{_esc(_qo["product_name"])}</b></div>'
+                        f'<div class="biz-pay-row"><span>金额</span><b>¥ {_qo["amount"]}</b></div>'
+                        f'<div class="biz-pay-row"><span>支付方式</span><b>{_bm.get("name", "")}</b></div>'
+                        f'<div class="biz-pay-row"><span>下单时间</span><b>{_qo["created_at"]}</b></div>'
+                        f'<div class="biz-pay-row"><span>状态</span>'
+                        f'<span class="biz-pay-badge {_badge_cls}">{_badge_txt}</span></div>'
+                        '</div>',
+                        unsafe_allow_html=True,
+                    )
+                elif _qno.strip():
+                    st.warning("未找到该订单编号，请核对后重试（订单编号以 KA 开头）。")
+
+            _recent = pay_mod.list_orders(5)
+            if _recent:
+                st.markdown('<div class="biz-pay-note">最近订单：</div>', unsafe_allow_html=True)
+                _tbl = [{
+                    "订单号": _r["order_no"],
+                    "商品": _r["product_name"],
+                    "金额": f'¥ {_r["amount"]}',
+                    "方式": (pay_mod.method(_r["method"]) or {}).get("name", _r["method"]),
+                    "状态": pay_mod.ORDER_STATUS.get(_r["status"], _r["status"]),
+                } for _r in _recent]
+                st.dataframe(_tbl, use_container_width=True, hide_index=True)
+
+
 elif view == "demo":
     back_button()
     if _BIZ_OK:

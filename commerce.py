@@ -81,11 +81,12 @@ PLANS = [
         "cta": "免费体验",
     },
     {
-        "name": "专业版", "en": "PROFESSIONAL", "price": "按需报价", "unit": "联系商务",
+        "name": "专业版", "en": "PROFESSIONAL", "price": "¥ 299 起", "unit": "订阅 ¥3,999 / 年",
         "featured": True,
         "desc": "面向修复工作室、项目组与设计机构",
         "items": ["批量考证与任务管理", "光谱分析与置信度报告", "考证报告导出（PDF / 结构化数据）", "专属培训与场景化配置", "优先技术支持"],
-        "cta": "预约演示",
+        "cta": "立即订购",
+        "href": "?view=pay&product=report_single",
     },
     {
         "name": "机构版", "en": "ENTERPRISE", "price": "定制方案", "unit": "私有化部署",
@@ -93,6 +94,7 @@ PLANS = [
         "desc": "面向文博单位、科研院所与大型工程",
         "items": ["私有化 / 内网部署，数据不出域", "专属知识库与颜料谱定制", "业务系统对接与 API", "驻场支持与服务等级协议", "定制算法与联合课题"],
         "cta": "洽谈方案",
+        "href": "?view=demo",
     },
 ]
 
@@ -253,6 +255,7 @@ def pricing() -> str:
     for p in PLANS:
         items = "".join(f'<li><span>✓</span>{_esc_text(x)}</li>' for x in p["items"])
         badge = '<div class="biz-plan-badge">推荐方案</div>' if p["featured"] else ""
+        href = p.get("href", "?view=home")
         cards += (
             f'<article class="biz-plan{" is-featured" if p["featured"] else ""}">'
             f'{badge}'
@@ -261,13 +264,14 @@ def pricing() -> str:
             f'<div class="biz-plan-desc">{_esc_text(p["desc"])}</div>'
             f'<div class="biz-plan-price">{p["price"]}<small>{p["unit"]}</small></div>'
             f'<ul class="biz-plan-list">{items}</ul>'
-            f'<div class="biz-plan-cta">{_esc_text(p["cta"])}</div>'
+            f'<a class="biz-plan-cta" href="{href}" target="_self">{_esc_text(p["cta"])}</a>'
             '</article>'
         )
     return (
         f'<div class="biz-grid-3">{cards}</div>'
-        '<div class="biz-plan-note">※ 以上为服务方案展示示意，具体交付内容、部署方式与报价以商务合同为准；'
-        '本演示站不提供在线支付，也不构成要约。</div>'
+        '<div class="biz-plan-note">※ 在线支付支持<b>微信支付、支付宝、银联云闪付、数字人民币、对公转账</b>五种方式；'
+        '当前商户通道接入前为演示收银台（不产生真实扣款），接入后自动切换真实收款。'
+        '报价以商务合同为准，不构成要约。</div>'
     )
 
 
@@ -323,6 +327,7 @@ def footer() -> str:
         '<div class="biz-footer-col">'
         '<h5>商务合作</h5>'
         '<div class="biz-footer-line">预约演示 · 服务方案 · 私有化部署</div>'
+        '<div class="biz-footer-line">在线支付 · 微信 / 支付宝 / 云闪付 / 数字人民币 / 对公</div>'
         '<div class="biz-footer-line">机构版支持内网部署与系统对接</div>'
         '<div class="biz-footer-line">演示站表单仅存于当前会话，不会发送至服务器</div>'
         '</div>'
@@ -341,6 +346,30 @@ def rail_slogan() -> str:
         '<div class="biz-rail-slogan">'
         f'<b>考色 KAOSE</b><span>{SLOGAN}</span>'
         '<em>数字文保 · 智能决策</em>'
+        '</div>'
+    )
+
+
+def pay_head() -> str:
+    """在线订购收银台页标题与说明。"""
+    return (
+        '<div class="biz-demo-head">'
+        '<div class="biz-eyebrow"><i></i> SECURE CHECKOUT / 在线支付</div>'
+        '<h2 class="biz-h2">在线订购</h2>'
+        '<p class="biz-section-desc">支持微信支付、支付宝、银联云闪付、数字人民币与对公转账。'
+        '商户通道接入前为<b>演示收银台</b>：下单、支付、收据全流程可完整体验，不产生真实扣款。</p>'
+        '</div>'
+    )
+
+
+def pay_safety() -> str:
+    """收银台页安全提示条。"""
+    return (
+        '<div class="biz-pay-safety">'
+        '<span class="biz-pay-safety-item">✓ 订单全程可查询</span>'
+        '<span class="biz-pay-safety-item">✓ 电子收据可下载留存</span>'
+        '<span class="biz-pay-safety-item">✓ 不存储任何银行卡 / 密码信息</span>'
+        '<span class="biz-pay-safety-item">✓ 对公转账支持人工对账确认</span>'
         '</div>'
     )
 

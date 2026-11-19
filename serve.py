@@ -18,6 +18,8 @@ def main() -> int:
         "--server.headless", "true",
         "--server.enableCORS", "false",
         "--server.enableXsrfProtection", "false",
+        # 让 /app/static/* 可访问：PWA 的 manifest / service worker / 图标都从这里加载
+        "--server.enableStaticServing", "true",
         "--browser.gatherUsageStats", "false",
     ]
     root = os.path.dirname(os.path.abspath(__file__))

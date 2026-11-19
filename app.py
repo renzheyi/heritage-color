@@ -1199,6 +1199,60 @@ html body [data-testid="stApp"] *:not(text):not(tspan)::after{
 """
 st.markdown(_UNIFORM_FONT_CSS, unsafe_allow_html=True)
 
+# ================================================================ PWA：可安装应用到手机/电脑桌面
+# manifest / 图标 / Service Worker 放在 static/，由 serve.py 的 enableStaticServing 提供。
+# 通过 st.html 的 JS 注入到页面 head（Streamlit 本身不提供自定义 head 的接口）。
+_PWA_BOOT = """
+<script>
+(function () {
+  function once(sel, make) { if (!document.querySelector(sel)) { document.head.appendChild(make()); } }
+  var manifestHref = '/app/static/manifest.webmanifest';
+  // 保留当前分享码：线上平台要求 URL 带 sharecode，否则安装后打开会 403
+  try {
+    var sc = new URLSearchParams(location.search).get('sharecode');
+    if (sc) manifestHref += '?sharecode=' + encodeURIComponent(sc);
+  } catch (e) {}
+
+  once('link[rel="manifest"]', function () {
+    var l = document.createElement('link'); l.rel = 'manifest'; l.href = manifestHref; return l;
+  });
+  once('meta[name="theme-color"]', function () {
+    var m = document.createElement('meta'); m.name = 'theme-color'; m.content = '#C4322B'; return m;
+  });
+  once('meta[name="apple-mobile-web-app-capable"]', function () {
+    var m = document.createElement('meta'); m.name = 'apple-mobile-web-app-capable'; m.content = 'yes'; return m;
+  });
+  once('meta[name="mobile-web-app-capable"]', function () {
+    var m = document.createElement('meta'); m.name = 'mobile-web-app-capable'; m.content = 'yes'; return m;
+  });
+  once('meta[name="apple-mobile-web-app-status-bar-style"]', function () {
+    var m = document.createElement('meta'); m.name = 'apple-mobile-web-app-status-bar-style'; m.content = 'black-translucent'; return m;
+  });
+  once('meta[name="apple-mobile-web-app-title"]', function () {
+    var m = document.createElement('meta'); m.name = 'apple-mobile-web-app-title'; m.content = '考色'; return m;
+  });
+  once('link[rel="apple-touch-icon"]', function () {
+    var l = document.createElement('link'); l.rel = 'apple-touch-icon'; l.href = '/app/static/icon-192.png'; return l;
+  });
+
+  if ('serviceWorker' in navigator) {
+    // 先尝试根作用域，Streamlit 静态服务不带 Service-Worker-Allowed 头时会失败，回退静态目录作用域
+    navigator.serviceWorker.register('/app/static/sw.js', { scope: '/' })
+      .catch(function () { return navigator.serviceWorker.register('/app/static/sw.js', { scope: '/app/static/' }); })
+      .catch(function () {});
+  }
+})();
+</script>
+"""
+try:
+    st.html(_PWA_BOOT, unsafe_allow_javascript=True)
+except Exception:
+    # 旧版 Streamlit 无 unsafe_allow_javascript 时降级为普通注入（不影响主站）
+    try:
+        st.html(_PWA_BOOT)
+    except Exception:
+        pass
+
 # 商业化文案模块为可选增强：即使部署环境只刷新了 app.py、commerce.py 还是旧缓存，
 # 主站功能照常运行，仅跳过商业化板块，绝不出现整站红页。
 try:

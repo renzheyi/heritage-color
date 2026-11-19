@@ -1,0 +1,33 @@
+{
+  "name": "考色 · 文物色彩智能考证平台",
+  "short_name": "考色",
+  "description": "文物色彩智能考证、颜料推演与数字修复决策平台",
+  "lang": "zh-CN",
+  "dir": "ltr",
+  "start_url": "/?sharecode=T3T3IUSVPP",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#F5EAD3",
+  "theme_color": "#C4322B",
+  "icons": [
+    {
+      "src": "/app/static/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/app/static/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/app/static/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
